@@ -1,0 +1,6 @@
+[package]
+name = "gameboy-emu"
+version = "0.1.0"
+authors = ["Caleb Boylan <calebboylan@gmail.com>"]
+
+[dependencies]
