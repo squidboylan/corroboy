@@ -204,20 +204,6 @@ union Reg16Bit {
     whole: u16,
 }
 
-#[derive(Clone, Copy)]
-struct Flags {
-    pub z: u8,
-    pub n: u8,
-    pub h: u8,
-    pub c: u8,
-}
-
-impl Flags {
-    pub fn new() -> Flags {
-        Flags{ z: 0, n: 0, h: 0, c: 0 }
-    }
-}
-
 pub struct Cpu {
     af: Reg16Bit,
     bc: Reg16Bit,
@@ -226,7 +212,6 @@ pub struct Cpu {
     sp: Reg16Bit,
     pc: Reg16Bit,
     mem: mmu::Mmu,
-    flags: Flags,
 }
 
 impl Cpu {
@@ -238,8 +223,7 @@ impl Cpu {
         let sp = Reg16Bit{ whole: 0 };
         let pc = Reg16Bit{ whole: 0 };
         let mem = mmu::Mmu::new();
-        let flags = Flags::new();
-        Cpu {af, bc, de, hl, sp, pc, mem, flags}
+        Cpu {af, bc, de, hl, sp, pc, mem}
     }
 
     fn exec_opcode(&mut self, opcode: u8, param: u8) {
