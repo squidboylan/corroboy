@@ -192,6 +192,102 @@ macro_rules! get_hl {
     }
 }
 
+macro_rules! get_z_flag {
+    ($self_: ident) => {
+        unsafe {
+            ($self_.af.split.lower & 0b10000000) >> 7
+        }
+    }
+}
+
+macro_rules! get_n_flag {
+    ($self_: ident) => {
+        unsafe {
+            ($self_.af.split.lower & 0b01000000) >> 6
+        }
+    }
+}
+
+macro_rules! get_h_flag {
+    ($self_: ident) => {
+        unsafe {
+            ($self_.af.split.lower & 0b00100000) >> 5
+        }
+    }
+}
+
+macro_rules! get_c_flag {
+    ($self_: ident) => {
+        unsafe {
+            ($self_.af.split.lower & 0b00010000) >> 4
+        }
+    }
+}
+
+macro_rules! set_z_flag {
+    ($self_: ident) => {
+        unsafe {
+            $self_.af.split.lower |= 0b10000000
+        }
+    }
+}
+
+macro_rules! set_n_flag {
+    ($self_: ident) => {
+        unsafe {
+            $self_.af.split.lower |= 0b01000000
+        }
+    }
+}
+
+macro_rules! set_h_flag {
+    ($self_: ident) => {
+        unsafe {
+            $self_.af.split.lower |= 0b00100000
+        }
+    }
+}
+
+macro_rules! set_c_flag {
+    ($self_: ident) => {
+        unsafe {
+            $self_.af.split.lower |= 0b00010000
+        }
+    }
+}
+
+macro_rules! unset_z_flag {
+    ($self_: ident) => {
+        unsafe {
+            $self_.af.split.lower &= 0b01111111
+        }
+    }
+}
+
+macro_rules! unset_n_flag {
+    ($self_: ident) => {
+        unsafe {
+            $self_.af.split.lower &= 0b10111111
+        }
+    }
+}
+
+macro_rules! unset_h_flag {
+    ($self_: ident) => {
+        unsafe {
+            $self_.af.split.lower &= 0b11011111
+        }
+    }
+}
+
+macro_rules! unset_c_flag {
+    ($self_: ident) => {
+        unsafe {
+            $self_.af.split.lower &= 0b11101111
+        }
+    }
+}
+
 #[derive(Clone, Copy)]
 struct Reg8Bit {
     lower: u8,
@@ -355,6 +451,29 @@ impl Cpu {
         self.exec_opcode(0x7E, 0);
         assert_eq!(get_a!(self), 60);
     }
+
+    pub fn test_flag_bits(&mut self) {
+        set_z_flag!(self);
+        assert_eq!(get_z_flag!(self), 1);
+        set_z_flag!(self);
+        assert_eq!(get_z_flag!(self), 1);
+        set_z_flag!(self);
+        assert_eq!(get_z_flag!(self), 1);
+        unset_z_flag!(self);
+        assert_eq!(get_z_flag!(self), 0);
+        set_h_flag!(self);
+        assert_eq!(get_h_flag!(self), 1);
+        unset_h_flag!(self);
+        assert_eq!(get_h_flag!(self), 0);
+        set_n_flag!(self);
+        assert_eq!(get_n_flag!(self), 1);
+        unset_n_flag!(self);
+        assert_eq!(get_n_flag!(self), 0);
+        set_c_flag!(self);
+        assert_eq!(get_c_flag!(self), 1);
+        unset_c_flag!(self);
+        assert_eq!(get_c_flag!(self), 0);
+    }
 }
 
 #[test]
@@ -366,4 +485,8 @@ fn test_cpu() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
     derp.test_opcodes();
+
+    // Get a new CPU in to start at a known state
+    let mut derp = Cpu::new();
+    derp.test_flag_bits();
 }
