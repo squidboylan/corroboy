@@ -320,10 +320,19 @@ macro_rules! unset_c_flag {
     }
 }
 
+// endianness makes my life hard here?
+#[cfg(target_endian = "little")]
 #[derive(Clone, Copy)]
 struct Reg8Bit {
     lower: u8,
     upper: u8,
+}
+
+#[cfg(target_endian = "big")]
+#[derive(Clone, Copy)]
+struct Reg8Bit {
+    upper: u8,
+    lower: u8,
 }
 
 #[derive(Clone, Copy)]
