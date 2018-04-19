@@ -365,11 +365,11 @@ impl Cpu {
 
     fn get_opcode(&mut self) -> u16 {
         let mut pc = get_pc!(self);
-        let temp = self.mem.get_ins(pc as usize);
+        let temp = self.mem.get_mem_u8(pc as usize);
         pc += 1;
         let temp_u16: u16;
         if temp == 0xCB {
-            temp_u16 = 0xCB00 + (self.mem.get_ins(pc as usize) as u16);
+            temp_u16 = 0xCB00 + (self.mem.get_mem_u8(pc as usize) as u16);
             pc += 1;
         }
         else {
@@ -383,7 +383,7 @@ impl Cpu {
 
     fn get_param_8_bit(&mut self) -> u8 {
         let mut pc = get_pc!(self);
-        let temp = self.mem.get_ins(pc as usize);
+        let temp = self.mem.get_mem_u8(pc as usize);
         pc += 1;
         set_pc!(self, pc);
         temp
@@ -391,9 +391,9 @@ impl Cpu {
 
     fn get_param_16_bit(&mut self) -> u16 {
         let mut pc = get_pc!(self);
-        let temp = self.mem.get_ins(pc as usize);
+        let temp = self.mem.get_mem_u8(pc as usize);
         pc += 1;
-        let temp_u16: u16 = ((temp as u16) << 8) + (self.mem.get_ins(pc as usize) as u16);
+        let temp_u16: u16 = ((temp as u16) << 8) + (self.mem.get_mem_u8(pc as usize) as u16);
         pc += 1;
         set_pc!(self, pc);
         temp_u16
@@ -404,6 +404,7 @@ impl Cpu {
         let param_8_bit: u8 = 0;
         match opcode {
             0x01 => self.op_param_16_bit(opcode, param_16_bit),
+            0x08 => self.op_param_16_bit(opcode, param_16_bit),
             0x11 => self.op_param_16_bit(opcode, param_16_bit),
             0x21 => self.op_param_16_bit(opcode, param_16_bit),
             0x31 => self.op_param_16_bit(opcode, param_16_bit),
@@ -422,7 +423,7 @@ impl Cpu {
             0x7B => set_a!(self, get_e!(self)),
             0x7C => set_a!(self, get_h!(self)),
             0x7D => set_a!(self, get_l!(self)),
-            0x7E => set_a!(self, self.mem.get_ram_u8(get_hl!(self) as usize)),
+            0x7E => set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize)),
             0x7F => set_a!(self, get_a!(self)),
             0x40 => set_b!(self, get_b!(self)),
             0x41 => set_b!(self, get_c!(self)),
@@ -430,7 +431,7 @@ impl Cpu {
             0x43 => set_b!(self, get_e!(self)),
             0x44 => set_b!(self, get_h!(self)),
             0x45 => set_b!(self, get_l!(self)),
-            0x46 => set_b!(self, self.mem.get_ram_u8(get_hl!(self) as usize)),
+            0x46 => set_b!(self, self.mem.get_mem_u8(get_hl!(self) as usize)),
             0x47 => set_b!(self, get_a!(self)),
             0x48 => set_c!(self, get_b!(self)),
             0x49 => set_c!(self, get_c!(self)),
@@ -438,7 +439,7 @@ impl Cpu {
             0x4B => set_c!(self, get_e!(self)),
             0x4C => set_c!(self, get_h!(self)),
             0x4D => set_c!(self, get_l!(self)),
-            0x4E => set_c!(self, self.mem.get_ram_u8(get_hl!(self) as usize)),
+            0x4E => set_c!(self, self.mem.get_mem_u8(get_hl!(self) as usize)),
             0x4F => set_c!(self, get_a!(self)),
             0x50 => set_d!(self, get_b!(self)),
             0x51 => set_d!(self, get_c!(self)),
@@ -446,7 +447,7 @@ impl Cpu {
             0x53 => set_d!(self, get_e!(self)),
             0x54 => set_d!(self, get_h!(self)),
             0x55 => set_d!(self, get_l!(self)),
-            0x56 => set_d!(self, self.mem.get_ram_u8(get_hl!(self) as usize)),
+            0x56 => set_d!(self, self.mem.get_mem_u8(get_hl!(self) as usize)),
             0x57 => set_d!(self, get_a!(self)),
             0x58 => set_e!(self, get_b!(self)),
             0x59 => set_e!(self, get_c!(self)),
@@ -454,7 +455,7 @@ impl Cpu {
             0x5B => set_e!(self, get_e!(self)),
             0x5C => set_e!(self, get_h!(self)),
             0x5D => set_e!(self, get_l!(self)),
-            0x5E => set_e!(self, self.mem.get_ram_u8(get_hl!(self) as usize)),
+            0x5E => set_e!(self, self.mem.get_mem_u8(get_hl!(self) as usize)),
             0x5F => set_e!(self, get_a!(self)),
             0x60 => set_h!(self, get_b!(self)),
             0x61 => set_h!(self, get_c!(self)),
@@ -462,7 +463,7 @@ impl Cpu {
             0x63 => set_h!(self, get_e!(self)),
             0x64 => set_h!(self, get_h!(self)),
             0x65 => set_h!(self, get_l!(self)),
-            0x66 => set_h!(self, self.mem.get_ram_u8(get_hl!(self) as usize)),
+            0x66 => set_h!(self, self.mem.get_mem_u8(get_hl!(self) as usize)),
             0x67 => set_h!(self, get_a!(self)),
             0x68 => set_l!(self, get_b!(self)),
             0x69 => set_l!(self, get_c!(self)),
@@ -470,32 +471,60 @@ impl Cpu {
             0x6B => set_l!(self, get_e!(self)),
             0x6C => set_l!(self, get_h!(self)),
             0x6D => set_l!(self, get_l!(self)),
-            0x6E => set_l!(self, self.mem.get_ram_u8(get_hl!(self) as usize)),
+            0x6E => set_l!(self, self.mem.get_mem_u8(get_hl!(self) as usize)),
             0x6F => set_l!(self, get_a!(self)),
-            0x0A => set_a!(self, self.mem.get_ram_u8(get_bc!(self) as usize)),
-            0x1A => set_a!(self, self.mem.get_ram_u8(get_de!(self) as usize)),
-            0x7E => set_a!(self, self.mem.get_ram_u8(get_hl!(self) as usize)),
-            0x70 => self.mem.set_ram_u8(get_hl!(self) as usize, get_b!(self)),
-            0x71 => self.mem.set_ram_u8(get_hl!(self) as usize, get_c!(self)),
-            0x72 => self.mem.set_ram_u8(get_hl!(self) as usize, get_d!(self)),
-            0x73 => self.mem.set_ram_u8(get_hl!(self) as usize, get_e!(self)),
-            0x74 => self.mem.set_ram_u8(get_hl!(self) as usize, get_h!(self)),
-            0x75 => self.mem.set_ram_u8(get_hl!(self) as usize, get_l!(self)),
-            0x02 => self.mem.set_ram_u8(get_bc!(self) as usize, get_a!(self)),
-            0x12 => self.mem.set_ram_u8(get_de!(self) as usize, get_a!(self)),
-            0x77 => self.mem.set_ram_u8(get_hl!(self) as usize, get_a!(self)),
+            0x0A => set_a!(self, self.mem.get_mem_u8(get_bc!(self) as usize)),
+            0x1A => set_a!(self, self.mem.get_mem_u8(get_de!(self) as usize)),
+            0x7E => set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize)),
+            0x70 => self.mem.set_mem_u8(get_hl!(self) as usize, get_b!(self)),
+            0x71 => self.mem.set_mem_u8(get_hl!(self) as usize, get_c!(self)),
+            0x72 => self.mem.set_mem_u8(get_hl!(self) as usize, get_d!(self)),
+            0x73 => self.mem.set_mem_u8(get_hl!(self) as usize, get_e!(self)),
+            0x74 => self.mem.set_mem_u8(get_hl!(self) as usize, get_h!(self)),
+            0x75 => self.mem.set_mem_u8(get_hl!(self) as usize, get_l!(self)),
+            0x02 => self.mem.set_mem_u8(get_bc!(self) as usize, get_a!(self)),
+            0x12 => self.mem.set_mem_u8(get_de!(self) as usize, get_a!(self)),
+            0x77 => self.mem.set_mem_u8(get_hl!(self) as usize, get_a!(self)),
+
+            0xA7 => {set_a!(self, get_a!(self) & get_a!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+            0xA0 => {set_a!(self, get_a!(self) & get_b!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+            0xA1 => {set_a!(self, get_a!(self) & get_c!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+            0xA2 => {set_a!(self, get_a!(self) & get_d!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+            0xA3 => {set_a!(self, get_a!(self) & get_e!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+            0xA4 => {set_a!(self, get_a!(self) & get_h!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+            0xA5 => {set_a!(self, get_a!(self) & get_l!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+            0xA6 => {set_a!(self, get_a!(self) & self.mem.get_mem_u8(get_hl!(self) as usize)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+
+            0xB7 => {set_a!(self, get_a!(self) | get_a!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xB0 => {set_a!(self, get_a!(self) | get_b!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xB1 => {set_a!(self, get_a!(self) | get_c!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xB2 => {set_a!(self, get_a!(self) | get_d!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xB3 => {set_a!(self, get_a!(self) | get_e!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xB4 => {set_a!(self, get_a!(self) | get_h!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xB5 => {set_a!(self, get_a!(self) | get_l!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xB6 => {set_a!(self, get_a!(self) | self.mem.get_mem_u8(get_hl!(self) as usize)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+
+            0xAF => {set_a!(self, get_a!(self) ^ get_a!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xA8 => {set_a!(self, get_a!(self) ^ get_b!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xA9 => {set_a!(self, get_a!(self) ^ get_c!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xAA => {set_a!(self, get_a!(self) ^ get_d!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xAB => {set_a!(self, get_a!(self) ^ get_e!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xAC => {set_a!(self, get_a!(self) ^ get_h!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xAD => {set_a!(self, get_a!(self) ^ get_l!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+            0xAE => {set_a!(self, get_a!(self) ^ self.mem.get_mem_u8(get_hl!(self) as usize)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
+
             0xF9 => set_sp!(self, get_hl!(self)),
-            0xE2 => self.mem.set_ram_u8((get_c!(self) as u16 + 0xFF00) as usize, get_a!(self)),
-            0xF2 => set_a!(self, self.mem.get_ram_u8((get_c!(self) as u16 + 0xFF00) as usize)),
+            0xE2 => self.mem.set_mem_u8((get_c!(self) as u16 + 0xFF00) as usize, get_a!(self)),
+            0xF2 => set_a!(self, self.mem.get_mem_u8((get_c!(self) as u16 + 0xFF00) as usize)),
 
-            0x22 => { self.mem.set_ram_u8(get_hl!(self) as usize, get_a!(self));
+            0x22 => { self.mem.set_mem_u8(get_hl!(self) as usize, get_a!(self));
                       set_hl!(self, get_hl!(self) + 1);},
-            0x2A => { set_a!(self, self.mem.get_ram_u8(get_hl!(self) as usize));
+            0x2A => { set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize));
                       set_hl!(self, get_hl!(self) + 1);},
 
-            0x32 => { self.mem.set_ram_u8(get_hl!(self) as usize, get_a!(self));
+            0x32 => { self.mem.set_mem_u8(get_hl!(self) as usize, get_a!(self));
                       set_hl!(self, get_hl!(self) - 1);},
-            0x3A => { set_a!(self, self.mem.get_ram_u8(get_hl!(self) as usize));
+            0x3A => { set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize));
                       set_hl!(self, get_hl!(self) - 1);},
             _ => println!("opcode dispatch broke :("),
         }
@@ -504,10 +533,11 @@ impl Cpu {
     fn op_param_16_bit(&mut self, opcode: u16, param: u16) {
         match opcode {
             0x01 => set_bc!(self, param),
+            0x08 => self.mem.set_mem_u16(param as usize, get_sp!(self)),
             0x11 => set_de!(self, param),
             0x21 => set_hl!(self, param),
             0x31 => set_sp!(self, param),
-            0xFA => set_a!(self, self.mem.get_ram_u8(param.swap_bytes() as usize)),
+            0xFA => set_a!(self, self.mem.get_mem_u8(param.swap_bytes() as usize)),
             _ => println!("opcode dispatched to 16 bit param executer but that didnt match the op"),
         };
     }
@@ -521,13 +551,13 @@ impl Cpu {
             0x26 => set_h!(self, param),
             0x2E => set_l!(self, param),
             0x3E => set_a!(self, param),
-            0xEA => self.mem.set_ram_u8(param as usize, get_a!(self)),
-            0x36 => self.mem.set_ram_u8(get_hl!(self) as usize, param as u8),
-            0xE0 => self.mem.set_ram_u8((param as u16 + 0xFF00) as usize, get_a!(self)),
-            0xF0 => set_a!(self, self.mem.get_ram_u8((param as u16 + 0xFF00) as usize)),
+            0xEA => self.mem.set_mem_u8(param as usize, get_a!(self)),
+            0x36 => self.mem.set_mem_u8(get_hl!(self) as usize, param as u8),
+            0xE0 => self.mem.set_mem_u8((param as u16 + 0xFF00) as usize, get_a!(self)),
+            0xF0 => set_a!(self, self.mem.get_mem_u8((param as u16 + 0xFF00) as usize)),
 
             // this doesnt really work and is complicated so i'll figure it out later
-            0xF8 => { set_hl!(self, get_sp!(self) + param as u16); unset_z_flag!(self); unset_n_flag!(self);},
+            0xF8 => { set_hl!(self, (get_sp!(self) as i16 + param as i16) as u16); unset_z_flag!(self); unset_n_flag!(self);},
             _ => println!("opcode dispatched to 8 bit param executer but that didnt match the op"),
         };
     }
@@ -566,7 +596,7 @@ impl Cpu {
         assert_eq!(get_l!(self), 0b10101010);
         assert_eq!(get_hl!(self), 0b0000010010101010);
 
-        self.mem.set_ram_u8(0b0000010010101010, 60);
+        self.mem.set_mem_u8(0b0000010010101010, 60);
     }
 
     pub fn test_flag_bits(&mut self) {
@@ -593,12 +623,9 @@ impl Cpu {
     }
 
     pub fn test_get_opcode(&mut self) {
-        self.mem.set_cartridge(0, 0xCB);
-        self.mem.set_cartridge(1, 0x10);
-        self.mem.set_cartridge(2, 0x20);
-        self.mem.set_cartridge(3, 0x10);
-        self.mem.set_cartridge(4, 0x20);
-        self.mem.set_cartridge(5, 0x30);
+        self.mem.set_mem_u8(0, 0xCB);
+        self.mem.set_mem_u8(1, 0x10);
+        self.mem.set_mem_u8(2, 0x20);
 
         set_pc!(self, 0);
         assert_eq!(self.get_opcode(), 0xCB10);
@@ -608,9 +635,9 @@ impl Cpu {
     }
 
     pub fn test_get_param(&mut self) {
-        self.mem.set_cartridge(3, 0x10);
-        self.mem.set_cartridge(4, 0x20);
-        self.mem.set_cartridge(5, 0x30);
+        self.mem.set_mem_u8(3, 0x10);
+        self.mem.set_mem_u8(4, 0x20);
+        self.mem.set_mem_u8(5, 0x30);
 
         set_pc!(self, 3);
         assert_eq!(self.get_param_8_bit(), 0x10);
