@@ -9,7 +9,7 @@ impl Mmu {
     }
 
     pub fn get_mem_u8(&self, location: usize) -> u8 {
-        if location < 0x4000 && location >= 0x0000 {
+        if location < 0x4000 {
             return self.cartridge[location];
         }
         if location < 0xE000 && location >= 0xC000 {
@@ -19,7 +19,7 @@ impl Mmu {
     }
 
     pub fn set_mem_u8(&mut self, location: usize, val: u8) {
-        if location < 0x4000 && location >= 0x0000 {
+        if location < 0x4000 {
             self.cartridge[location] = val;
         }
         if location < 0xE000 && location >= 0xC000 {
@@ -27,7 +27,7 @@ impl Mmu {
         }
     }
     pub fn get_mem_u16(&self, location: usize) -> u16 {
-        if location < 0x4000 && location >= 0x0000 {
+        if location < 0x4000 {
             return ((self.cartridge[location] as u16) << 8) + (self.cartridge[location + 1] as u16);
         }
         if location < 0xE000 && location >= 0xC000 {
@@ -38,7 +38,7 @@ impl Mmu {
     }
 
     pub fn set_mem_u16(&mut self, location: usize, val: u16) {
-        if location < 0x4000 && location >= 0x0000 {
+        if location < 0x4000 {
             self.cartridge[location] = (val >> 8) as u8;
             self.cartridge[location + 1] = val as u8;
         }
