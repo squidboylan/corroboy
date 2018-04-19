@@ -15,6 +15,14 @@ impl Mmu {
     pub fn set_ram_u8(&mut self, location: usize, val: u8) {
         self.ram[location] = val;
     }
+
+    pub fn get_ins(&self, location: usize) -> u8 {
+        self.cartridge[location]
+    }
+
+    pub fn set_cartridge(&mut self, location: usize, val: u8) {
+        self.cartridge[location] = val;
+    }
 }
 
 #[test]
