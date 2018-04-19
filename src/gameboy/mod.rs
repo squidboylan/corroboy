@@ -400,23 +400,21 @@ impl Cpu {
     }
 
     fn exec_dispatcher(&mut self, opcode: u16) {
-        let param_16_bit: u16 = 0;
-        let param_8_bit: u8 = 0;
         match opcode {
-            0x01 => self.op_param_16_bit(opcode, param_16_bit),
-            0x08 => self.op_param_16_bit(opcode, param_16_bit),
-            0x11 => self.op_param_16_bit(opcode, param_16_bit),
-            0x21 => self.op_param_16_bit(opcode, param_16_bit),
-            0x31 => self.op_param_16_bit(opcode, param_16_bit),
-            0xFA => self.op_param_16_bit(opcode, param_16_bit),
-            0x06 => self.op_param_8_bit(opcode, param_8_bit),
-            0x0E => self.op_param_8_bit(opcode, param_8_bit),
-            0x16 => self.op_param_8_bit(opcode, param_8_bit),
-            0x1E => self.op_param_8_bit(opcode, param_8_bit),
-            0x26 => self.op_param_8_bit(opcode, param_8_bit),
-            0x2E => self.op_param_8_bit(opcode, param_8_bit),
-            0x3E => self.op_param_8_bit(opcode, param_8_bit),
-            0xEA => self.op_param_8_bit(opcode, param_8_bit),
+            0x01 => self.op_param_16_bit(opcode),
+            0x08 => self.op_param_16_bit(opcode),
+            0x11 => self.op_param_16_bit(opcode),
+            0x21 => self.op_param_16_bit(opcode),
+            0x31 => self.op_param_16_bit(opcode),
+            0xFA => self.op_param_16_bit(opcode),
+            0x06 => self.op_param_8_bit(opcode),
+            0x0E => self.op_param_8_bit(opcode),
+            0x16 => self.op_param_8_bit(opcode),
+            0x1E => self.op_param_8_bit(opcode),
+            0x26 => self.op_param_8_bit(opcode),
+            0x2E => self.op_param_8_bit(opcode),
+            0x3E => self.op_param_8_bit(opcode),
+            0xEA => self.op_param_8_bit(opcode),
             0x78 => set_a!(self, get_b!(self)),
             0x79 => set_a!(self, get_c!(self)),
             0x7A => set_a!(self, get_d!(self)),
@@ -530,7 +528,8 @@ impl Cpu {
         }
     }
 
-    fn op_param_16_bit(&mut self, opcode: u16, param: u16) {
+    fn op_param_16_bit(&mut self, opcode: u16) {
+        let param = self.get_param_16_bit();
         match opcode {
             0x01 => set_bc!(self, param),
             0x08 => self.mem.set_mem_u16(param as usize, get_sp!(self)),
@@ -542,7 +541,8 @@ impl Cpu {
         };
     }
 
-    fn op_param_8_bit(&mut self, opcode: u16, param: u8) {
+    fn op_param_8_bit(&mut self, opcode: u16) {
+        let param = self.get_param_8_bit();
         match opcode {
             0x06 => set_b!(self, param),
             0x0E => set_c!(self, param),
@@ -578,6 +578,7 @@ impl Cpu {
         assert_eq!(get_pc!(self), 10);
     }
 
+    /*
     pub fn test_opcodes(&mut self) {
         self.op_param_8_bit(0x06, 0b00000001);
         assert_eq!(get_b!(self), 0b00000001);
@@ -598,6 +599,7 @@ impl Cpu {
 
         self.mem.set_mem_u8(0b0000010010101010, 60);
     }
+    */
 
     pub fn test_flag_bits(&mut self) {
         set_z_flag!(self);
@@ -644,6 +646,18 @@ impl Cpu {
         assert_eq!(self.get_param_16_bit(), 0x2030);
         assert_eq!(get_pc!(self), 6);
     }
+
+    pub fn load_rom(&mut self, rom_path: &str) {
+        self.mem.load_rom(rom_path);
+    }
+
+    pub fn run(&mut self) {
+        loop {
+            let opcode = self.get_opcode();
+            println!("{}", opcode);
+            self.exec_dispatcher(opcode);
+        }
+    }
 }
 
 #[test]
@@ -653,12 +667,14 @@ fn test_registers() {
     derp.test_registers();
 }
 
+/*
 #[test]
 fn test_opcodes() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
     derp.test_opcodes();
 }
+*/
 
 #[test]
 fn test_flag_bits() {

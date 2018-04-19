@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io::prelude::*;
+
 pub struct Mmu {
     ram: [u8; 8192],
     cartridge: [u8; 32768],
@@ -47,6 +50,16 @@ impl Mmu {
             self.ram[location + 1 - 0xC000] = val as u8;
         }
     }
+
+    pub fn load_rom(&mut self, rom_path: &str) {
+        let mut f = File::open(rom_path).expect("rom not found");
+
+        let mut contents: Vec<u8> = vec![];
+        f.read_to_end(&mut contents);
+        for (index, i) in contents.iter().enumerate() {
+            self.cartridge[index] = *i;
+        }
+    }
 }
 
 #[test]
@@ -54,8 +67,15 @@ fn test_mmu_ram() {
     let mut derp = Mmu::new();
     derp.set_mem_u8(0xC000, 255);
     assert_eq!(derp.get_mem_u8(0xC000), 255);
+
     derp.set_mem_u8(0xC001, 10);
     assert_eq!(derp.get_mem_u8(0xC001), 10);
+
     derp.set_mem_u8(0xC002, 1);
     assert_eq!(derp.get_mem_u8(0xC002), 1);
+
+    derp.set_mem_u16(0xC003, 0x1234);
+    assert_eq!(derp.get_mem_u8(0xC003), 0x12);
+    assert_eq!(derp.get_mem_u8(0xC004), 0x34);
+    assert_eq!(derp.get_mem_u16(0xC003), 0x1234);
 }
