@@ -372,6 +372,24 @@ impl Cpu {
         temp_u16
     }
 
+    fn get_param_8_bit(&mut self) -> u8 {
+        let mut pc = get_pc!(self);
+        let temp = self.mem.get_ins(pc as usize);
+        pc += 1;
+        set_pc!(self, pc);
+        temp
+    }
+
+    fn get_param_16_bit(&mut self) -> u16 {
+        let mut pc = get_pc!(self);
+        let temp = self.mem.get_ins(pc as usize);
+        pc += 1;
+        let temp_u16: u16 = ((temp as u16) << 8) + (self.mem.get_ins(pc as usize) as u16);
+        pc += 1;
+        set_pc!(self, pc);
+        temp_u16
+    }
+
     fn exec_dispatcher(&mut self, opcode: u16) {
         let param_16_bit: u16 = 0;
         let param_8_bit: u8 = 0;
@@ -468,7 +486,7 @@ impl Cpu {
             0xE0 => self.op_no_param(opcode),
             0xF0 => self.op_no_param(opcode),
             0xF8 => self.op_no_param(opcode),
-            _ => (),
+            _ => println!("opcode dispatch broke :("),
         }
     }
 
@@ -479,7 +497,7 @@ impl Cpu {
             0x21 => set_hl!(self, param),
             0x31 => set_sp!(self, param),
             0xFA => set_a!(self, self.mem.get_ram_u8(param.swap_bytes() as usize)),
-            _ => (),
+            _ => println!("opcode dispatched to 16 bit param executer but that didnt match the op"),
         };
     }
 
@@ -499,7 +517,7 @@ impl Cpu {
 
             // this doesnt really work and is complicated so i'll figure it out later
             0xF8 => { set_hl!(self, get_sp!(self) + param as u16); unset_z_flag!(self); unset_n_flag!(self);},
-            _ => (),
+            _ => println!("opcode dispatched to 8 bit param executer but that didnt match the op"),
         };
     }
 
@@ -586,8 +604,7 @@ impl Cpu {
                       set_hl!(self, get_hl!(self) - 1);},
             0x3A => { set_a!(self, self.mem.get_ram_u8(get_hl!(self) as usize));
                       set_hl!(self, get_hl!(self) - 1);},
-
-            _ => (),
+            _ => println!("opcode dispatched to no param executer but that didnt match the op"),
         };
     }
 
@@ -658,12 +675,26 @@ impl Cpu {
         self.mem.set_cartridge(0, 0xCB);
         self.mem.set_cartridge(1, 0x10);
         self.mem.set_cartridge(2, 0x20);
+        self.mem.set_cartridge(3, 0x10);
+        self.mem.set_cartridge(4, 0x20);
+        self.mem.set_cartridge(5, 0x30);
 
         set_pc!(self, 0);
         assert_eq!(self.get_opcode(), 0xCB10);
         assert_eq!(get_pc!(self), 2);
         assert_eq!(self.get_opcode(), 0x20);
         assert_eq!(get_pc!(self), 3);
+    }
+
+    pub fn test_get_param(&mut self) {
+        self.mem.set_cartridge(3, 0x10);
+        self.mem.set_cartridge(4, 0x20);
+        self.mem.set_cartridge(5, 0x30);
+
+        set_pc!(self, 3);
+        assert_eq!(self.get_param_8_bit(), 0x10);
+        assert_eq!(self.get_param_16_bit(), 0x2030);
+        assert_eq!(get_pc!(self), 6);
     }
 }
 
@@ -693,4 +724,11 @@ fn test_get_opcode() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
     derp.test_get_opcode();
+}
+
+#[test]
+fn test_get_param() {
+    // Get a new CPU in to start at a known state
+    let mut derp = Cpu::new();
+    derp.test_get_param();
 }
