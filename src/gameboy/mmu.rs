@@ -42,14 +42,15 @@ impl Mmu {
         0
     }
 
+    // z80 is little endian in ram
     pub fn set_mem_u16(&mut self, location: usize, val: u16) {
         if location < 0x4000 {
-            self.cartridge[location] = (val >> 8) as u8;
-            self.cartridge[location + 1] = val as u8;
+            self.cartridge[location] = val as u8;
+            self.cartridge[location + 1] = (val >> 8) as u8;
         }
         if location < 0xE000 && location >= 0xC000 {
-            self.ram[location - 0xC000] = (val >> 8) as u8;
-            self.ram[location + 1 - 0xC000] = val as u8;
+            self.ram[location - 0xC000] = val as u8;
+            self.ram[location + 1 - 0xC000] = (val >> 8) as u8;
         }
     }
 

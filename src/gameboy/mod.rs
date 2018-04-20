@@ -561,6 +561,8 @@ impl Cpu {
             0x3A => { set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize));
                       set_hl!(self, get_hl!(self) - 1);},
 
+            0xC5 => { self.mem.set_mem_u16(get_sp!(self) as usize, get_bc!(self)); set_sp!(self, get_sp!(self) - 2); },
+
             0xCB7C => { unset_n_flag!(self); set_h_flag!(self);
                 if ((get_h!(self) & 0b10000000) >> 7) == 0 { set_z_flag!(self); }
                 else { unset_z_flag!(self); } },
@@ -580,7 +582,7 @@ impl Cpu {
             0x31 => set_sp!(self, param),
 
             // CALL
-            0xCD => {self.mem.set_mem_u16(get_sp!(self) as usize, get_pc!(self)); set_sp!(self, get_sp!(self) - 1); set_pc!(self, param);}
+            0xCD => {self.mem.set_mem_u16(get_sp!(self) as usize, get_pc!(self)); set_sp!(self, get_sp!(self) - 2); set_pc!(self, param);}
 
             0xFA => set_a!(self, self.mem.get_mem_u8(param.swap_bytes() as usize)),
             _ => println!("opcode dispatched to 16 bit param executer but that didnt match the op"),
