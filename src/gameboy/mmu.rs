@@ -33,10 +33,10 @@ impl Mmu {
     // z80 is little endian in ram
     pub fn get_mem_u16(&self, location: usize) -> u16 {
         if location < 0x4000 {
-            return ((self.cartridge[location] as u16) + ((self.cartridge[location + 1] as u16) << 8);
+            return (self.cartridge[location] as u16) + ((self.cartridge[location + 1] as u16) << 8);
         }
         if location < 0xE000 && location >= 0xC000 {
-            return ((self.ram[location - 0xC000] as u16) + ((self.ram[location + 1 - 0xC000] as u16) << 8);
+            return (self.ram[location - 0xC000] as u16) + ((self.ram[location + 1 - 0xC000] as u16) << 8);
         }
 
         0
