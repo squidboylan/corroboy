@@ -84,18 +84,18 @@ impl Mmu {
     pub fn push_u16(&mut self, sp: &mut u16, val: u16) {
         if *sp < 0xE000 && *sp >= 0xC000 {
             *sp = *sp - 1;
-            self.ram[(*sp - 0xC000) as usize] = val as u8;
-            *sp = *sp - 1;
             self.ram[(*sp - 0xC000) as usize] = (val >> 8) as u8;
+            *sp = *sp - 1;
+            self.ram[(*sp - 0xC000) as usize] = val as u8;
         }
     }
 
     pub fn pop_u16(&mut self, sp: &mut u16) -> u16{
         let mut val: u16 = 0;
         if *sp < 0xE000 && *sp >= 0xC000 {
-            val = (self.ram[(*sp - 0xC000) as usize] as u16) << 8;
+            val = (self.ram[(*sp - 0xC000) as usize] as u16);
             *sp = *sp + 1;
-            val = val + (self.ram[(*sp - 0xC000) as usize] as u16);
+            val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8);
             *sp = *sp + 1;
         }
 

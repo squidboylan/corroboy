@@ -561,8 +561,24 @@ impl Cpu {
             0x3A => { set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize));
                       set_hl!(self, get_hl!(self) - 1);},
 
-            //0xC5 => { self.mem.set_mem_u16(get_sp!(self) as usize, get_bc!(self)); set_sp!(self, get_sp!(self) - 2); },
+            0xC1 => set_bc!(self, self.mem.pop_u16(&mut get_sp!(self))),
             0xC5 => self.mem.push_u16(&mut get_sp!(self), get_bc!(self)),
+
+            0x17 => { let tmp = get_c_flag!(self); unset_n_flag!(self); unset_h_flag!(self);
+                    if ((get_a!(self) & 0b10000000) >> 7) == 1 { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    set_a!(self, (get_a!(self) << 1) + tmp);
+                    if get_a!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                },
+
+            0xCB11 => { let tmp = get_c_flag!(self); unset_n_flag!(self); unset_h_flag!(self);
+                    if ((get_c!(self) & 0b10000000) >> 7) == 1 { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    set_c!(self, (get_c!(self) << 1) + tmp);
+                    if get_c!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                },
 
             0xCB7C => { unset_n_flag!(self); set_h_flag!(self);
                 if ((get_h!(self) & 0b10000000) >> 7) == 0 { set_z_flag!(self); }
