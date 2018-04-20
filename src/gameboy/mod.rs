@@ -418,6 +418,7 @@ impl Cpu {
             0x21 => self.op_param_16_bit(opcode),
             0x31 => self.op_param_16_bit(opcode),
             0xFA => self.op_param_16_bit(opcode),
+            0xCD => self.op_param_16_bit(opcode),
             0x06 => self.op_param_8_bit(opcode),
             0x0E => self.op_param_8_bit(opcode),
             0x16 => self.op_param_8_bit(opcode),
@@ -430,6 +431,13 @@ impl Cpu {
             0x28 => self.op_param_8_bit(opcode),
             0x30 => self.op_param_8_bit(opcode),
             0x38 => self.op_param_8_bit(opcode),
+            0xE0 => self.op_param_8_bit(opcode),
+
+            0xC => { unset_n_flag!(self); set_c!(self, get_c!(self) + 1);
+                    if get_c!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if get_c!(self) & 0b00011111 == 0b00010000 { set_h_flag!(self); }
+                    else { unset_h_flag!(self); }},
 
             0xBE => { let val = self.mem.get_mem_u8(get_hl!(self) as usize);
                     let tmp = get_a!(self) - val;
@@ -557,6 +565,7 @@ impl Cpu {
                 if ((get_h!(self) & 0b10000000) >> 7) == 0 { set_z_flag!(self); }
                 else { unset_z_flag!(self); } },
 
+
             _ => println!("opcode dispatch broke :("),
         }
     }
@@ -569,6 +578,10 @@ impl Cpu {
             0x11 => set_de!(self, param),
             0x21 => set_hl!(self, param),
             0x31 => set_sp!(self, param),
+
+            // CALL
+            0xCD => {self.mem.set_mem_u16(get_sp!(self) as usize, get_pc!(self)); set_sp!(self, get_sp!(self) - 1); set_pc!(self, param);}
+
             0xFA => set_a!(self, self.mem.get_mem_u8(param.swap_bytes() as usize)),
             _ => println!("opcode dispatched to 16 bit param executer but that didnt match the op"),
         };
@@ -713,8 +726,8 @@ impl Cpu {
             self.exec_dispatcher(opcode);
 
             if cfg!(debug_assertions = true) {
-                println!("");
                 println!("elapsed nanos: {}", start.elapsed().subsec_nanos());
+                println!("");
             }
         }
     }
