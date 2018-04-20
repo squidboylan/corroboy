@@ -1,3 +1,8 @@
+//extern crate elapsed;
+
+//use elapsed::measure_time;
+
+use std::time::{Duration, Instant};
 pub mod mmu;
 
 macro_rules! set_a {
@@ -386,7 +391,9 @@ impl Cpu {
         let temp = self.mem.get_mem_u8(pc as usize);
         pc += 1;
         set_pc!(self, pc);
-        println!("8 bit param: b: {:b}, hex: {:x}, signed: {:x}", temp, temp, (temp as i8) as i16);
+        if cfg!(debug_assertions = true) {
+            println!("8 bit param: b: {:b}, hex: {:x}, signed: {:x}", temp, temp, (temp as i8) as i16);
+        }
         temp
     }
 
@@ -397,7 +404,9 @@ impl Cpu {
         let temp_u16: u16 = (temp as u16) + ((self.mem.get_mem_u8(pc as usize) as u16) << 8);
         pc += 1;
         set_pc!(self, pc);
-        println!("16 bit param: b: {:b}, hex: {:x}", temp_u16, temp_u16);
+        if cfg!(debug_assertions = true) {
+            println!("16 bit param: b: {:b}, hex: {:x}", temp_u16, temp_u16);
+        }
         temp_u16
     }
 
@@ -679,7 +688,7 @@ impl Cpu {
 
         set_pc!(self, 3);
         assert_eq!(self.get_param_8_bit(), 0x10);
-        assert_eq!(self.get_param_16_bit(), 0x2030);
+        assert_eq!(self.get_param_16_bit(), 0x3020);
         assert_eq!(get_pc!(self), 6);
     }
 
@@ -689,12 +698,24 @@ impl Cpu {
 
     pub fn run(&mut self) {
         loop {
-            println!("pc: {:x}", get_pc!(self));
+
+            let start = Instant::now();
+            if cfg!(debug_assertions = true) {
+                println!("pc: {:x}", get_pc!(self));
+            }
+
             let opcode = self.get_opcode();
-            //println!("{:b}", get_hl!(self));
-            println!("opcode: {:x}", opcode);
+
+            if cfg!(debug_assertions = true) {
+                println!("opcode: {:x}", opcode);
+            }
+
             self.exec_dispatcher(opcode);
-            println!("");
+
+            if cfg!(debug_assertions = true) {
+                println!("");
+                println!("elapsed nanos: {}", start.elapsed().subsec_nanos());
+            }
         }
     }
 }
