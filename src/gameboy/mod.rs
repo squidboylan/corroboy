@@ -386,6 +386,7 @@ impl Cpu {
         let temp = self.mem.get_mem_u8(pc as usize);
         pc += 1;
         set_pc!(self, pc);
+        println!("8 bit param: b: {:b}, hex: {:x}, signed: {:x}", temp, temp, (temp as i8) as i16);
         temp
     }
 
@@ -393,9 +394,10 @@ impl Cpu {
         let mut pc = get_pc!(self);
         let temp = self.mem.get_mem_u8(pc as usize);
         pc += 1;
-        let temp_u16: u16 = ((temp as u16) << 8) + (self.mem.get_mem_u8(pc as usize) as u16);
+        let temp_u16: u16 = (temp as u16) + ((self.mem.get_mem_u8(pc as usize) as u16) << 8);
         pc += 1;
         set_pc!(self, pc);
+        println!("16 bit param: b: {:b}, hex: {:x}", temp_u16, temp_u16);
         temp_u16
     }
 
@@ -415,6 +417,22 @@ impl Cpu {
             0x2E => self.op_param_8_bit(opcode),
             0x3E => self.op_param_8_bit(opcode),
             0xEA => self.op_param_8_bit(opcode),
+            0x20 => self.op_param_8_bit(opcode),
+            0x28 => self.op_param_8_bit(opcode),
+            0x30 => self.op_param_8_bit(opcode),
+            0x38 => self.op_param_8_bit(opcode),
+
+            0xBE => { let val = self.mem.get_mem_u8(get_hl!(self) as usize);
+                    let tmp = get_a!(self) - val;
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (val & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
+
             0x78 => set_a!(self, get_b!(self)),
             0x79 => set_a!(self, get_c!(self)),
             0x7A => set_a!(self, get_d!(self)),
@@ -522,8 +540,14 @@ impl Cpu {
 
             0x32 => { self.mem.set_mem_u8(get_hl!(self) as usize, get_a!(self));
                       set_hl!(self, get_hl!(self) - 1);},
+
             0x3A => { set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize));
                       set_hl!(self, get_hl!(self) - 1);},
+
+            0xCB7C => { unset_n_flag!(self); set_h_flag!(self);
+                if ((get_h!(self) & 0b10000000) >> 7) == 0 { set_z_flag!(self); }
+                else { unset_z_flag!(self); } },
+
             _ => println!("opcode dispatch broke :("),
         }
     }
@@ -556,6 +580,12 @@ impl Cpu {
             0xE0 => self.mem.set_mem_u8((param as u16 + 0xFF00) as usize, get_a!(self)),
             0xF0 => set_a!(self, self.mem.get_mem_u8((param as u16 + 0xFF00) as usize)),
 
+            // Jumps
+            0x20 => { if get_z_flag!(self) == 0 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
+            0x28 => { if get_z_flag!(self) == 1 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
+            0x30 => { if get_c_flag!(self) == 0 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
+            0x38 => { if get_c_flag!(self) == 1 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
+
             // this doesnt really work and is complicated so i'll figure it out later
             0xF8 => { set_hl!(self, (get_sp!(self) as i16 + param as i16) as u16); unset_z_flag!(self); unset_n_flag!(self);},
             _ => println!("opcode dispatched to 8 bit param executer but that didnt match the op"),
@@ -565,6 +595,7 @@ impl Cpu {
     pub fn test_registers(&mut self) {
         set_a!(self, 1);
         set_f!(self, 2);
+
         assert_eq!(get_a!(self), 1);
         assert_eq!(get_f!(self), 2);
         assert_eq!(get_af!(self), 258);
@@ -576,6 +607,11 @@ impl Cpu {
 
         set_pc!(self, 10);
         assert_eq!(get_pc!(self), 10);
+
+        set_hl!(self, 2);
+        assert_eq!(get_hl!(self), 2);
+        set_hl!(self, get_hl!(self) - 1);
+        assert_eq!(get_hl!(self), 1);
     }
 
     /*
@@ -653,9 +689,12 @@ impl Cpu {
 
     pub fn run(&mut self) {
         loop {
+            println!("pc: {:x}", get_pc!(self));
             let opcode = self.get_opcode();
-            println!("{}", opcode);
+            //println!("{:b}", get_hl!(self));
+            println!("opcode: {:x}", opcode);
             self.exec_dispatcher(opcode);
+            println!("");
         }
     }
 }
