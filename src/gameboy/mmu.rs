@@ -63,6 +63,44 @@ impl Mmu {
             self.cartridge[index] = *i;
         }
     }
+
+    pub fn push_u8(&mut self, sp: &mut u16, val: u8) {
+        if *sp < 0xE000 && *sp >= 0xC000 {
+            *sp = *sp - 1;
+            self.ram[(*sp - 0xC000) as usize] = val;
+        }
+    }
+
+    pub fn pop_u8(&mut self, sp: &mut u16) -> u8{
+        let mut val: u8 = 0;
+        if *sp < 0xE000 && *sp >= 0xC000 {
+            val = self.ram[(*sp - 0xC000) as usize];
+            *sp = *sp + 1;
+        }
+
+        val
+    }
+
+    pub fn push_u16(&mut self, sp: &mut u16, val: u16) {
+        if *sp < 0xE000 && *sp >= 0xC000 {
+            *sp = *sp - 1;
+            self.ram[(*sp - 0xC000) as usize] = val as u8;
+            *sp = *sp - 1;
+            self.ram[(*sp - 0xC000) as usize] = (val >> 8) as u8;
+        }
+    }
+
+    pub fn pop_u16(&mut self, sp: &mut u16) -> u16{
+        let mut val: u16 = 0;
+        if *sp < 0xE000 && *sp >= 0xC000 {
+            val = (self.ram[(*sp - 0xC000) as usize] as u16) << 8;
+            *sp = *sp + 1;
+            val = val + (self.ram[(*sp - 0xC000) as usize] as u16);
+            *sp = *sp + 1;
+        }
+
+        val
+    }
 }
 
 #[test]
@@ -78,7 +116,23 @@ fn test_mmu_ram() {
     assert_eq!(derp.get_mem_u8(0xC002), 1);
 
     derp.set_mem_u16(0xC003, 0x1234);
-    assert_eq!(derp.get_mem_u8(0xC003), 0x12);
-    assert_eq!(derp.get_mem_u8(0xC004), 0x34);
+    assert_eq!(derp.get_mem_u8(0xC003), 0x34);
+    assert_eq!(derp.get_mem_u8(0xC004), 0x12);
     assert_eq!(derp.get_mem_u16(0xC003), 0x1234);
+}
+
+#[test]
+fn test_stack_functions() {
+    let mut derp = Mmu::new();
+    let mut sp: u16 = 0xDFFF;
+
+    derp.push_u16(&mut sp, 0x3210);
+    derp.push_u8(&mut sp, 0x01);
+    derp.push_u8(&mut sp, 0xF1);
+    derp.push_u8(&mut sp, 0x0F);
+    assert_eq!(derp.pop_u8(&mut sp), 0x0F);
+    assert_eq!(derp.pop_u8(&mut sp), 0xF1);
+    assert_eq!(derp.pop_u8(&mut sp), 0x01);
+    assert_eq!(derp.pop_u16(&mut sp), 0x3210);
+
 }
