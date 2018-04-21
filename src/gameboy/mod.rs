@@ -5,6 +5,9 @@
 use std::time::{Duration, Instant};
 pub mod mmu;
 
+#[macro_use]
+pub mod ops;
+
 macro_rules! set_a {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -445,162 +448,31 @@ impl Cpu {
             0xF0 => self.op_param_8_bit(opcode),
             0xFE => self.op_param_8_bit(opcode),
 
-            0x0C => { unset_n_flag!(self); set_c!(self, get_c!(self) + 1);
-                    if get_c!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if get_c!(self) & 0b00011111 == 0b00010000 { set_h_flag!(self); }
-                    else { unset_h_flag!(self); }},
+            0x3C => inc_a!(self),
+            0x04 => inc_b!(self),
+            0x0C => inc_c!(self),
+            0x14 => inc_d!(self),
+            0x1C => inc_e!(self),
+            0x24 => inc_h!(self),
+            0x2C => inc_l!(self),
 
-            0x3C => { unset_n_flag!(self); set_a!(self, get_a!(self) + 1);
-                    if get_a!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if get_a!(self) & 0b00011111 == 0b00010000 { set_h_flag!(self); }
-                    else { unset_h_flag!(self); }},
+            0xBE => cp_hl_val!(self),
+            0xBF => cp_a!(self),
+            0xB8 => cp_b!(self),
+            0xB9 => cp_c!(self),
+            0xBA => cp_d!(self),
+            0xBB => cp_e!(self),
+            0xBC => cp_h!(self),
+            0xBD => cp_l!(self),
 
-            0xBE => { let val = self.mem.get_mem_u8(get_hl!(self) as usize);
-                    let tmp = get_a!(self) - val;
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (val & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
-            0xBF => { let tmp = get_a!(self) - get_a!(self);
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (get_a!(self) & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
-            0xB8 => { let tmp = get_a!(self) - get_b!(self);
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (get_b!(self) & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
-            0xB9 => { let tmp = get_a!(self) - get_c!(self);
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (get_c!(self) & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
-            0xBA => { let tmp = get_a!(self) - get_d!(self);
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (get_d!(self) & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
-            0xBB => { let tmp = get_a!(self) - get_e!(self);
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (get_e!(self) & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
-            0xBC => { let tmp = get_a!(self) - get_h!(self);
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (get_h!(self) & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
-            0xBD => { let tmp = get_a!(self) - get_l!(self);
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (get_l!(self) & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
-            0x04 => { set_b!(self, get_b!(self) + 1);
-                    unset_n_flag!(self);
-                    if get_b!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if (get_b!(self) & 0b00011111) == 0b00010000 { unset_h_flag!(self); }
-                    else { unset_h_flag!(self); }
-                },
-
-            0x3D => { set_a!(self, get_a!(self) - 1);
-                    set_n_flag!(self);
-                    if get_a!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if (get_a!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
-                    else { unset_h_flag!(self); }
-                },
-
-            0x05 => { set_b!(self, get_b!(self) - 1);
-                    set_n_flag!(self);
-                    if get_b!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if (get_b!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
-                    else { unset_h_flag!(self); }
-                },
-
-            0x0D => { set_c!(self, get_c!(self) - 1);
-                    set_n_flag!(self);
-                    if get_c!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if (get_c!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
-                    else { unset_h_flag!(self); }
-                },
-
-            0x15 => { set_d!(self, get_d!(self) - 1);
-                    set_n_flag!(self);
-                    if get_d!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if (get_d!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
-                    else { unset_h_flag!(self); }
-                },
-
-            0x1D => { set_e!(self, get_e!(self) - 1);
-                    set_n_flag!(self);
-                    if get_e!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if (get_e!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
-                    else { unset_h_flag!(self); }
-                },
-
-            0x25 => { set_h!(self, get_h!(self) - 1);
-                    set_n_flag!(self);
-                    if get_h!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if (get_h!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
-                    else { unset_h_flag!(self); }
-                },
-
-            0x2D => { set_l!(self, get_l!(self) - 1);
-                    set_n_flag!(self);
-                    if get_l!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    if (get_l!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
-                    else { unset_h_flag!(self); }
-                },
+            0x35 => dec_hl_val!(self),
+            0x3D => dec_a!(self),
+            0x05 => dec_b!(self),
+            0x0D => dec_c!(self),
+            0x15 => dec_d!(self),
+            0x1D => dec_e!(self),
+            0x25 => dec_h!(self),
+            0x2D => dec_l!(self),
 
             0x03 => set_bc!(self, get_bc!(self) + 1),
             0x13 => set_de!(self, get_de!(self) + 1),
