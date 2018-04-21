@@ -2,21 +2,33 @@ use std::fs::File;
 use std::io::prelude::*;
 
 pub struct Mmu {
+    small_ram: [u8; 128],
     ram: [u8; 8192],
     cartridge: [u8; 32768],
+    video_ram: [u8; 8192],
 }
 
 impl Mmu {
     pub fn new() -> Mmu {
-        Mmu{ ram: [0; 8192], cartridge: [0; 32768] }
+        Mmu{ ram: [0; 8192], cartridge: [0; 32768], small_ram: [0; 128], video_ram: [0; 8192] }
+
     }
 
     pub fn get_mem_u8(&self, location: usize) -> u8 {
         if location < 0x4000 {
             return self.cartridge[location];
         }
-        if location < 0xE000 && location >= 0xC000 {
+        else if location < 0xE000 && location >= 0xC000 {
             return self.ram[location - 0xC000];
+        }
+        else if location < 0xA000 && location >= 0x8000 {
+            return self.video_ram[location - 0x8000];
+        }
+        else if location < 0xFFFF && location >= 0xFF80 {
+            return self.small_ram[location - 0xFF80];
+        }
+        else if location == 0xFF44 {
+            return 0x90;
         }
         0
     }
@@ -25,8 +37,14 @@ impl Mmu {
         if location < 0x4000 {
             self.cartridge[location] = val;
         }
-        if location < 0xE000 && location >= 0xC000 {
+        else if location < 0xE000 && location >= 0xC000 {
             self.ram[location - 0xC000] = val;
+        }
+        else if location < 0xA000 && location >= 0x8000 {
+            self.video_ram[location - 0x8000] = val;
+        }
+        else if location < 0xFFFF && location >= 0xFF80 {
+            self.small_ram[location - 0xFF80] = val;
         }
     }
 
@@ -35,8 +53,14 @@ impl Mmu {
         if location < 0x4000 {
             return (self.cartridge[location] as u16) + ((self.cartridge[location + 1] as u16) << 8);
         }
-        if location < 0xE000 && location >= 0xC000 {
+        else if location < 0xE000 && location >= 0xC000 {
             return (self.ram[location - 0xC000] as u16) + ((self.ram[location + 1 - 0xC000] as u16) << 8);
+        }
+        else if location < 0xA000 && location >= 0x8000 {
+            return (self.video_ram[location - 0x8000] as u16) + ((self.video_ram[location + 1 - 0x8000] as u16) << 8);
+        }
+        else if location < 0xFFFF && location >= 0xFF80 {
+            return (self.small_ram[location - 0xFF80] as u16) + ((self.small_ram[location + 1 - 0xFF80] as u16) << 8);
         }
 
         0
@@ -48,9 +72,17 @@ impl Mmu {
             self.cartridge[location] = val as u8;
             self.cartridge[location + 1] = (val >> 8) as u8;
         }
-        if location < 0xE000 && location >= 0xC000 {
+        else if location < 0xE000 && location >= 0xC000 {
             self.ram[location - 0xC000] = val as u8;
             self.ram[location + 1 - 0xC000] = (val >> 8) as u8;
+        }
+        else if location < 0xA000 && location >= 0x8000 {
+            self.video_ram[location - 0x8000] = val as u8;
+            self.video_ram[location + 1 - 0x8000] = (val >> 8) as u8;
+        }
+        else if location < 0xFFFF && location >= 0xFF80 {
+            self.small_ram[location - 0xFF80] = val as u8;
+            self.small_ram[location + 1 - 0xFF80] = (val >> 8) as u8;
         }
     }
 
@@ -69,12 +101,28 @@ impl Mmu {
             *sp = *sp - 1;
             self.ram[(*sp - 0xC000) as usize] = val;
         }
+        else if *sp < 0xA000 && *sp >= 0x8000 {
+            *sp = *sp - 1;
+            self.video_ram[(*sp - 0x8000) as usize] = val;
+        }
+        else if *sp < 0xFFFF && *sp >= 0xFF80 {
+            *sp = *sp - 1;
+            self.small_ram[(*sp - 0xFF80) as usize] = val;
+        }
     }
 
     pub fn pop_u8(&mut self, sp: &mut u16) -> u8{
         let mut val: u8 = 0;
         if *sp < 0xE000 && *sp >= 0xC000 {
             val = self.ram[(*sp - 0xC000) as usize];
+            *sp = *sp + 1;
+        }
+        else if *sp < 0xA000 && *sp >= 0x8000 {
+            val = self.video_ram[(*sp - 0x8000) as usize];
+            *sp = *sp + 1;
+        }
+        else if *sp < 0xFFFF && *sp >= 0xFF80 {
+            val = self.small_ram[(*sp - 0xFF80) as usize];
             *sp = *sp + 1;
         }
 
@@ -88,6 +136,18 @@ impl Mmu {
             *sp = *sp - 1;
             self.ram[(*sp - 0xC000) as usize] = val as u8;
         }
+        else if *sp < 0xA000 && *sp >= 0x8000 {
+            *sp = *sp - 1;
+            self.video_ram[(*sp - 0x8000) as usize] = (val >> 8) as u8;
+            *sp = *sp - 1;
+            self.video_ram[(*sp - 0x8000) as usize] = val as u8;
+        }
+        else if *sp < 0xFFFF && *sp >= 0xFF80 {
+            *sp = *sp - 1;
+            self.small_ram[(*sp - 0xFF80) as usize] = (val >> 8) as u8;
+            *sp = *sp - 1;
+            self.small_ram[(*sp - 0xFF80) as usize] = val as u8;
+        }
     }
 
     pub fn pop_u16(&mut self, sp: &mut u16) -> u16{
@@ -96,6 +156,18 @@ impl Mmu {
             val = (self.ram[(*sp - 0xC000) as usize] as u16);
             *sp = *sp + 1;
             val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8);
+            *sp = *sp + 1;
+        }
+        else if *sp < 0xA000 && *sp >= 0x8000 {
+            val = (self.video_ram[(*sp - 0x8000) as usize] as u16);
+            *sp = *sp + 1;
+            val = val + ((self.video_ram[(*sp - 0x8000) as usize] as u16) << 8);
+            *sp = *sp + 1;
+        }
+        else if *sp < 0xFFFF && *sp >= 0xFF80 {
+            val = (self.small_ram[(*sp - 0xFF80) as usize] as u16);
+            *sp = *sp + 1;
+            val = val + ((self.small_ram[(*sp - 0xFF80) as usize] as u16) << 8);
             *sp = *sp + 1;
         }
 

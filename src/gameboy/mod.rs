@@ -221,6 +221,14 @@ macro_rules! get_sp {
     }
 }
 
+macro_rules! get_sp_mut {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.sp.whole
+        }
+    }
+}
+
 macro_rules! get_pc {
     ($self_: ident) => {
         unsafe {
@@ -412,6 +420,7 @@ impl Cpu {
 
     fn exec_dispatcher(&mut self, opcode: u16) {
         match opcode {
+            0x00 => (), //noop
             0x01 => self.op_param_16_bit(opcode),
             0x08 => self.op_param_16_bit(opcode),
             0x11 => self.op_param_16_bit(opcode),
@@ -422,6 +431,7 @@ impl Cpu {
             0x06 => self.op_param_8_bit(opcode),
             0x0E => self.op_param_8_bit(opcode),
             0x16 => self.op_param_8_bit(opcode),
+            0x18 => self.op_param_8_bit(opcode),
             0x1E => self.op_param_8_bit(opcode),
             0x26 => self.op_param_8_bit(opcode),
             0x2E => self.op_param_8_bit(opcode),
@@ -432,11 +442,19 @@ impl Cpu {
             0x30 => self.op_param_8_bit(opcode),
             0x38 => self.op_param_8_bit(opcode),
             0xE0 => self.op_param_8_bit(opcode),
+            0xF0 => self.op_param_8_bit(opcode),
+            0xFE => self.op_param_8_bit(opcode),
 
-            0xC => { unset_n_flag!(self); set_c!(self, get_c!(self) + 1);
+            0x0C => { unset_n_flag!(self); set_c!(self, get_c!(self) + 1);
                     if get_c!(self) == 0 { set_z_flag!(self); }
                     else { unset_z_flag!(self); }
                     if get_c!(self) & 0b00011111 == 0b00010000 { set_h_flag!(self); }
+                    else { unset_h_flag!(self); }},
+
+            0x3C => { unset_n_flag!(self); set_a!(self, get_a!(self) + 1);
+                    if get_a!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if get_a!(self) & 0b00011111 == 0b00010000 { set_h_flag!(self); }
                     else { unset_h_flag!(self); }},
 
             0xBE => { let val = self.mem.get_mem_u8(get_hl!(self) as usize);
@@ -450,7 +468,145 @@ impl Cpu {
                     else { set_h_flag!(self); }
                 },
 
-            0x78 => set_a!(self, get_b!(self)),
+            0xBF => { let tmp = get_a!(self) - get_a!(self);
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (get_a!(self) & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
+
+            0xB8 => { let tmp = get_a!(self) - get_b!(self);
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (get_b!(self) & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
+
+            0xB9 => { let tmp = get_a!(self) - get_c!(self);
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (get_c!(self) & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
+
+            0xBA => { let tmp = get_a!(self) - get_d!(self);
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (get_d!(self) & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
+
+            0xBB => { let tmp = get_a!(self) - get_e!(self);
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (get_e!(self) & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
+
+            0xBC => { let tmp = get_a!(self) - get_h!(self);
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (get_h!(self) & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
+
+            0xBD => { let tmp = get_a!(self) - get_l!(self);
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (get_l!(self) & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
+
+            0x04 => { set_b!(self, get_b!(self) + 1);
+                    unset_n_flag!(self);
+                    if get_b!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if (get_b!(self) & 0b00011111) == 0b00010000 { unset_h_flag!(self); }
+                    else { unset_h_flag!(self); }
+                },
+
+            0x3D => { set_a!(self, get_a!(self) - 1);
+                    set_n_flag!(self);
+                    if get_a!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if (get_a!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
+                    else { unset_h_flag!(self); }
+                },
+
+            0x05 => { set_b!(self, get_b!(self) - 1);
+                    set_n_flag!(self);
+                    if get_b!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if (get_b!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
+                    else { unset_h_flag!(self); }
+                },
+
+            0x0D => { set_c!(self, get_c!(self) - 1);
+                    set_n_flag!(self);
+                    if get_c!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if (get_c!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
+                    else { unset_h_flag!(self); }
+                },
+
+            0x15 => { set_d!(self, get_d!(self) - 1);
+                    set_n_flag!(self);
+                    if get_d!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if (get_d!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
+                    else { unset_h_flag!(self); }
+                },
+
+            0x1D => { set_e!(self, get_e!(self) - 1);
+                    set_n_flag!(self);
+                    if get_e!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if (get_e!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
+                    else { unset_h_flag!(self); }
+                },
+
+            0x25 => { set_h!(self, get_h!(self) - 1);
+                    set_n_flag!(self);
+                    if get_h!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if (get_h!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
+                    else { unset_h_flag!(self); }
+                },
+
+            0x2D => { set_l!(self, get_l!(self) - 1);
+                    set_n_flag!(self);
+                    if get_l!(self) == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    if (get_l!(self) & 0b00011111) == 0b00001111 { unset_h_flag!(self); }
+                    else { unset_h_flag!(self); }
+                },
+
+            0x03 => set_bc!(self, get_bc!(self) + 1),
+            0x13 => set_de!(self, get_de!(self) + 1),
+            0x23 => set_hl!(self, get_hl!(self) + 1),
+            0x33 => set_sp!(self, get_sp!(self) + 1),
+
             0x79 => set_a!(self, get_c!(self)),
             0x7A => set_a!(self, get_d!(self)),
             0x7B => set_a!(self, get_e!(self)),
@@ -561,8 +717,12 @@ impl Cpu {
             0x3A => { set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize));
                       set_hl!(self, get_hl!(self) - 1);},
 
-            0xC1 => set_bc!(self, self.mem.pop_u16(&mut get_sp!(self))),
-            0xC5 => self.mem.push_u16(&mut get_sp!(self), get_bc!(self)),
+            0xC1 => set_bc!(self, self.mem.pop_u16(get_sp_mut!(self))),
+            0xC5 => self.mem.push_u16(get_sp_mut!(self), get_bc!(self)),
+
+            0xC9 => set_pc!(self, self.mem.pop_u16(get_sp_mut!(self))),
+
+            0x99 => set_a!(self, get_c!(self) + get_c_flag!(self)),
 
             0x17 => { let tmp = get_c_flag!(self); unset_n_flag!(self); unset_h_flag!(self);
                     if ((get_a!(self) & 0b10000000) >> 7) == 1 { set_c_flag!(self); }
@@ -593,13 +753,14 @@ impl Cpu {
         let param = self.get_param_16_bit();
         match opcode {
             0x01 => set_bc!(self, param),
-            0x08 => self.mem.set_mem_u16(param as usize, get_sp!(self)),
             0x11 => set_de!(self, param),
             0x21 => set_hl!(self, param),
             0x31 => set_sp!(self, param),
 
+            0x08 => self.mem.set_mem_u16(param as usize, get_sp!(self)),
+
             // CALL
-            0xCD => { self.mem.push_u16(&mut get_sp!(self), get_pc!(self)); set_pc!(self, param); }
+            0xCD => { self.mem.push_u16(get_sp_mut!(self), get_pc!(self)); set_pc!(self, param); }
 
             0xFA => set_a!(self, self.mem.get_mem_u8(param.swap_bytes() as usize)),
             _ => println!("opcode dispatched to 16 bit param executer but that didnt match the op"),
@@ -620,6 +781,18 @@ impl Cpu {
             0x36 => self.mem.set_mem_u8(get_hl!(self) as usize, param as u8),
             0xE0 => self.mem.set_mem_u8((param as u16 + 0xFF00) as usize, get_a!(self)),
             0xF0 => set_a!(self, self.mem.get_mem_u8((param as u16 + 0xFF00) as usize)),
+
+            0x18 => set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16),
+
+            0xFE => { let tmp = get_a!(self) - param;
+                    if tmp == 0 { set_z_flag!(self); }
+                    else { unset_z_flag!(self); }
+                    set_n_flag!(self);
+                    if get_a!(self) < tmp { set_c_flag!(self); }
+                    else { unset_c_flag!(self); }
+                    if (get_a!(self) & 0b00001111) < (param & 0b00001111) { unset_h_flag!(self); }
+                    else { set_h_flag!(self); }
+                },
 
             // Jumps
             0x20 => { if get_z_flag!(self) == 0 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
@@ -724,6 +897,18 @@ impl Cpu {
         assert_eq!(get_pc!(self), 6);
     }
 
+    pub fn test_stack(&mut self) {
+        set_sp!(self, 0xFFFE);
+        self.mem.push_u8(get_sp_mut!(self), 10);
+        self.mem.push_u8(get_sp_mut!(self), 20);
+        self.mem.push_u16(get_sp_mut!(self), 0x3020);
+
+        assert_eq!(get_sp!(self), 0xFFFA);
+        assert_eq!(self.mem.pop_u16(get_sp_mut!(self)), 0x3020);
+        assert_eq!(self.mem.pop_u8(get_sp_mut!(self)), 20);
+        assert_eq!(self.mem.pop_u8(get_sp_mut!(self)), 10);
+    }
+
     pub fn load_rom(&mut self, rom_path: &str) {
         self.mem.load_rom(rom_path);
     }
@@ -732,22 +917,24 @@ impl Cpu {
         loop {
 
             let start = Instant::now();
-            if cfg!(debug_assertions = true) {
+            //if cfg!(debug_assertions = true) {
                 println!("pc: {:x}", get_pc!(self));
-            }
+                println!("sp: {:x}", get_sp!(self));
+                println!("b: {:b}", get_b!(self));
+            //}
 
             let opcode = self.get_opcode();
 
-            if cfg!(debug_assertions = true) {
+            //if cfg!(debug_assertions = true) {
                 println!("opcode: {:x}", opcode);
-            }
+            //}
 
             self.exec_dispatcher(opcode);
 
-            if cfg!(debug_assertions = true) {
+            //if cfg!(debug_assertions = true) {
                 println!("elapsed nanos: {}", start.elapsed().subsec_nanos());
                 println!("");
-            }
+            //}
         }
     }
 }
@@ -787,4 +974,11 @@ fn test_get_param() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
     derp.test_get_param();
+}
+
+#[test]
+fn test_stack() {
+    // Get a new CPU in to start at a known state
+    let mut derp = Cpu::new();
+    derp.test_stack();
 }
