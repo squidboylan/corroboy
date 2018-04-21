@@ -4,3 +4,6 @@ version = "0.1.0"
 authors = ["Caleb Boylan <calebboylan@gmail.com>"]
 
 [dependencies]
+
+[profile.dev]
+overflow-checks = false
