@@ -313,3 +313,29 @@ macro_rules! inc_sp {
         set_sp!($self_, get_sp!($self_) + 1);
     }};
 }
+
+// DEC nn
+
+macro_rules! dec_bc {
+    ($self_: ident) => {{
+        set_bc!($self_, get_bc!($self_) - 1);
+    }};
+}
+
+macro_rules! dec_de {
+    ($self_: ident) => {{
+        set_de!($self_, get_de!($self_) - 1);
+    }};
+}
+
+macro_rules! dec_hl {
+    ($self_: ident) => {{
+        set_hl!($self_, get_hl!($self_) - 1);
+    }};
+}
+
+macro_rules! dec_sp {
+    ($self_: ident) => {{
+        set_sp!($self_, get_sp!($self_) - 1);
+    }};
+}
