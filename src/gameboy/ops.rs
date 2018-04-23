@@ -287,3 +287,29 @@ macro_rules! add_hl_sp {
         else { unset_h_flag!($self_); }
     }};
 }
+
+// INC nn
+
+macro_rules! inc_bc {
+    ($self_: ident) => {{
+        set_bc!($self_, get_bc!($self_) + 1);
+    }};
+}
+
+macro_rules! inc_de {
+    ($self_: ident) => {{
+        set_de!($self_, get_de!($self_) + 1);
+    }};
+}
+
+macro_rules! inc_hl {
+    ($self_: ident) => {{
+        set_hl!($self_, get_hl!($self_) + 1);
+    }};
+}
+
+macro_rules! inc_sp {
+    ($self_: ident) => {{
+        set_sp!($self_, get_sp!($self_) + 1);
+    }};
+}
