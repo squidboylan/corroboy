@@ -474,6 +474,11 @@ impl Cpu {
             0x25 => dec_h!(self),
             0x2D => dec_l!(self),
 
+            0x09 => add_hl_bc!(self),
+            0x19 => add_hl_de!(self),
+            0x29 => add_hl_hl!(self),
+            0x39 => add_hl_sp!(self),
+
             0x03 => set_bc!(self, get_bc!(self) + 1),
             0x13 => set_de!(self, get_de!(self) + 1),
             0x23 => set_hl!(self, get_hl!(self) + 1),
