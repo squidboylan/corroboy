@@ -489,6 +489,15 @@ impl Cpu {
             0x2B => dec_hl!(self),
             0x3B => dec_sp!(self),
 
+            0xCB37 => swap_a!(self),
+            0xCB30 => swap_b!(self),
+            0xCB31 => swap_c!(self),
+            0xCB32 => swap_d!(self),
+            0xCB33 => swap_e!(self),
+            0xCB34 => swap_h!(self),
+            0xCB35 => swap_h!(self),
+            0xCB36 => swap_hl_val!(self),
+
             0x79 => set_a!(self, get_c!(self)),
             0x7A => set_a!(self, get_d!(self)),
             0x7B => set_a!(self, get_e!(self)),
