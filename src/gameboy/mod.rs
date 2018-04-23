@@ -828,28 +828,18 @@ impl Cpu {
         assert_eq!(get_hl!(self), 1);
     }
 
-    /*
     pub fn test_opcodes(&mut self) {
-        self.op_param_8_bit(0x06, 0b00000001);
+        // 0x06 arg
+        self.mem.set_mem_u8(0, 0x01);
+        // 0x0E arg
+        self.mem.set_mem_u8(1, 0b10);
+        //self.op_param_8_bit(0x06, 0b00000001);
+        self.exec_dispatcher(0x06);
         assert_eq!(get_b!(self), 0b00000001);
-        self.op_param_8_bit(0x0E, 0b00000010);
+        self.exec_dispatcher(0x0E);
         assert_eq!(get_c!(self), 0b00000010);
         assert_eq!(get_bc!(self), 0b0000000100000010);
-
-        self.op_param_8_bit(0x16, 30);
-        assert_eq!(get_d!(self), 30);
-        self.op_param_8_bit(0x1E, 40);
-        assert_eq!(get_e!(self), 40);
-
-        self.op_param_8_bit(0x26, 0b00000100);
-        assert_eq!(get_h!(self), 0b00000100);
-        self.op_param_8_bit(0x2E, 0b10101010);
-        assert_eq!(get_l!(self), 0b10101010);
-        assert_eq!(get_hl!(self), 0b0000010010101010);
-
-        self.mem.set_mem_u8(0b0000010010101010, 60);
     }
-    */
 
     pub fn test_flag_bits(&mut self) {
         set_z_flag!(self);
@@ -946,14 +936,12 @@ fn test_registers() {
     derp.test_registers();
 }
 
-/*
 #[test]
 fn test_opcodes() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
     derp.test_opcodes();
 }
-*/
 
 #[test]
 fn test_flag_bits() {
