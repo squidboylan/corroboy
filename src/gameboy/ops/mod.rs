@@ -31,4 +31,6 @@ pub mod swap;
 #[macro_use]
 pub mod misc;
 
+#[macro_use]
+pub mod ld;
 
