@@ -423,7 +423,7 @@ impl Cpu {
 
     fn exec_dispatcher(&mut self, opcode: u16) {
         match opcode {
-            0x00 => (), //noop
+            0x00 => nop!(self),
             0x01 => self.op_param_16_bit(opcode),
             0x08 => self.op_param_16_bit(opcode),
             0x11 => self.op_param_16_bit(opcode),
@@ -497,6 +497,12 @@ impl Cpu {
             0xCB34 => swap_h!(self),
             0xCB35 => swap_h!(self),
             0xCB36 => swap_hl_val!(self),
+
+            0x27 => daa!(self),
+            0x2F => cpl!(self),
+
+            0x37 => ccf!(self),
+            0x3F => scf!(self),
 
             0x79 => set_a!(self, get_c!(self)),
             0x7A => set_a!(self, get_d!(self)),
