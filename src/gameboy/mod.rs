@@ -572,14 +572,14 @@ impl Cpu {
             0x12 => self.mem.set_mem_u8(get_de!(self) as usize, get_a!(self)),
             0x77 => self.mem.set_mem_u8(get_hl!(self) as usize, get_a!(self)),
 
-            0xA7 => {set_a!(self, get_a!(self) & get_a!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
-            0xA0 => {set_a!(self, get_a!(self) & get_b!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
-            0xA1 => {set_a!(self, get_a!(self) & get_c!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
-            0xA2 => {set_a!(self, get_a!(self) & get_d!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
-            0xA3 => {set_a!(self, get_a!(self) & get_e!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
-            0xA4 => {set_a!(self, get_a!(self) & get_h!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
-            0xA5 => {set_a!(self, get_a!(self) & get_l!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
-            0xA6 => {set_a!(self, get_a!(self) & self.mem.get_mem_u8(get_hl!(self) as usize)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); set_h_flag!(self);},
+            0xA7 => and_a!(self);
+            0xA0 => and_b!(self);
+            0xA1 => and_c!(self);
+            0xA2 => and_d!(self);
+            0xA3 => and_e!(self);
+            0xA4 => and_h!(self);
+            0xA5 => and_l!(self);
+            0xA6 => and_hl_val!(self);
 
             0xB7 => {set_a!(self, get_a!(self) | get_a!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
             0xB0 => {set_a!(self, get_a!(self) | get_b!(self)); if get_a!(self) == 0 { unset_z_flag!(self); } unset_n_flag!(self); unset_c_flag!(self); unset_h_flag!(self);},
