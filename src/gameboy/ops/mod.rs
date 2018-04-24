@@ -26,6 +26,9 @@ pub mod cp;
 pub mod add;
 
 #[macro_use]
+pub mod sub;
+
+#[macro_use]
 pub mod swap;
 
 #[macro_use]
@@ -33,4 +36,7 @@ pub mod misc;
 
 #[macro_use]
 pub mod ld;
+
+#[macro_use]
+pub mod push;
 

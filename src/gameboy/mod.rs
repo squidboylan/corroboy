@@ -601,6 +601,19 @@ impl Cpu {
             0xAD => xor_l!(self),
             0xAE => xor_hl_val!(self),
 
+            0xF5 => push_af!(self),
+            0xC5 => push_bc!(self),
+            0xD5 => push_de!(self),
+            0xE5 => push_hl!(self),
+
+            0x97 => sub_a_a!(self),
+            0x90 => sub_a_b!(self),
+            0x91 => sub_a_c!(self),
+            0x92 => sub_a_d!(self),
+            0x93 => sub_a_e!(self),
+            0x94 => sub_a_h!(self),
+            0x95 => sub_a_l!(self),
+
             0xF9 => set_sp!(self, get_hl!(self)),
             0xE2 => self.mem.set_mem_u8((get_c!(self) as u16 + 0xFF00) as usize, get_a!(self)),
             0xF2 => set_a!(self, self.mem.get_mem_u8((get_c!(self) as u16 + 0xFF00) as usize)),
@@ -617,7 +630,6 @@ impl Cpu {
                       set_hl!(self, get_hl!(self) - 1);},
 
             0xC1 => set_bc!(self, self.mem.pop_u16(get_sp_mut!(self))),
-            0xC5 => self.mem.push_u16(get_sp_mut!(self), get_bc!(self)),
 
             0xC9 => set_pc!(self, self.mem.pop_u16(get_sp_mut!(self))),
 
