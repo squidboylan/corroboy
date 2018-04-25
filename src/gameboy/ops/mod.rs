@@ -40,3 +40,15 @@ pub mod ld;
 #[macro_use]
 pub mod push;
 
+#[macro_use]
+pub mod pop;
+
+#[macro_use]
+pub mod sbc;
+
+#[macro_use]
+pub mod rl;
+
+#[macro_use]
+pub mod bit;
+

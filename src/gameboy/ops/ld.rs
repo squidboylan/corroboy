@@ -420,3 +420,66 @@ macro_rules! ld_de_val_a {
     }};
 }
 
+// LD sp, hl
+
+macro_rules! ld_sp_hl {
+    ($self_: ident) => {{
+        set_sp!($self_, get_hl!($self_));
+    }};
+}
+
+// LD (C), a
+
+macro_rules! ld_c_val_a {
+    ($self_: ident) => {{
+        $self_.mem.set_mem_u8((get_c!($self_) as u16 + 0xFF00) as usize, get_a!($self_));
+    }};
+}
+
+// LD a, (c)
+
+macro_rules! ld_a_c_val {
+    ($self_: ident) => {{
+        set_a!($self_, $self_.mem.get_mem_u8((get_c!($self_) as u16 + 0xFF00) as usize));
+    }};
+}
+
+// LDI A, (HL)
+// Load (HL) into A and then increment HL
+
+macro_rules! ldi_a_hl {
+    ($self_: ident) => {{
+        set_a!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+        set_hl!($self_, get_hl!($self_) + 1);
+    }};
+}
+
+// LDI (HL), A
+// Load A into (HL) and then increment HL
+
+macro_rules! ldi_hl_a {
+    ($self_: ident) => {{
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
+        set_hl!($self_, get_hl!($self_) + 1);
+    }};
+}
+
+// LDD A, (HL)
+// Load (HL) into A and then decrement HL
+
+macro_rules! ldd_a_hl {
+    ($self_: ident) => {{
+        set_a!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+        set_hl!($self_, get_hl!($self_) - 1);
+    }};
+}
+
+// LDD (HL), A
+// Load A into (HL) and then decrement HL
+
+macro_rules! ldd_hl_a {
+    ($self_: ident) => {{
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
+        set_hl!($self_, get_hl!($self_) - 1);
+    }};
+}

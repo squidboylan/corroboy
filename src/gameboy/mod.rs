@@ -614,47 +614,46 @@ impl Cpu {
             0x94 => sub_a_h!(self),
             0x95 => sub_a_l!(self),
 
-            0xF9 => set_sp!(self, get_hl!(self)),
-            0xE2 => self.mem.set_mem_u8((get_c!(self) as u16 + 0xFF00) as usize, get_a!(self)),
-            0xF2 => set_a!(self, self.mem.get_mem_u8((get_c!(self) as u16 + 0xFF00) as usize)),
+            0xF9 => ld_sp_hl!(self),
 
-            0x22 => { self.mem.set_mem_u8(get_hl!(self) as usize, get_a!(self));
-                      set_hl!(self, get_hl!(self) + 1);},
-            0x2A => { set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize));
-                      set_hl!(self, get_hl!(self) + 1);},
+            0xE2 => ld_c_val_a!(self),
+            0xF2 => ld_a_c_val!(self),
 
-            0x32 => { self.mem.set_mem_u8(get_hl!(self) as usize, get_a!(self));
-                      set_hl!(self, get_hl!(self) - 1);},
+            0x22 => ldi_hl_a!(self),
+            0x2A => ldi_a_hl!(self),
 
-            0x3A => { set_a!(self, self.mem.get_mem_u8(get_hl!(self) as usize));
-                      set_hl!(self, get_hl!(self) - 1);},
+            0x32 => ldd_a_hl!(self),
+            0x3A => ldd_hl_a!(self),
 
-            0xC1 => set_bc!(self, self.mem.pop_u16(get_sp_mut!(self))),
+            0xF1 => pop_af!(self),
+            0xC1 => pop_bc!(self),
+            0xD1 => pop_de!(self),
+            0xE1 => pop_hl!(self),
 
-            0xC9 => set_pc!(self, self.mem.pop_u16(get_sp_mut!(self))),
+            // RET
+            0xC9 => pop_pc!(self),
 
-            0x99 => set_a!(self, get_c!(self) + get_c_flag!(self)),
+            0x9F => sbc_a_a!(self),
+            0x98 => sbc_a_b!(self),
+            0x99 => sbc_a_c!(self),
+            0x9A => sbc_a_d!(self),
+            0x9B => sbc_a_e!(self),
+            0x9C => sbc_a_h!(self),
+            0x9D => sbc_a_l!(self),
+            0x9E => sbc_a_hl_val!(self),
 
-            0x17 => { let tmp = get_c_flag!(self); unset_n_flag!(self); unset_h_flag!(self);
-                    if ((get_a!(self) & 0b10000000) >> 7) == 1 { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    set_a!(self, (get_a!(self) << 1) + tmp);
-                    if get_a!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                },
+            0x07 => rlca!(self),
+            0x17 => rla!(self),
 
-            0xCB11 => { let tmp = get_c_flag!(self); unset_n_flag!(self); unset_h_flag!(self);
-                    if ((get_c!(self) & 0b10000000) >> 7) == 1 { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    set_c!(self, (get_c!(self) << 1) + tmp);
-                    if get_c!(self) == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                },
+            0xCB1F => rl_a!(self),
+            0xCB10 => rl_b!(self),
+            0xCB11 => rl_c!(self),
+            0xCB12 => rl_d!(self),
+            0xCB13 => rl_e!(self),
+            0xCB14 => rl_h!(self),
+            0xCB15 => rl_l!(self),
 
-            0xCB7C => { unset_n_flag!(self); set_h_flag!(self);
-                if ((get_h!(self) & 0b10000000) >> 7) == 0 { set_z_flag!(self); }
-                else { unset_z_flag!(self); } },
-
+            0xCB7C => bit_7_h!(self),
 
             _ => println!("opcode dispatch broke :("),
         }
