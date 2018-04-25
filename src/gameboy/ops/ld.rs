@@ -42,6 +42,12 @@ macro_rules! ld_a_l {
     }};
 }
 
+macro_rules! ld_a_param {
+    ($self_: ident, $param: expr) => {{
+        set_a!($self_, $param);
+    }};
+}
+
 macro_rules! ld_a_bc_val {
     ($self_: ident) => {{
         set_a!($self_, $self_.mem.get_mem_u8(get_bc!($self_) as usize));
@@ -104,6 +110,12 @@ macro_rules! ld_b_l {
     }};
 }
 
+macro_rules! ld_b_param {
+    ($self_: ident, $param: expr) => {{
+        set_b!($self_, $param);
+    }};
+}
+
 macro_rules! ld_b_hl_val {
     ($self_: ident) => {{
         set_b!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
@@ -154,6 +166,13 @@ macro_rules! ld_c_l {
     }};
 }
 
+macro_rules! ld_c_param {
+    ($self_: ident, $param: expr) => {{
+        set_c!($self_, $param);
+    }};
+}
+
+
 macro_rules! ld_c_hl_val {
     ($self_: ident) => {{
         set_c!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
@@ -201,6 +220,12 @@ macro_rules! ld_d_h {
 macro_rules! ld_d_l {
     ($self_: ident) => {{
         set_d!($self_, get_l!($self_));
+    }};
+}
+
+macro_rules! ld_d_param {
+    ($self_: ident, $param: expr) => {{
+        set_d!($self_, $param);
     }};
 }
 
@@ -254,6 +279,13 @@ macro_rules! ld_e_l {
     }};
 }
 
+macro_rules! ld_e_param {
+    ($self_: ident, $param: expr) => {{
+        set_e!($self_, $param);
+    }};
+}
+
+
 macro_rules! ld_e_hl_val {
     ($self_: ident) => {{
         set_e!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
@@ -301,6 +333,12 @@ macro_rules! ld_h_h {
 macro_rules! ld_h_l {
     ($self_: ident) => {{
         set_h!($self_, get_l!($self_));
+    }};
+}
+
+macro_rules! ld_h_param {
+    ($self_: ident, $param: expr) => {{
+        set_h!($self_, $param);
     }};
 }
 
@@ -354,9 +392,41 @@ macro_rules! ld_l_l {
     }};
 }
 
+macro_rules! ld_l_param {
+    ($self_: ident, $param: expr) => {{
+        set_l!($self_, $param);
+    }};
+}
+
 macro_rules! ld_l_hl_val {
     ($self_: ident) => {{
         set_l!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    }};
+}
+
+// LD BC, nn
+
+macro_rules! ld_bc_param {
+    ($self_: ident, $param: expr) => {{
+        set_bc!($self_, $param);
+    }};
+}
+
+macro_rules! ld_de_param {
+    ($self_: ident, $param: expr) => {{
+        set_de!($self_, $param);
+    }};
+}
+
+macro_rules! ld_hl_param {
+    ($self_: ident, $param: expr) => {{
+        set_hl!($self_, $param);
+    }};
+}
+
+macro_rules! ld_sp_param {
+    ($self_: ident, $param: expr) => {{
+        set_sp!($self_, $param);
     }};
 }
 

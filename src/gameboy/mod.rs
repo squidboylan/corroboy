@@ -662,10 +662,10 @@ impl Cpu {
     fn op_param_16_bit(&mut self, opcode: u16) {
         let param = self.get_param_16_bit();
         match opcode {
-            0x01 => set_bc!(self, param),
-            0x11 => set_de!(self, param),
-            0x21 => set_hl!(self, param),
-            0x31 => set_sp!(self, param),
+            0x01 => ld_bc_param!(self, param),
+            0x11 => ld_de_param!(self, param),
+            0x21 => ld_hl_param!(self, param),
+            0x31 => ld_sp_param!(self, param),
 
             0x08 => self.mem.set_mem_u16(param as usize, get_sp!(self)),
 
@@ -680,13 +680,14 @@ impl Cpu {
     fn op_param_8_bit(&mut self, opcode: u16) {
         let param = self.get_param_8_bit();
         match opcode {
-            0x06 => set_b!(self, param),
-            0x0E => set_c!(self, param),
-            0x16 => set_d!(self, param),
-            0x1E => set_e!(self, param),
-            0x26 => set_h!(self, param),
-            0x2E => set_l!(self, param),
-            0x3E => set_a!(self, param),
+            0x3E => ld_a_param!(self, param),
+            0x06 => ld_b_param!(self, param),
+            0x0E => ld_c_param!(self, param),
+            0x16 => ld_d_param!(self, param),
+            0x1E => ld_e_param!(self, param),
+            0x26 => ld_h_param!(self, param),
+            0x2E => ld_l_param!(self, param),
+
             0xEA => self.mem.set_mem_u8(param as usize, get_a!(self)),
             0x36 => self.mem.set_mem_u8(get_hl!(self) as usize, param as u8),
             0xE0 => self.mem.set_mem_u8((param as u16 + 0xFF00) as usize, get_a!(self)),
