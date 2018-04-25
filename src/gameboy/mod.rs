@@ -667,12 +667,13 @@ impl Cpu {
             0x21 => ld_hl_param!(self, param),
             0x31 => ld_sp_param!(self, param),
 
-            0x08 => self.mem.set_mem_u16(param as usize, get_sp!(self)),
+            0x08 => ld_param_val_sp!(self, param),
 
             // CALL
-            0xCD => { self.mem.push_u16(get_sp_mut!(self), get_pc!(self)); set_pc!(self, param); }
+            0xCD => call_nn!(self, param),
 
-            0xFA => set_a!(self, self.mem.get_mem_u8(param.swap_bytes() as usize)),
+            0xFA => ld_a_nn_val!(self, param),
+
             _ => println!("opcode dispatched to 16 bit param executer but that didnt match the op"),
         };
     }

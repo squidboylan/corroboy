@@ -498,6 +498,14 @@ macro_rules! ld_sp_hl {
     }};
 }
 
+// LD (nn), sp
+
+macro_rules! ld_param_val_sp {
+    ($self_: ident, $param: expr) => {{
+        $self_.mem.set_mem_u16($param as usize, get_sp!($self_));
+    }};
+}
+
 // LD (C), a
 
 macro_rules! ld_c_val_a {
@@ -511,6 +519,14 @@ macro_rules! ld_c_val_a {
 macro_rules! ld_a_c_val {
     ($self_: ident) => {{
         set_a!($self_, $self_.mem.get_mem_u8((get_c!($self_) as u16 + 0xFF00) as usize));
+    }};
+}
+
+// LD a, (nn)
+
+macro_rules! ld_a_nn_val {
+    ($self_: ident, $param: expr) => {{
+        set_a!($self_, $self_.mem.get_mem_u8($param.swap_bytes() as usize));
     }};
 }
 
