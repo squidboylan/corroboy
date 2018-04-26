@@ -645,13 +645,24 @@ impl Cpu {
             0x07 => rlca!(self),
             0x17 => rla!(self),
 
-            0xCB1F => rl_a!(self),
+            0x0F => rrca!(self),
+            0x1F => rra!(self),
+
+            0xCB17 => rl_a!(self),
             0xCB10 => rl_b!(self),
             0xCB11 => rl_c!(self),
             0xCB12 => rl_d!(self),
             0xCB13 => rl_e!(self),
             0xCB14 => rl_h!(self),
             0xCB15 => rl_l!(self),
+
+            0xCB1F => rr_a!(self),
+            0xCB18 => rr_b!(self),
+            0xCB19 => rr_c!(self),
+            0xCB1A => rr_d!(self),
+            0xCB1B => rr_e!(self),
+            0xCB1C => rr_h!(self),
+            0xCB1D => rr_l!(self),
 
             0xCB7C => bit_7_h!(self),
 
