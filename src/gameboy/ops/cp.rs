@@ -83,6 +83,18 @@ macro_rules! cp_l {
     }};
 }
 
+macro_rules! cp_n {
+    ($self_: ident, $param: expr) => {{ let tmp = get_a!($self_) - $param;
+            if tmp == 0 { set_z_flag!($self_); }
+            else { unset_z_flag!($self_); }
+            set_n_flag!($self_);
+            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            else { unset_c_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) < ($param & 0b00001111) { unset_h_flag!($self_); }
+            else { set_h_flag!($self_); }
+    }};
+}
+
 macro_rules! cp_hl_val {
     ($self_: ident) => {{ let val = $self_.mem.get_mem_u8(get_hl!($self_) as usize);
             let tmp = get_a!($self_) - val;

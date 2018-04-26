@@ -689,31 +689,22 @@ impl Cpu {
             0x26 => ld_h_param!(self, param),
             0x2E => ld_l_param!(self, param),
 
-            0xEA => self.mem.set_mem_u8(param as usize, get_a!(self)),
-            0x36 => self.mem.set_mem_u8(get_hl!(self) as usize, param as u8),
-            0xE0 => self.mem.set_mem_u8((param as u16 + 0xFF00) as usize, get_a!(self)),
-            0xF0 => set_a!(self, self.mem.get_mem_u8((param as u16 + 0xFF00) as usize)),
+            0xEA => ld_nn_val_a!(self, param),
+            0x36 => ld_hl_val_n!(self, param),
+            0xE0 => ld_n_val_a!(self, param),
+            0xF0 => ld_a_n_val!(self, param),
 
-            0x18 => set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16),
-
-            0xFE => { let tmp = get_a!(self) - param;
-                    if tmp == 0 { set_z_flag!(self); }
-                    else { unset_z_flag!(self); }
-                    set_n_flag!(self);
-                    if get_a!(self) < tmp { set_c_flag!(self); }
-                    else { unset_c_flag!(self); }
-                    if (get_a!(self) & 0b00001111) < (param & 0b00001111) { unset_h_flag!(self); }
-                    else { set_h_flag!(self); }
-                },
-
+            0xFE => cp_n!(self, param),
             // Jumps
-            0x20 => { if get_z_flag!(self) == 0 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
-            0x28 => { if get_z_flag!(self) == 1 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
-            0x30 => { if get_c_flag!(self) == 0 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
-            0x38 => { if get_c_flag!(self) == 1 {set_pc!(self, (get_pc!(self) as i16 + ((param as i8) as i16)) as u16);} },
+            0x18 => jr_n!(self, param),
+
+            0x20 => jr_nz_n!(self, param),
+            0x28 => jr_z_n!(self, param),
+            0x30 => jr_nc_n!(self, param),
+            0x38 => jr_c_n!(self, param),
 
             // this doesnt really work and is complicated so i'll figure it out later
-            0xF8 => { set_hl!(self, (get_sp!(self) as i16 + ((param as i8) as i16)) as u16); unset_z_flag!(self); unset_n_flag!(self);},
+            0xF8 => ldhl_sp_n!(self, param),
             _ => println!("opcode dispatched to 8 bit param executer but that didnt match the op"),
         };
     }

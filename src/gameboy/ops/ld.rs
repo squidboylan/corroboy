@@ -434,43 +434,49 @@ macro_rules! ld_sp_param {
 
 macro_rules! ld_hl_val_a {
     ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_))
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_b {
     ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_))
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_c {
     ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_c!($self_))
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_c!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_d {
     ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_d!($self_))
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_d!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_e {
     ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_e!($self_))
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_e!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_h {
     ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_h!($self_))
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_h!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_l {
     ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_l!($self_))
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_l!($self_));
+    }};
+}
+
+macro_rules! ld_hl_val_n {
+    ($self_: ident, $param: expr) => {{
+        $self_.mem.set_mem_u8(get_hl!($self_) as usize, $param);
     }};
 }
 
@@ -487,6 +493,14 @@ macro_rules! ld_bc_val_a {
 macro_rules! ld_de_val_a {
     ($self_: ident) => {{
         $self_.mem.set_mem_u8(get_de!($self_) as usize, get_a!($self_))
+    }};
+}
+
+// LD (nn),a
+
+macro_rules! ld_nn_val_a {
+    ($self_: ident, $param: ident) => {{
+        $self_.mem.set_mem_u8($param as usize, get_a!($self_))
     }};
 }
 
@@ -519,6 +533,24 @@ macro_rules! ld_c_val_a {
 macro_rules! ld_a_c_val {
     ($self_: ident) => {{
         set_a!($self_, $self_.mem.get_mem_u8((get_c!($self_) as u16 + 0xFF00) as usize));
+    }};
+}
+
+// LD (n), a
+// load A into (n + 0xFF00)
+
+macro_rules! ld_n_val_a {
+    ($self_: ident, $param: expr) => {{
+        $self_.mem.set_mem_u8(($param as u16 + 0xFF00) as usize, get_a!($self_));
+    }};
+}
+
+// LD a, (n)
+// load (n + 0xFF00) into A
+
+macro_rules! ld_a_n_val {
+    ($self_: ident, $param: expr) => {{
+        set_a!($self_, $self_.mem.get_mem_u8(($param as u16 + 0xFF00) as usize));
     }};
 }
 
@@ -567,5 +599,21 @@ macro_rules! ldd_hl_a {
     ($self_: ident) => {{
         $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
         set_hl!($self_, get_hl!($self_) - 1);
+    }};
+}
+
+// LDHL SP,n
+
+macro_rules! ldhl_sp_n {
+    ($self_: ident, $param: expr) => {{
+        set_hl!($self_, (get_sp!($self_) as i16 + (($param as i8) as i16)) as u16);
+        unset_z_flag!($self_);
+        unset_n_flag!($self_);
+        // This is fine because we care about the last 4 bits and not the sign? Docs are hard to
+        // find on this
+        if get_sp!($self_) & 0b0000000000001111 + ($param as u16) & 0b0000000000001111 > 0xF { set_h_flag!($self_); }
+        else { set_h_flag!($self_); }
+        if get_hl!($self_) < get_sp!($self_) { set_c_flag!($self_); }
+        else { unset_c_flag!($self_); }
     }};
 }
