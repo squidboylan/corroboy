@@ -455,6 +455,7 @@ impl Cpu {
             0x1C => inc_e!(self),
             0x24 => inc_h!(self),
             0x2C => inc_l!(self),
+            0x34 => inc_hl_val!(self),
 
             0xBE => cp_hl_val!(self),
             0xBF => cp_a!(self),
@@ -473,6 +474,15 @@ impl Cpu {
             0x1D => dec_e!(self),
             0x25 => dec_h!(self),
             0x2D => dec_l!(self),
+
+            0x87 => add_a_a!(self),
+            0x80 => add_a_b!(self),
+            0x81 => add_a_c!(self),
+            0x82 => add_a_d!(self),
+            0x83 => add_a_e!(self),
+            0x84 => add_a_h!(self),
+            0x85 => add_a_l!(self),
+            0x86 => add_a_hl_val!(self),
 
             0x09 => add_hl_bc!(self),
             0x19 => add_hl_de!(self),
@@ -633,6 +643,15 @@ impl Cpu {
             // RET
             0xC9 => pop_pc!(self),
 
+            0x8F => adc_a_a!(self),
+            0x88 => adc_a_b!(self),
+            0x89 => adc_a_c!(self),
+            0x8A => adc_a_d!(self),
+            0x8B => adc_a_e!(self),
+            0x8C => adc_a_h!(self),
+            0x8D => adc_a_l!(self),
+            0x8E => adc_a_hl_val!(self),
+
             0x9F => sbc_a_a!(self),
             0x98 => sbc_a_b!(self),
             0x99 => sbc_a_c!(self),
@@ -641,6 +660,7 @@ impl Cpu {
             0x9C => sbc_a_h!(self),
             0x9D => sbc_a_l!(self),
             0x9E => sbc_a_hl_val!(self),
+
 
             0x07 => rlca!(self),
             0x17 => rla!(self),
@@ -704,6 +724,12 @@ impl Cpu {
             0x36 => ld_hl_val_n!(self, param),
             0xE0 => ld_n_val_a!(self, param),
             0xF0 => ld_a_n_val!(self, param),
+
+            0xC6 => add_a_param!(self, param),
+
+            0xCE => adc_a_param!(self, param),
+
+            0xDE => sbc_a_param!(self, param),
 
             0xFE => cp_n!(self, param),
             // Jumps

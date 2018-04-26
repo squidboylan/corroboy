@@ -47,6 +47,9 @@ pub mod pop;
 pub mod sbc;
 
 #[macro_use]
+pub mod adc;
+
+#[macro_use]
 pub mod rl;
 
 #[macro_use]
