@@ -623,6 +623,7 @@ impl Cpu {
             0x93 => sub_a_e!(self),
             0x94 => sub_a_h!(self),
             0x95 => sub_a_l!(self),
+            0x96 => sub_a_hl_val!(self),
 
             0xF9 => ld_sp_hl!(self),
 
@@ -726,6 +727,8 @@ impl Cpu {
             0xF0 => ld_a_n_val!(self, param),
 
             0xC6 => add_a_param!(self, param),
+
+            0xD6 => sub_a_param!(self, param),
 
             0xCE => adc_a_param!(self, param),
 
