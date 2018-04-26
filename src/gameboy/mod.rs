@@ -622,8 +622,8 @@ impl Cpu {
             0x22 => ldi_hl_a!(self),
             0x2A => ldi_a_hl!(self),
 
-            0x32 => ldd_a_hl!(self),
-            0x3A => ldd_hl_a!(self),
+            0x32 => ldd_hl_a!(self),
+            0x3A => ldd_a_hl!(self),
 
             0xF1 => pop_af!(self),
             0xC1 => pop_bc!(self),
