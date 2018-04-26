@@ -642,7 +642,11 @@ impl Cpu {
             0xE1 => pop_hl!(self),
 
             // RET
-            0xC9 => pop_pc!(self),
+            0xC9 => ret!(self),
+            0xC0 => ret_nz!(self),
+            0xC8 => ret_z!(self),
+            0xD0 => ret_nc!(self),
+            0xD8 => ret_c!(self),
 
             0x8F => adc_a_a!(self),
             0x88 => adc_a_b!(self),

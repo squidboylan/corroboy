@@ -61,3 +61,6 @@ pub mod bit;
 #[macro_use]
 pub mod jump;
 
+#[macro_use]
+pub mod ret;
+
