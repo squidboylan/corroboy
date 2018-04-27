@@ -70,8 +70,8 @@ macro_rules! dec_l {
 }
 
 macro_rules! dec_hl_val {
-    ($self_: ident) => {{ let val = $self_.mem.get_mem_u8(get_hl!($self_) as usize) - 1;
-            $self_.mem.set_mem_u8(get_hl!($self_) as usize, val);
+    ($self_: ident, $mem: ident) => {{ let val = $mem.get_mem_u8(get_hl!($self_) as usize) - 1;
+            $mem.set_mem_u8(get_hl!($self_) as usize, val);
             unset_n_flag!($self_);
             if val == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }

@@ -96,7 +96,7 @@ macro_rules! cp_n {
 }
 
 macro_rules! cp_hl_val {
-    ($self_: ident) => {{ let val = $self_.mem.get_mem_u8(get_hl!($self_) as usize);
+    ($self_: ident, $mem: ident) => {{ let val = $mem.get_mem_u8(get_hl!($self_) as usize);
             let tmp = get_a!($self_) - val;
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }

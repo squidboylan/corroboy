@@ -49,20 +49,20 @@ macro_rules! ld_a_param {
 }
 
 macro_rules! ld_a_bc_val {
-    ($self_: ident) => {{
-        set_a!($self_, $self_.mem.get_mem_u8(get_bc!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_a!($self_, $mem.get_mem_u8(get_bc!($self_) as usize));
     }};
 }
 
 macro_rules! ld_a_de_val {
-    ($self_: ident) => {{
-        set_a!($self_, $self_.mem.get_mem_u8(get_de!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_a!($self_, $mem.get_mem_u8(get_de!($self_) as usize));
     }};
 }
 
 macro_rules! ld_a_hl_val {
-    ($self_: ident) => {{
-        set_a!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_a!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
     }};
 }
 
@@ -117,8 +117,8 @@ macro_rules! ld_b_param {
 }
 
 macro_rules! ld_b_hl_val {
-    ($self_: ident) => {{
-        set_b!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_b!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
     }};
 }
 
@@ -174,8 +174,8 @@ macro_rules! ld_c_param {
 
 
 macro_rules! ld_c_hl_val {
-    ($self_: ident) => {{
-        set_c!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_c!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
     }};
 }
 
@@ -230,8 +230,8 @@ macro_rules! ld_d_param {
 }
 
 macro_rules! ld_d_hl_val {
-    ($self_: ident) => {{
-        set_d!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_d!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
     }};
 }
 
@@ -287,8 +287,8 @@ macro_rules! ld_e_param {
 
 
 macro_rules! ld_e_hl_val {
-    ($self_: ident) => {{
-        set_e!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_e!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
     }};
 }
 
@@ -343,8 +343,8 @@ macro_rules! ld_h_param {
 }
 
 macro_rules! ld_h_hl_val {
-    ($self_: ident) => {{
-        set_h!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_h!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
     }};
 }
 
@@ -399,8 +399,8 @@ macro_rules! ld_l_param {
 }
 
 macro_rules! ld_l_hl_val {
-    ($self_: ident) => {{
-        set_l!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_l!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
     }};
 }
 
@@ -433,74 +433,74 @@ macro_rules! ld_sp_param {
 // LD (hl),r2
 
 macro_rules! ld_hl_val_a {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_b {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_c {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_c!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_c!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_d {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_d!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_d!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_e {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_e!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_e!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_h {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_h!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_h!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_l {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_l!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_l!($self_));
     }};
 }
 
 macro_rules! ld_hl_val_n {
-    ($self_: ident, $param: expr) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, $param);
+    ($self_: ident, $mem: ident, $param: expr) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, $param);
     }};
 }
 
 // LD (bc),a
 
 macro_rules! ld_bc_val_a {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_bc!($self_) as usize, get_a!($self_))
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_bc!($self_) as usize, get_a!($self_))
     }};
 }
 
 // LD (de),a
 
 macro_rules! ld_de_val_a {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_de!($self_) as usize, get_a!($self_))
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_de!($self_) as usize, get_a!($self_))
     }};
 }
 
 // LD (nn),a
 
 macro_rules! ld_nn_val_a {
-    ($self_: ident, $param: ident) => {{
-        $self_.mem.set_mem_u8($param as usize, get_a!($self_))
+    ($self_: ident, $mem: ident, $param: expr) => {{
+        $mem.set_mem_u8($param as usize, get_a!($self_))
     }};
 }
 
@@ -515,24 +515,24 @@ macro_rules! ld_sp_hl {
 // LD (nn), sp
 
 macro_rules! ld_param_val_sp {
-    ($self_: ident, $param: expr) => {{
-        $self_.mem.set_mem_u16($param as usize, get_sp!($self_));
+    ($self_: ident, $mem: ident, $param: expr) => {{
+        $mem.set_mem_u16($param as usize, get_sp!($self_));
     }};
 }
 
 // LD (C), a
 
 macro_rules! ld_c_val_a {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8((get_c!($self_) as u16 + 0xFF00) as usize, get_a!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8((get_c!($self_) as u16 + 0xFF00) as usize, get_a!($self_));
     }};
 }
 
 // LD a, (c)
 
 macro_rules! ld_a_c_val {
-    ($self_: ident) => {{
-        set_a!($self_, $self_.mem.get_mem_u8((get_c!($self_) as u16 + 0xFF00) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_a!($self_, $mem.get_mem_u8((get_c!($self_) as u16 + 0xFF00) as usize));
     }};
 }
 
@@ -540,8 +540,8 @@ macro_rules! ld_a_c_val {
 // load A into (n + 0xFF00)
 
 macro_rules! ld_n_val_a {
-    ($self_: ident, $param: expr) => {{
-        $self_.mem.set_mem_u8(($param as u16 + 0xFF00) as usize, get_a!($self_));
+    ($self_: ident, $mem: ident, $param: expr) => {{
+        $mem.set_mem_u8(($param as u16 + 0xFF00) as usize, get_a!($self_));
     }};
 }
 
@@ -549,16 +549,16 @@ macro_rules! ld_n_val_a {
 // load (n + 0xFF00) into A
 
 macro_rules! ld_a_n_val {
-    ($self_: ident, $param: expr) => {{
-        set_a!($self_, $self_.mem.get_mem_u8(($param as u16 + 0xFF00) as usize));
+    ($self_: ident, $mem: ident, $param: expr) => {{
+        set_a!($self_, $mem.get_mem_u8(($param as u16 + 0xFF00) as usize));
     }};
 }
 
 // LD a, (nn)
 
 macro_rules! ld_a_nn_val {
-    ($self_: ident, $param: expr) => {{
-        set_a!($self_, $self_.mem.get_mem_u8($param.swap_bytes() as usize));
+    ($self_: ident, $mem: ident, $param: expr) => {{
+        set_a!($self_, $mem.get_mem_u8($param.swap_bytes() as usize));
     }};
 }
 
@@ -566,8 +566,8 @@ macro_rules! ld_a_nn_val {
 // Load (HL) into A and then increment HL
 
 macro_rules! ldi_a_hl {
-    ($self_: ident) => {{
-        set_a!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_a!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
         set_hl!($self_, get_hl!($self_) + 1);
     }};
 }
@@ -576,8 +576,8 @@ macro_rules! ldi_a_hl {
 // Load A into (HL) and then increment HL
 
 macro_rules! ldi_hl_a {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
         set_hl!($self_, get_hl!($self_) + 1);
     }};
 }
@@ -586,8 +586,8 @@ macro_rules! ldi_hl_a {
 // Load (HL) into A and then decrement HL
 
 macro_rules! ldd_a_hl {
-    ($self_: ident) => {{
-        set_a!($self_, $self_.mem.get_mem_u8(get_hl!($self_) as usize));
+    ($self_: ident, $mem: ident) => {{
+        set_a!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
         set_hl!($self_, get_hl!($self_) - 1);
     }};
 }
@@ -596,8 +596,8 @@ macro_rules! ldd_a_hl {
 // Load A into (HL) and then decrement HL
 
 macro_rules! ldd_hl_a {
-    ($self_: ident) => {{
-        $self_.mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
+    ($self_: ident, $mem: ident) => {{
+        $mem.set_mem_u8(get_hl!($self_) as usize, get_a!($self_));
         set_hl!($self_, get_hl!($self_) - 1);
     }};
 }

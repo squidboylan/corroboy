@@ -124,8 +124,8 @@ macro_rules! add_a_l {
 }
 
 macro_rules! add_a_hl_val {
-    ($self_: ident) => {{ let old_a = get_a!($self_);
-        let hl_val = $self_.mem.get_mem_u8(get_hl!($self_) as usize);
+    ($self_: ident, $mem: ident) => {{ let old_a = get_a!($self_);
+        let hl_val = $mem.get_mem_u8(get_hl!($self_) as usize);
         set_a!($self_, get_a!($self_) + hl_val);
         unset_n_flag!($self_);
         if old_a > get_a!($self_) { set_c_flag!($self_); }
