@@ -18,6 +18,8 @@ impl Mmu {
             small_ram: [0; 128],
             video_ram: [0; 8192],
             oam: [0; 144],
+
+            // Should be FF00 - FF4B, but not implemented
             io_ports: [0; 75],
         }
 
