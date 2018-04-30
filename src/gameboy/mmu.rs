@@ -6,83 +6,71 @@ pub struct Mmu {
     ram: [u8; 8192],
     cartridge: [u8; 32768],
     video_ram: [u8; 8192],
+    oam: [u8; 144],
+    io_ports: [u8; 75],
 }
 
 impl Mmu {
     pub fn new() -> Mmu {
-        Mmu{ ram: [0; 8192], cartridge: [0; 32768], small_ram: [0; 128], video_ram: [0; 8192] }
+        Mmu{
+            ram: [0; 8192],
+            cartridge: [0; 32768],
+            small_ram: [0; 128],
+            video_ram: [0; 8192],
+            oam: [0; 144],
+            io_ports: [0; 75],
+        }
 
     }
 
     pub fn get_mem_u8(&self, location: usize) -> u8 {
-        if location < 0x4000 {
-            return self.cartridge[location];
+        match location {
+            0 ... 0x3FFF => return self.cartridge[location],
+            0x8000 ... 0x9FFF => return self.video_ram[location - 0x8000],
+            0xC000 ... 0xDFFF => return self.ram[location - 0xC000],
+            0xE000 ... 0xFDFF => return self.ram[location - 0xE000],
+            0xFE00 ... 0xFE9F => return self.oam[location - 0xFE00],
+            0xFF44 => return 0x90,
+            0xFF80 ... 0xFFFE => return self.small_ram[location - 0xFF80],
+            _ => 0
         }
-        else if location < 0xE000 && location >= 0xC000 {
-            return self.ram[location - 0xC000];
-        }
-        else if location < 0xA000 && location >= 0x8000 {
-            return self.video_ram[location - 0x8000];
-        }
-        else if location < 0xFFFF && location >= 0xFF80 {
-            return self.small_ram[location - 0xFF80];
-        }
-        else if location == 0xFF44 {
-            return 0x90;
-        }
-        0
     }
 
     pub fn set_mem_u8(&mut self, location: usize, val: u8) {
-        if location < 0x4000 {
-            self.cartridge[location] = val;
-        }
-        else if location < 0xE000 && location >= 0xC000 {
-            self.ram[location - 0xC000] = val;
-        }
-        else if location < 0xA000 && location >= 0x8000 {
-            self.video_ram[location - 0x8000] = val;
-        }
-        else if location < 0xFFFF && location >= 0xFF80 {
-            self.small_ram[location - 0xFF80] = val;
+        match location {
+            0 ... 0x3FFF => self.cartridge[location] = val,
+            0x8000 ... 0x9FFF => self.video_ram[location - 0x8000] = val,
+            0xC000 ... 0xDFFF => self.ram[location - 0xC000] = val,
+            0xE000 ... 0xFDFF => self.video_ram[location - 0x8000] = val,
+            0xFE00 ... 0xFE9F => self.oam[location - 0xFE00] = val,
+            0xFF80 ... 0xFFFE => self.small_ram[location - 0xFF80] = val,
+            _ => println!("set mem that mmu cant handle"),
         }
     }
 
     // z80 is little endian in ram
     pub fn get_mem_u16(&self, location: usize) -> u16 {
-        if location < 0x4000 {
-            return (self.cartridge[location] as u16) + ((self.cartridge[location + 1] as u16) << 8);
+        match location {
+            0 ... 0x3FFF => return (self.cartridge[location] as u16) + ((self.cartridge[location + 1] as u16) << 8),
+            0xC000 ... 0xDFFF => return (self.ram[location - 0xC000] as u16) + ((self.ram[location + 1 - 0xC000] as u16) << 8),
+            0xE000 ... 0xFDFF => return (self.ram[location - 0xE000] as u16) + ((self.ram[location + 1 - 0xE000] as u16) << 8),
+            0x8000 ... 0x9FFF => return (self.video_ram[location - 0x8000] as u16) + ((self.video_ram[location + 1 - 0x8000] as u16) << 8),
+            0xFE00 ... 0xFE9F => return (self.oam[location - 0xFE00] as u16) + ((self.oam[location + 1 - 0xFE00] as u16) << 8),
+            0xFF80 ... 0xFFFE => return (self.small_ram[location - 0xFF80] as u16) + ((self.small_ram[location + 1 - 0xFF80] as u16) << 8),
+            _ => 0
         }
-        else if location < 0xE000 && location >= 0xC000 {
-            return (self.ram[location - 0xC000] as u16) + ((self.ram[location + 1 - 0xC000] as u16) << 8);
-        }
-        else if location < 0xA000 && location >= 0x8000 {
-            return (self.video_ram[location - 0x8000] as u16) + ((self.video_ram[location + 1 - 0x8000] as u16) << 8);
-        }
-        else if location < 0xFFFF && location >= 0xFF80 {
-            return (self.small_ram[location - 0xFF80] as u16) + ((self.small_ram[location + 1 - 0xFF80] as u16) << 8);
-        }
-
-        0
     }
 
     // z80 is little endian in ram
     pub fn set_mem_u16(&mut self, location: usize, val: u16) {
-        if location < 0x4000 {
-            self.cartridge[location] = val as u8;
-            self.cartridge[location + 1] = (val >> 8) as u8;
-        }
-        else if location < 0xE000 && location >= 0xC000 {
-            self.ram[location - 0xC000] = val as u8;
-            self.ram[location + 1 - 0xC000] = (val >> 8) as u8;
-        }
-        else if location < 0xA000 && location >= 0x8000 {
-            self.video_ram[location - 0x8000] = val as u8;
-            self.video_ram[location + 1 - 0x8000] = (val >> 8) as u8;
-        }
-        else if location < 0xFFFF && location >= 0xFF80 {
-            self.small_ram[location - 0xFF80] = val as u8;
-            self.small_ram[location + 1 - 0xFF80] = (val >> 8) as u8;
+        match location {
+            0 ... 0x3FFF => { self.cartridge[location] = val as u8; self.cartridge[location + 1] = (val >> 8) as u8; },
+            0xC000 ... 0xDFFF => { self.ram[location - 0xC000] = val as u8; self.ram[location + 1 - 0xC000] = (val >> 8) as u8; },
+            0xE000 ... 0xFDFF => { self.ram[location - 0xE000] = val as u8; self.ram[location + 1 - 0xE000] = (val >> 8) as u8; },
+            0x8000 ... 0x9FFF => { self.video_ram[location - 0x8000] = val as u8; self.video_ram[location + 1 - 0x8000] = (val >> 8) as u8; },
+            0xFE00 ... 0xFE9F => { self.oam[location - 0xFE00] = val as u8; self.oam[location + 1 - 0xFE00] = (val >> 8) as u8; },
+            0xFF80 ... 0xFFFE => { self.small_ram[location - 0xFF80] = val as u8; self.small_ram[location + 1 - 0xFF80] = (val >> 8) as u8; },
+            _ => println!("set mem that mmu cant handle"),
         }
     }
 
@@ -97,80 +85,42 @@ impl Mmu {
     }
 
     pub fn push_u8(&mut self, sp: &mut u16, val: u8) {
-        if *sp < 0xE000 && *sp >= 0xC000 {
-            *sp = *sp - 1;
-            self.ram[(*sp - 0xC000) as usize] = val;
-        }
-        else if *sp < 0xA000 && *sp >= 0x8000 {
-            *sp = *sp - 1;
-            self.video_ram[(*sp - 0x8000) as usize] = val;
-        }
-        else if *sp < 0xFFFF && *sp >= 0xFF80 {
-            *sp = *sp - 1;
-            self.small_ram[(*sp - 0xFF80) as usize] = val;
+        match *sp {
+            0xC000 ... 0xDFFF => { *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = val; },
+            0x8000 ... 0x9FFF => { *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = val; },
+            0xFF80 ... 0xFFFE => { *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = val; },
+            _ => println!("push to mem that mmu cant handle"),
         }
     }
 
     pub fn pop_u8(&mut self, sp: &mut u16) -> u8{
         let mut val: u8 = 0;
-        if *sp < 0xE000 && *sp >= 0xC000 {
-            val = self.ram[(*sp - 0xC000) as usize];
-            *sp = *sp + 1;
+        match *sp {
+            0xC000 ... 0xDFFF => { val = self.ram[(*sp - 0xC000) as usize]; *sp = *sp + 1; },
+            0x8000 ... 0x9FFF => { val = self.video_ram[(*sp - 0x8000) as usize]; *sp = *sp + 1; },
+            0xFF80 ... 0xFFFE => { val = self.small_ram[(*sp - 0xFF80) as usize]; *sp = *sp + 1; },
+            _ => println!("pop mem that mmu cant handle"),
         }
-        else if *sp < 0xA000 && *sp >= 0x8000 {
-            val = self.video_ram[(*sp - 0x8000) as usize];
-            *sp = *sp + 1;
-        }
-        else if *sp < 0xFFFF && *sp >= 0xFF80 {
-            val = self.small_ram[(*sp - 0xFF80) as usize];
-            *sp = *sp + 1;
-        }
-
         val
     }
 
     pub fn push_u16(&mut self, sp: &mut u16, val: u16) {
-        if *sp < 0xE000 && *sp >= 0xC000 {
-            *sp = *sp - 1;
-            self.ram[(*sp - 0xC000) as usize] = (val >> 8) as u8;
-            *sp = *sp - 1;
-            self.ram[(*sp - 0xC000) as usize] = val as u8;
-        }
-        else if *sp < 0xA000 && *sp >= 0x8000 {
-            *sp = *sp - 1;
-            self.video_ram[(*sp - 0x8000) as usize] = (val >> 8) as u8;
-            *sp = *sp - 1;
-            self.video_ram[(*sp - 0x8000) as usize] = val as u8;
-        }
-        else if *sp < 0xFFFF && *sp >= 0xFF80 {
-            *sp = *sp - 1;
-            self.small_ram[(*sp - 0xFF80) as usize] = (val >> 8) as u8;
-            *sp = *sp - 1;
-            self.small_ram[(*sp - 0xFF80) as usize] = val as u8;
+        match *sp {
+            0xC000 ... 0xDFFF => { *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = val as u8; },
+            0x8000 ... 0x9FFF => { *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = val as u8; },
+            0xFF80 ... 0xFFFE => { *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = val as u8; },
+            _ => println!("push to mem that mmu cant handle"),
         }
     }
 
     pub fn pop_u16(&mut self, sp: &mut u16) -> u16{
         let mut val: u16 = 0;
-        if *sp < 0xE000 && *sp >= 0xC000 {
-            val = (self.ram[(*sp - 0xC000) as usize] as u16);
-            *sp = *sp + 1;
-            val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8);
-            *sp = *sp + 1;
+        match *sp {
+            0xC000 ... 0xDFFF => { val = (self.ram[(*sp - 0xC000) as usize] as u16); *sp = *sp + 1; val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8); *sp = *sp + 1; },
+            0x8000 ... 0x9FFF => { val = (self.video_ram[(*sp - 0x8000) as usize] as u16); *sp = *sp + 1; val = val + ((self.video_ram[(*sp - 0x8000) as usize] as u16) << 8); *sp = *sp + 1; },
+            0xFF80 ... 0xFFFE => { val = (self.small_ram[(*sp - 0xFF80) as usize] as u16); *sp = *sp + 1; val = val + ((self.small_ram[(*sp - 0xFF80) as usize] as u16) << 8); *sp = *sp + 1; },
+            _ => println!("pop mem that mmu cant handle"),
         }
-        else if *sp < 0xA000 && *sp >= 0x8000 {
-            val = (self.video_ram[(*sp - 0x8000) as usize] as u16);
-            *sp = *sp + 1;
-            val = val + ((self.video_ram[(*sp - 0x8000) as usize] as u16) << 8);
-            *sp = *sp + 1;
-        }
-        else if *sp < 0xFFFF && *sp >= 0xFF80 {
-            val = (self.small_ram[(*sp - 0xFF80) as usize] as u16);
-            *sp = *sp + 1;
-            val = val + ((self.small_ram[(*sp - 0xFF80) as usize] as u16) << 8);
-            *sp = *sp + 1;
-        }
-
         val
     }
 }
