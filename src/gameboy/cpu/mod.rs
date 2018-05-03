@@ -79,6 +79,7 @@ impl Cpu {
             0x31 => self.op_param_16_bit(mem, opcode),
             0xFA => self.op_param_16_bit(mem, opcode),
             0xCD => self.op_param_16_bit(mem, opcode),
+            0xEA => self.op_param_16_bit(mem, opcode),
             0x06 => self.op_param_8_bit(mem, opcode),
             0x0E => self.op_param_8_bit(mem, opcode),
             0x16 => self.op_param_8_bit(mem, opcode),
@@ -87,7 +88,6 @@ impl Cpu {
             0x26 => self.op_param_8_bit(mem, opcode),
             0x2E => self.op_param_8_bit(mem, opcode),
             0x3E => self.op_param_8_bit(mem, opcode),
-            0xEA => self.op_param_8_bit(mem, opcode),
             0x20 => self.op_param_8_bit(mem, opcode),
             0x28 => self.op_param_8_bit(mem, opcode),
             0x30 => self.op_param_8_bit(mem, opcode),
@@ -351,6 +351,8 @@ impl Cpu {
             0x21 => ld_hl_param!(self, param),
             0x31 => ld_sp_param!(self, param),
 
+            0xEA => ld_nn_val_a!(self, mem, param),
+
             0x08 => ld_param_val_sp!(self, mem, param),
 
             // CALL
@@ -373,7 +375,6 @@ impl Cpu {
             0x26 => ld_h_param!(self, param),
             0x2E => ld_l_param!(self, param),
 
-            0xEA => ld_nn_val_a!(self, mem, param),
             0x36 => ld_hl_val_n!(self, mem, param),
             0xE0 => ld_n_val_a!(self, mem, param),
             0xF0 => ld_a_n_val!(self, mem, param),
@@ -495,6 +496,7 @@ impl Cpu {
 
     pub fn exec_next(&mut self, mem: &mut Mmu) {
         if cfg!(debug_assertions = true) {
+            println!("a: {:x}", get_a!(self));
             println!("pc: {:x}", get_pc!(self));
             println!("sp: {:x}", get_sp!(self));
         }
