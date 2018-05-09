@@ -6,6 +6,7 @@ macro_rules! dec_a {
             else { unset_z_flag!($self_); }
             if (get_a!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
             else { unset_h_flag!($self_); }
+            return 1;
     }};
 }
 
@@ -16,6 +17,7 @@ macro_rules! dec_b {
             else { unset_z_flag!($self_); }
             if (get_b!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
             else { unset_h_flag!($self_); }
+            return 1;
     }};
 }
 
@@ -26,6 +28,7 @@ macro_rules! dec_c {
             else { unset_z_flag!($self_); }
             if (get_c!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
             else { unset_h_flag!($self_); }
+            return 1;
     }};
 }
 
@@ -36,6 +39,7 @@ macro_rules! dec_d {
             else { unset_z_flag!($self_); }
             if (get_d!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
             else { unset_h_flag!($self_); }
+            return 1;
     }};
 }
 
@@ -46,6 +50,7 @@ macro_rules! dec_e {
             else { unset_z_flag!($self_); }
             if (get_e!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
             else { unset_h_flag!($self_); }
+            return 1;
     }};
 }
 
@@ -56,6 +61,7 @@ macro_rules! dec_h {
             else { unset_z_flag!($self_); }
             if (get_h!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
             else { unset_h_flag!($self_); }
+            return 1;
     }};
 }
 
@@ -66,6 +72,7 @@ macro_rules! dec_l {
             else { unset_z_flag!($self_); }
             if (get_l!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
             else { unset_h_flag!($self_); }
+            return 1;
     }};
 }
 
@@ -77,6 +84,7 @@ macro_rules! dec_hl_val {
             else { unset_z_flag!($self_); }
             if (val & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
             else { unset_h_flag!($self_); }
+            return 3;
     }};
 }
 
@@ -85,24 +93,28 @@ macro_rules! dec_hl_val {
 macro_rules! dec_bc {
     ($self_: ident) => {{
         set_bc!($self_, get_bc!($self_) - 1);
+        return 2;
     }};
 }
 
 macro_rules! dec_de {
     ($self_: ident) => {{
         set_de!($self_, get_de!($self_) - 1);
+        return 2;
     }};
 }
 
 macro_rules! dec_hl {
     ($self_: ident) => {{
         set_hl!($self_, get_hl!($self_) - 1);
+        return 2;
     }};
 }
 
 macro_rules! dec_sp {
     ($self_: ident) => {{
         set_sp!($self_, get_sp!($self_) - 1);
+        return 2;
     }};
 }
 

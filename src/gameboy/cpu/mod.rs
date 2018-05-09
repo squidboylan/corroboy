@@ -69,32 +69,32 @@ impl Cpu {
         temp_u16
     }
 
-    fn exec_dispatcher(&mut self, mem: &mut Mmu, opcode: u16) {
+    fn exec_dispatcher(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         match opcode {
             0x00 => nop!(self),
-            0x01 => self.op_param_16_bit(mem, opcode),
-            0x08 => self.op_param_16_bit(mem, opcode),
-            0x11 => self.op_param_16_bit(mem, opcode),
-            0x21 => self.op_param_16_bit(mem, opcode),
-            0x31 => self.op_param_16_bit(mem, opcode),
-            0xFA => self.op_param_16_bit(mem, opcode),
-            0xCD => self.op_param_16_bit(mem, opcode),
-            0xEA => self.op_param_16_bit(mem, opcode),
-            0x06 => self.op_param_8_bit(mem, opcode),
-            0x0E => self.op_param_8_bit(mem, opcode),
-            0x16 => self.op_param_8_bit(mem, opcode),
-            0x18 => self.op_param_8_bit(mem, opcode),
-            0x1E => self.op_param_8_bit(mem, opcode),
-            0x26 => self.op_param_8_bit(mem, opcode),
-            0x2E => self.op_param_8_bit(mem, opcode),
-            0x3E => self.op_param_8_bit(mem, opcode),
-            0x20 => self.op_param_8_bit(mem, opcode),
-            0x28 => self.op_param_8_bit(mem, opcode),
-            0x30 => self.op_param_8_bit(mem, opcode),
-            0x38 => self.op_param_8_bit(mem, opcode),
-            0xE0 => self.op_param_8_bit(mem, opcode),
-            0xF0 => self.op_param_8_bit(mem, opcode),
-            0xFE => self.op_param_8_bit(mem, opcode),
+            0x01 => return self.op_param_16_bit(mem, opcode),
+            0x08 => return self.op_param_16_bit(mem, opcode),
+            0x11 => return self.op_param_16_bit(mem, opcode),
+            0x21 => return self.op_param_16_bit(mem, opcode),
+            0x31 => return self.op_param_16_bit(mem, opcode),
+            0xFA => return self.op_param_16_bit(mem, opcode),
+            0xCD => return self.op_param_16_bit(mem, opcode),
+            0xEA => return self.op_param_16_bit(mem, opcode),
+            0x06 => return self.op_param_8_bit(mem, opcode),
+            0x0E => return self.op_param_8_bit(mem, opcode),
+            0x16 => return self.op_param_8_bit(mem, opcode),
+            0x18 => return self.op_param_8_bit(mem, opcode),
+            0x1E => return self.op_param_8_bit(mem, opcode),
+            0x26 => return self.op_param_8_bit(mem, opcode),
+            0x2E => return self.op_param_8_bit(mem, opcode),
+            0x3E => return self.op_param_8_bit(mem, opcode),
+            0x20 => return self.op_param_8_bit(mem, opcode),
+            0x28 => return self.op_param_8_bit(mem, opcode),
+            0x30 => return self.op_param_8_bit(mem, opcode),
+            0x38 => return self.op_param_8_bit(mem, opcode),
+            0xE0 => return self.op_param_8_bit(mem, opcode),
+            0xF0 => return self.op_param_8_bit(mem, opcode),
+            0xFE => return self.op_param_8_bit(mem, opcode),
 
             0x3C => inc_a!(self),
             0x04 => inc_b!(self),
@@ -339,11 +339,11 @@ impl Cpu {
 
             0xCB7C => bit_7_h!(self),
 
-            _ => println!("opcode dispatch broke :("),
+            _ => { println!("opcode dispatch broke :( opcode: {:x}", opcode); return 1; },
         }
     }
 
-    fn op_param_16_bit(&mut self, mem: &mut Mmu, opcode: u16) {
+    fn op_param_16_bit(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         let param = self.get_param_16_bit(mem);
         match opcode {
             0x01 => ld_bc_param!(self, param),
@@ -360,11 +360,11 @@ impl Cpu {
 
             0xFA => ld_a_nn_val!(self, mem, param),
 
-            _ => println!("opcode dispatched to 16 bit param executer but that didnt match the op"),
+            _ => { println!("opcode dispatched to 16 bit param executer but that didnt match the op"); return 1; },
         };
     }
 
-    fn op_param_8_bit(&mut self, mem: &mut Mmu, opcode: u16) {
+    fn op_param_8_bit(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         let param = self.get_param_8_bit(mem);
         match opcode {
             0x3E => ld_a_param!(self, param),
@@ -397,7 +397,7 @@ impl Cpu {
             0x38 => jr_c_n!(self, param),
 
             0xF8 => ldhl_sp_n!(self, param),
-            _ => println!("opcode dispatched to 8 bit param executer but that didnt match the op"),
+            _ => { println!("opcode dispatched to 8 bit param executer but that didnt match the op"); return 1; },
         };
     }
 
@@ -494,7 +494,8 @@ impl Cpu {
         assert_eq!(mem.pop_u8(get_sp_mut!(self)), 10);
     }
 
-    pub fn exec_next(&mut self, mem: &mut Mmu) {
+    // Exec the next instruction and return how many machine cycles it takes (cycles/4)
+    pub fn exec_next(&mut self, mem: &mut Mmu) -> u8 {
         if cfg!(debug_assertions = true) {
             println!("a: {:x}", get_a!(self));
             println!("pc: {:x}", get_pc!(self));
@@ -507,7 +508,7 @@ impl Cpu {
             println!("opcode: {:x}", opcode);
         }
 
-        self.exec_dispatcher(mem, opcode);
+        return self.exec_dispatcher(mem, opcode);
     }
 }
 

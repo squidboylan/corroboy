@@ -10,6 +10,7 @@ macro_rules! rr_a {
         set_a!($self_, (get_a!($self_) >> 1) + tmp << 7);
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 2;
     }};
 }
 
@@ -23,6 +24,7 @@ macro_rules! rr_b {
         set_b!($self_, (get_b!($self_) >> 1) + tmp << 7);
         if get_b!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 2;
     }};
 }
 
@@ -36,6 +38,7 @@ macro_rules! rr_c {
         set_c!($self_, (get_c!($self_) >> 1) + tmp << 7);
         if get_c!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 2;
     }};
 }
 
@@ -49,6 +52,7 @@ macro_rules! rr_d {
         set_d!($self_, (get_d!($self_) >> 1) + tmp << 7);
         if get_d!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 2;
     }};
 }
 
@@ -62,6 +66,7 @@ macro_rules! rr_e {
         set_e!($self_, (get_e!($self_) >> 1) + tmp << 7);
         if get_e!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 2;
     }};
 }
 
@@ -75,6 +80,7 @@ macro_rules! rr_h {
         set_h!($self_, (get_h!($self_) >> 1) + tmp << 7);
         if get_h!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 2;
     }};
 }
 
@@ -88,6 +94,7 @@ macro_rules! rr_l {
         set_l!($self_, (get_l!($self_) >> 1) + tmp << 7);
         if get_l!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 2;
     }};
 }
 
@@ -103,6 +110,7 @@ macro_rules! rrca {
         set_a!($self_, (get_a!($self_) >> 1));
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 1;
     }};
 }
 
@@ -118,6 +126,7 @@ macro_rules! rra {
         set_a!($self_, (get_a!($self_) >> 1) | tmp << 7);
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
+        return 1;
     }};
 }
 

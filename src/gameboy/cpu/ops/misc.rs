@@ -14,6 +14,7 @@ macro_rules! daa {
         unset_h_flag!($self_);
         if get_a!($self_) == 0 { set_z_flag!($self_) }
         else { unset_z_flag!($self_) }
+        return 1;
     }};
 }
 
@@ -25,6 +26,7 @@ macro_rules! cpl {
         set_a!($self_, !get_a!($self_));
         set_n_flag!($self_);
         set_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -34,6 +36,7 @@ macro_rules! call_nn {
     ($self_: ident, $mem: ident, $param: expr) => {{
         $mem.push_u16(get_sp_mut!($self_), get_pc!($self_));
         set_pc!($self_, $param);
+        return 3;
     }};
 }
 
@@ -46,6 +49,7 @@ macro_rules! ccf {
         else { set_c_flag!($self_); }
         unset_n_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -57,6 +61,7 @@ macro_rules! scf {
         set_c_flag!($self_);
         unset_n_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -64,7 +69,7 @@ macro_rules! scf {
 
 macro_rules! nop {
     ($self_: ident) => {{
-        ();
+        return 1;
     }};
 }
 
@@ -73,7 +78,7 @@ macro_rules! nop {
 
 macro_rules! halt {
     ($self_: ident) => {{
-        ();
+        return 1;
     }};
 }
 

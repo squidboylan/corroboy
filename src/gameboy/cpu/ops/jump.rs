@@ -3,6 +3,7 @@
 macro_rules! jr_n {
     ($self_: ident, $param: expr) => {{
         set_pc!($self_, (get_pc!($self_) as i16 + (($param as i8) as i16)) as u16);
+        return 2;
     }};
 }
 
@@ -13,6 +14,7 @@ macro_rules! jr_nz_n {
         if get_z_flag!($self_) == 0 {
             set_pc!($self_, (get_pc!($self_) as i16 + (($param as i8) as i16)) as u16);
         }
+        return 2;
     }};
 }
 
@@ -21,6 +23,7 @@ macro_rules! jr_z_n {
         if get_z_flag!($self_) == 1 {
             set_pc!($self_, (get_pc!($self_) as i16 + (($param as i8) as i16)) as u16);
         }
+        return 2;
     }};
 }
 
@@ -29,6 +32,7 @@ macro_rules! jr_nc_n {
         if get_c_flag!($self_) == 0 {
             set_pc!($self_, (get_pc!($self_) as i16 + (($param as i8) as i16)) as u16);
         }
+        return 2;
     }};
 }
 
@@ -37,5 +41,6 @@ macro_rules! jr_c_n {
         if get_c_flag!($self_) == 1 {
             set_pc!($self_, (get_pc!($self_) as i16 + (($param as i8) as i16)) as u16);
         }
+        return 2;
     }};
 }

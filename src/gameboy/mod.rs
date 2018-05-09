@@ -22,6 +22,8 @@ pub struct Gameboy {
     clock_speed: u64,
     nanos_per_cycle: Duration,
     cycles_per_frame: u64,
+    // This counts the number of cycles we have to burn after the last instruction for proper timing
+    burn_count: u8,
 }
 
 impl Gameboy {
@@ -33,6 +35,7 @@ impl Gameboy {
             clock_speed: 4194304,
             nanos_per_cycle: Duration::from_nanos((1_000_000_000/(4194304/4))),
             cycles_per_frame: (4194304/4)/60,
+            burn_count: 0,
         }
     }
 
@@ -47,8 +50,12 @@ impl Gameboy {
     pub fn run_game(&mut self) {
         // run the machine cycles for this frame
         for i in 0..(70224/4) {
-            //let start = Instant::now();
-            self.cpu.exec_next(&mut self.mem);
+            if self.burn_count == 0 {
+                self.burn_count = self.cpu.exec_next(&mut self.mem) - 1;
+            }
+            else {
+                self.burn_count -= 1;
+            }
 
             //let elapsed = start.elapsed();
             if cfg!(debug_assertions = true) {

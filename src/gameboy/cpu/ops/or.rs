@@ -8,6 +8,7 @@ macro_rules! or_a {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -19,6 +20,7 @@ macro_rules! or_b {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -31,6 +33,7 @@ macro_rules! or_c {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -42,6 +45,7 @@ macro_rules! or_d {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -53,6 +57,7 @@ macro_rules! or_e {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -64,6 +69,7 @@ macro_rules! or_h {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -75,6 +81,7 @@ macro_rules! or_l {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
+        return 1;
     }};
 }
 
@@ -86,6 +93,7 @@ macro_rules! or_hl_val {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
+        return 2;
     }};
 }
 
