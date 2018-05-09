@@ -30,9 +30,12 @@ impl Mmu {
 
     pub fn get_mem_u8(&self, location: usize) -> u8 {
         match location {
-            0 ... 0xFF => match self.bios_mapped {
-                0 => return self.bios[location],
-                _ => return self.cartridge[location],
+            0 ... 0xFF => { if self.bios_mapped == 0 {
+                    return self.bios[location];
+                }
+                else {
+                    return self.cartridge[location];
+                }
             },
             0x100 ... 0x7FFF => return self.cartridge[location],
             0x8000 ... 0x9FFF => return self.video_ram[location - 0x8000],
@@ -48,9 +51,12 @@ impl Mmu {
 
     pub fn set_mem_u8(&mut self, location: usize, val: u8) {
         match location {
-            0 ... 0xFF => match self.bios_mapped {
-                0 => self.bios[location] = val,
-                _ => self.cartridge[location] = val,
+            0 ... 0xFF => { if self.bios_mapped == 0 {
+                    self.bios[location] = val;
+                }
+                else {
+                    self.cartridge[location] = val;
+                }
             },
             0x100 ... 0x7FFF => self.cartridge[location] = val,
             0x8000 ... 0x9FFF => self.video_ram[location - 0x8000] = val,

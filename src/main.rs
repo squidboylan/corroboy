@@ -53,7 +53,7 @@ fn main() {
     let mut events: Events = Events::new(EventSettings::new());
     events.set_ups(60);
     events.set_max_fps(60);
-    PROFILER.lock().unwrap().start("./my-prof.profile").unwrap();
+    //PROFILER.lock().unwrap().start("./my-prof.profile").unwrap();
     while let Some(e) = events.next(&mut window) {
         if let Some(r) = e.render_args() {
             gb.render(&mut window, &e);
@@ -63,5 +63,5 @@ fn main() {
             gb.run_game();
         }
     }
-    PROFILER.lock().unwrap().stop().unwrap();
+    //PROFILER.lock().unwrap().stop().unwrap();
 }

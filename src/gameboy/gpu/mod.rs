@@ -186,19 +186,19 @@ impl Gpu {
     }
 
     pub fn update(&mut self, mem: &mut Mmu) {
-        if self.get_current_state(mem) == 0 {
-            // set state to lcd off and mode to v-blank (so CPU knows it can read stuff)
-            self.state = 0;
-            self.set_mode(mem, 0b01);
-            return;
-        }
-
-        if self.state == 0 && self.get_current_state(mem) == 1 {
-            self.state = 1;
-            self.initialize(mem);
-            self.count = 0;
-            self.set_curr_line(mem, 0);
-            self.set_mode(mem, 2);
+        if self.state == 0 {
+            if self.get_current_state(mem) == 1 {
+                self.state = 1;
+                self.initialize(mem);
+                self.count = 0;
+                self.set_curr_line(mem, 0);
+                self.set_mode(mem, 2);
+            }
+            else {
+                self.state = 0;
+                self.set_mode(mem, 0b01);
+                return;
+            }
         }
 
         // Do stuff here that happens once per frame
