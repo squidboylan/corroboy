@@ -7,6 +7,7 @@ extern crate glutin_window;
 extern crate opengl_graphics;
 extern crate image;
 extern crate gfx;
+extern crate cpuprofiler;
 
 use piston::window::WindowSettings;
 use piston::event_loop::*;
@@ -15,6 +16,8 @@ use piston_window::PistonWindow as Window;
 //use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{ GlGraphics, OpenGL };
 use std::time::{Duration, Instant};
+use cpuprofiler::PROFILER;
+
 
 
 use std::env;
@@ -50,6 +53,7 @@ fn main() {
     let mut events: Events = Events::new(EventSettings::new());
     events.set_ups(60);
     events.set_max_fps(60);
+    PROFILER.lock().unwrap().start("./my-prof.profile").unwrap();
     while let Some(e) = events.next(&mut window) {
         if let Some(r) = e.render_args() {
             gb.render(&mut window, &e);
@@ -59,4 +63,5 @@ fn main() {
             gb.run_game();
         }
     }
+    PROFILER.lock().unwrap().stop().unwrap();
 }

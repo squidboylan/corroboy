@@ -47,12 +47,12 @@ impl Gameboy {
     pub fn run_game(&mut self) {
         // run the machine cycles for this frame
         for i in 0..(70224/4) {
-            let start = Instant::now();
+            //let start = Instant::now();
             self.cpu.exec_next(&mut self.mem);
 
-            let elapsed = start.elapsed();
+            //let elapsed = start.elapsed();
             if cfg!(debug_assertions = true) {
-                println!("elapsed nanos: {}", elapsed.subsec_nanos());
+                //println!("elapsed nanos: {}", elapsed.subsec_nanos());
             }
 
             self.gpu.update(&mut self.mem);

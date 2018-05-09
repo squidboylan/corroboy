@@ -95,6 +95,9 @@ pub struct Gpu {
 
     // This represents the number of (machine) cycles we are into rendering the current line
     count: u16,
+
+    scx: u8,
+    scy: u8,
 }
 
 impl Gpu {
@@ -114,6 +117,8 @@ impl Gpu {
             bg_palette: [0; 4],
             pixel_map: [[1; 160]; 144],
             count: 0,
+            scx: 0,
+            scy: 0,
         }
     }
 
@@ -185,6 +190,7 @@ impl Gpu {
             // set state to lcd off and mode to v-blank (so CPU knows it can read stuff)
             self.state = 0;
             self.set_mode(mem, 0b01);
+            return;
         }
 
         if self.state == 0 && self.get_current_state(mem) == 1 {
@@ -194,6 +200,12 @@ impl Gpu {
             self.set_curr_line(mem, 0);
             self.set_mode(mem, 2);
         }
+
+        // Do stuff here that happens once per frame
+        if self.count == 0 && self.get_curr_line(mem) == 0 {
+            self.build_tile_map(mem);
+        }
+
         match self.get_mode(mem) {
             // H-blank
             0b00 => self.h_blank(mem),
@@ -253,8 +265,9 @@ impl Gpu {
         //println!("setting up line {}", self.get_curr_line(mem));
         // get the palette, etc
         if self.count == 0 {
-            self.build_tile_map(mem);
-            self.set_bg_palette(mem)
+            self.set_bg_palette(mem);
+            self.scy = mem.get_mem_u8(0xFF42);
+            self.scx = mem.get_mem_u8(0xFF43);
         }
         if self.count < 19 {
             self.count += 1;
@@ -267,14 +280,13 @@ impl Gpu {
     fn render_line(&mut self, mem: &mut Mmu) {
         let line_lcd = self.get_curr_line(mem);
         if self.count == 19 {
-            let scy = mem.get_mem_u8(0xFF42);
-            let scx = mem.get_mem_u8(0xFF43);
-            let line = line_lcd + scy;
+            let line = line_lcd + self.scy;
             let tile_y = ((line / 8) % 32) as usize;
             let line_in_tile = (line % 8) as usize;
-            for x in 0..160 {
-                let tile_x = (((x + scx)/8) % 32) as usize;
-                let x_in_tile = ((x + scx) % 8) as usize;
+            for i in 0..160 {
+                let x = i + self.scx;
+                let tile_x = ((x/8) % 32) as usize;
+                let x_in_tile = (x % 8) as usize;
                 let tile_num = self.tile_map[tile_y][tile_x] as usize;
                 let palette_num = self.bg_tiles[tile_num].raw_val[line_in_tile][x_in_tile] as usize;
                 let pixel_val = self.bg_palette[palette_num];
