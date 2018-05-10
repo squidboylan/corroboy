@@ -97,3 +97,14 @@ macro_rules! and_hl_val {
     }};
 }
 
+macro_rules! and_param {
+    ($self_: ident, $param: expr) => {{
+        set_a!($self_, get_a!($self_) & $param);
+        if get_a!($self_) == 0 { set_z_flag!($self_); }
+        else { unset_z_flag!($self_); }
+        unset_n_flag!($self_);
+        unset_c_flag!($self_);
+        set_h_flag!($self_);
+        return 2;
+    }};
+}

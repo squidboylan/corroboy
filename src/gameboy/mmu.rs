@@ -6,10 +6,13 @@ pub struct Mmu {
     ram: [u8; 8192],
     cartridge: [u8; 32768],
     video_ram: [u8; 8192],
-    oam: [u8; 144],
+    oam: [u8; 160],
     bios: [u8; 256],
-    io_ports: [u8; 75],
+    io_ports: [u8; 0x80],
     bios_mapped: u8,
+
+    // Interrupts enabled reg
+    ie: u8
 }
 
 impl Mmu {
@@ -19,12 +22,13 @@ impl Mmu {
             cartridge: [0xFF; 32768],
             small_ram: [0; 128],
             video_ram: [0; 8192],
-            oam: [0; 144],
+            oam: [0; 160],
             bios: [0; 256],
 
-            // Should be FF00 - FF4B, but not implemented
-            io_ports: [0; 75],
+            io_ports: [0; 0x80],
             bios_mapped: 0,
+
+            ie: 0,
         }
     }
 
@@ -42,10 +46,11 @@ impl Mmu {
             0xC000 ... 0xDFFF => return self.ram[location - 0xC000],
             0xE000 ... 0xFDFF => return self.ram[location - 0xE000],
             0xFE00 ... 0xFE9F => return self.oam[location - 0xFE00],
-            0xFF00 ... 0xFF4B => return self.io_ports[location - 0xFF00],
+            0xFF00 ... 0xFF7F => return self.io_ports[location - 0xFF00],
             0xFF50 => return self.bios_mapped,
             0xFF80 ... 0xFFFE => return self.small_ram[location - 0xFF80],
-            _ => 0
+            0xFFFF => return self.ie,
+            _ => 0xFF,
         }
     }
 
@@ -63,10 +68,12 @@ impl Mmu {
             0xC000 ... 0xDFFF => self.ram[location - 0xC000] = val,
             0xE000 ... 0xFDFF => self.ram[location - 0xE000] = val,
             0xFE00 ... 0xFE9F => self.oam[location - 0xFE00] = val,
-            0xFF00 ... 0xFF4B => self.io_ports[location - 0xFF00] = val,
+            0xFEA0 ... 0xFEFF => {},
+            0xFF00 ... 0xFF7F => self.io_ports[location - 0xFF00] = val,
             0xFF50 => self.bios_mapped = val,
             0xFF80 ... 0xFFFE => self.small_ram[location - 0xFF80] = val,
-            _ => println!("set mem that mmu cant handle"),
+            0xFFFF => self.ie = val,
+            _ => println!("set mem u8 that mmu cant handle, location: {:x}", location),
         }
     }
 
@@ -94,7 +101,7 @@ impl Mmu {
             0xFE00 ... 0xFE9F => { self.oam[location - 0xFE00] = val as u8; self.oam[location + 1 - 0xFE00] = (val >> 8) as u8; },
             0xFF00 ... 0xFF4B => { self.io_ports[location - 0xFF00] = val as u8; self.io_ports[location - 0xFF00] = (val >> 8) as u8; },
             0xFF80 ... 0xFFFE => { self.small_ram[location - 0xFF80] = val as u8; self.small_ram[location + 1 - 0xFF80] = (val >> 8) as u8; },
-            _ => println!("set mem that mmu cant handle"),
+            _ => println!("set mem u16 that mmu cant handle, location: {:x}", location),
         }
     }
 
@@ -126,7 +133,7 @@ impl Mmu {
             0xC000 ... 0xDFFF => { *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = val; },
             0x8000 ... 0x9FFF => { *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = val; },
             0xFF80 ... 0xFFFE => { *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = val; },
-            _ => println!("push to mem that mmu cant handle"),
+            _ => println!("push to mem u8 that mmu cant handle, location: {:x}", *sp),
         }
     }
 
@@ -136,7 +143,7 @@ impl Mmu {
             0xC000 ... 0xDFFF => { val = self.ram[(*sp - 0xC000) as usize]; *sp = *sp + 1; },
             0x8000 ... 0x9FFF => { val = self.video_ram[(*sp - 0x8000) as usize]; *sp = *sp + 1; },
             0xFF80 ... 0xFFFE => { val = self.small_ram[(*sp - 0xFF80) as usize]; *sp = *sp + 1; },
-            _ => println!("pop mem that mmu cant handle"),
+            _ => println!("pop mem u8 that mmu cant handle, location: {:x}", *sp),
         }
         val
     }
@@ -146,7 +153,7 @@ impl Mmu {
             0xC000 ... 0xDFFF => { *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = val as u8; },
             0x8000 ... 0x9FFF => { *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = val as u8; },
             0xFF80 ... 0xFFFE => { *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = val as u8; },
-            _ => println!("push to mem that mmu cant handle"),
+            _ => println!("push to mem u16 that mmu cant handle, location: {:x}", *sp),
         }
     }
 
@@ -156,7 +163,7 @@ impl Mmu {
             0xC000 ... 0xDFFF => { val = (self.ram[(*sp - 0xC000) as usize] as u16); *sp = *sp + 1; val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8); *sp = *sp + 1; },
             0x8000 ... 0x9FFF => { val = (self.video_ram[(*sp - 0x8000) as usize] as u16); *sp = *sp + 1; val = val + ((self.video_ram[(*sp - 0x8000) as usize] as u16) << 8); *sp = *sp + 1; },
             0xFF80 ... 0xFFFE => { val = (self.small_ram[(*sp - 0xFF80) as usize] as u16); *sp = *sp + 1; val = val + ((self.small_ram[(*sp - 0xFF80) as usize] as u16) << 8); *sp = *sp + 1; },
-            _ => println!("pop mem that mmu cant handle"),
+            _ => println!("pop mem u16 that mmu cant handle, location: {:x}", *sp),
         }
         val
     }

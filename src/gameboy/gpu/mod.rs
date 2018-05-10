@@ -204,6 +204,7 @@ impl Gpu {
         // Do stuff here that happens once per frame
         if self.count == 0 && self.get_curr_line(mem) == 0 {
             self.build_tile_map(mem);
+            self.build_tile_data(mem);
         }
 
         match self.get_mode(mem) {

@@ -46,10 +46,8 @@ impl Cpu {
     }
 
     fn get_param_8_bit(&mut self, mem: &mut Mmu) -> u8 {
-        let mut pc = get_pc!(self);
-        let temp = mem.get_mem_u8(pc as usize);
-        pc += 1;
-        set_pc!(self, pc);
+        let temp = mem.get_mem_u8(get_pc!(self) as usize);
+        set_pc!(self, get_pc!(self) + 1);
         if cfg!(debug_assertions = true) {
             println!("8 bit param: b: {:b}, hex: {:x}, signed: {:x}", temp, temp, (temp as i8) as i16);
         }
@@ -79,6 +77,14 @@ impl Cpu {
             0x31 => return self.op_param_16_bit(mem, opcode),
             0xFA => return self.op_param_16_bit(mem, opcode),
             0xCD => return self.op_param_16_bit(mem, opcode),
+
+            // JP cc,nn
+            0xC2 => return self.op_param_16_bit(mem, opcode),
+            0xCA => return self.op_param_16_bit(mem, opcode),
+            0xD2 => return self.op_param_16_bit(mem, opcode),
+            0xDA => return self.op_param_16_bit(mem, opcode),
+
+            0xC3 => return self.op_param_16_bit(mem, opcode),
             0xEA => return self.op_param_16_bit(mem, opcode),
             0x06 => return self.op_param_8_bit(mem, opcode),
             0x0E => return self.op_param_8_bit(mem, opcode),
@@ -91,8 +97,10 @@ impl Cpu {
             0x20 => return self.op_param_8_bit(mem, opcode),
             0x28 => return self.op_param_8_bit(mem, opcode),
             0x30 => return self.op_param_8_bit(mem, opcode),
+            0x36 => return self.op_param_8_bit(mem, opcode),
             0x38 => return self.op_param_8_bit(mem, opcode),
             0xE0 => return self.op_param_8_bit(mem, opcode),
+            0xE6 => return self.op_param_8_bit(mem, opcode),
             0xF0 => return self.op_param_8_bit(mem, opcode),
             0xFE => return self.op_param_8_bit(mem, opcode),
 
@@ -161,6 +169,16 @@ impl Cpu {
 
             0x37 => ccf!(self),
             0x3F => scf!(self),
+
+            // RST nn
+            0xC7 => rst_nn!(self, 0x00),
+            0xCF => rst_nn!(self, 0x08),
+            0xD7 => rst_nn!(self, 0x10),
+            0xDF => rst_nn!(self, 0x18),
+            0xE7 => rst_nn!(self, 0x20),
+            0xEF => rst_nn!(self, 0x28),
+            0xF7 => rst_nn!(self, 0x30),
+            0xFF => rst_nn!(self, 0x38),
 
             0x7F => ld_a_a!(self),
             0x78 => ld_a_b!(self),
@@ -358,6 +376,14 @@ impl Cpu {
             // CALL
             0xCD => call_nn!(self, mem, param),
 
+            // JUMP
+            0xC3 => jp_nn!(self,  param),
+
+            0xC2 => jp_nz_nn!(self,  param),
+            0xCA => jp_z_nn!(self,  param),
+            0xD2 => jp_nc_nn!(self,  param),
+            0xDA => jp_c_nn!(self,  param),
+
             0xFA => ld_a_nn_val!(self, mem, param),
 
             _ => { println!("opcode dispatched to 16 bit param executer but that didnt match the op"); return 1; },
@@ -379,6 +405,7 @@ impl Cpu {
             0xE0 => ld_n_val_a!(self, mem, param),
             0xF0 => ld_a_n_val!(self, mem, param),
 
+            0xE6 => and_param!(self, param),
             0xC6 => add_a_param!(self, param),
 
             0xD6 => sub_a_param!(self, param),
