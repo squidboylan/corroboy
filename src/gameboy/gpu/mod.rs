@@ -170,11 +170,18 @@ impl Gpu {
         tex_settings.set_mag(piston_window::Filter::Nearest);
         let tex = Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap();
 
-        window.draw_2d(e, |c, g| {
-            clear([1.0; 4], g);
+        if self.state == 0 {
+            window.draw_2d(e, |c, g| {
+                clear([0.0; 4], g);
+            });
+        }
+        else {
+            window.draw_2d(e, |c, g| {
+                clear([1.0; 4], g);
 
-            image(&tex, c.transform, g);
-        });
+                image(&tex, c.transform, g);
+            });
+        }
     }
 
     fn build_tile_map(&mut self, mem: &mut Mmu) {
@@ -195,6 +202,13 @@ impl Gpu {
                 self.set_mode(mem, 2);
             }
             else {
+                self.state = 0;
+                self.set_mode(mem, 0b01);
+                return;
+            }
+        }
+        else {
+            if self.get_current_state(mem) == 0 {
                 self.state = 0;
                 self.set_mode(mem, 0b01);
                 return;
@@ -235,6 +249,8 @@ impl Gpu {
             else {
                 self.count = 0;
                 self.set_mode(mem, 1);
+                let interrupts = mem.get_mem_u8(0xFF0F);
+                mem.set_mem_u8(0xFF0F, interrupts | 0b00000001);
             }
         }
     }

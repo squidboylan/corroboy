@@ -7,6 +7,16 @@ macro_rules! ret {
     }};
 }
 
+// RETI
+
+macro_rules! reti {
+    ($self_: ident, $mem: ident) => {{
+        set_pc!($self_, $mem.pop_u16(get_sp_mut!($self_)));
+        $self_.ime = 1;
+        return 2;
+    }};
+}
+
 // RET nn
 macro_rules! ret_nz {
     ($self_: ident, $mem: ident) => {{

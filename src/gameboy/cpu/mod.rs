@@ -13,6 +13,9 @@ pub struct Cpu {
     hl: registers::Reg16Bit,
     sp: registers::Reg16Bit,
     pc: registers::Reg16Bit,
+    // Interrupt master enable
+    ime: u8,
+    halt: u8
 }
 
 impl Cpu {
@@ -24,7 +27,7 @@ impl Cpu {
         let sp = registers::Reg16Bit{ whole: 0 };
         let pc = registers::Reg16Bit{ whole: 0 };
 
-        Cpu {af, bc, de, hl, sp, pc}
+        Cpu {af, bc, de, hl, sp, pc, ime: 0, halt: 0}
     }
 
     fn get_opcode(&mut self, mem: &mut Mmu) -> u16 {
@@ -76,7 +79,18 @@ impl Cpu {
             0x21 => return self.op_param_16_bit(mem, opcode),
             0x31 => return self.op_param_16_bit(mem, opcode),
             0xFA => return self.op_param_16_bit(mem, opcode),
+
+            // CALL nn
             0xCD => return self.op_param_16_bit(mem, opcode),
+
+            // CALL cc,nn
+            0xC4 => return self.op_param_16_bit(mem, opcode),
+            0xCC => return self.op_param_16_bit(mem, opcode),
+            0xD4 => return self.op_param_16_bit(mem, opcode),
+            0xDC => return self.op_param_16_bit(mem, opcode),
+
+            // JP nn
+            0xC3 => return self.op_param_16_bit(mem, opcode),
 
             // JP cc,nn
             0xC2 => return self.op_param_16_bit(mem, opcode),
@@ -84,7 +98,6 @@ impl Cpu {
             0xD2 => return self.op_param_16_bit(mem, opcode),
             0xDA => return self.op_param_16_bit(mem, opcode),
 
-            0xC3 => return self.op_param_16_bit(mem, opcode),
             0xEA => return self.op_param_16_bit(mem, opcode),
             0x06 => return self.op_param_8_bit(mem, opcode),
             0x0E => return self.op_param_8_bit(mem, opcode),
@@ -99,8 +112,10 @@ impl Cpu {
             0x30 => return self.op_param_8_bit(mem, opcode),
             0x36 => return self.op_param_8_bit(mem, opcode),
             0x38 => return self.op_param_8_bit(mem, opcode),
+            0xC6 => return self.op_param_8_bit(mem, opcode),
             0xE0 => return self.op_param_8_bit(mem, opcode),
             0xE6 => return self.op_param_8_bit(mem, opcode),
+            0xEE => return self.op_param_8_bit(mem, opcode),
             0xF0 => return self.op_param_8_bit(mem, opcode),
             0xFE => return self.op_param_8_bit(mem, opcode),
 
@@ -169,6 +184,9 @@ impl Cpu {
 
             0x37 => ccf!(self),
             0x3F => scf!(self),
+
+            // JP (HL)
+            0xE9 => jp_hl!(self, param),
 
             // RST nn
             0xC7 => rst_nn!(self, 0x00),
@@ -332,12 +350,20 @@ impl Cpu {
             0x9D => sbc_a_l!(self),
             0x9E => sbc_a_hl_val!(self, mem),
 
+            // Interrupt disabling and enabling
+            0xF3 => di!(self),
+            0xFB => ei!(self),
+
+            0xD9 => reti!(self, mem),
 
             0x07 => rlca!(self),
             0x17 => rla!(self),
 
             0x0F => rrca!(self),
             0x1F => rra!(self),
+
+            // HALT
+            0x76 => halt!(self),
 
             0xCB17 => rl_a!(self),
             0xCB10 => rl_b!(self),
@@ -376,6 +402,11 @@ impl Cpu {
             // CALL
             0xCD => call_nn!(self, mem, param),
 
+            0xC4 => call_nz_nn!(self, mem, param),
+            0xCC => call_z_nn!(self, mem, param),
+            0xD4 => call_nc_nn!(self, mem, param),
+            0xDC => call_c_nn!(self, mem, param),
+
             // JUMP
             0xC3 => jp_nn!(self,  param),
 
@@ -403,6 +434,7 @@ impl Cpu {
 
             0x36 => ld_hl_val_n!(self, mem, param),
             0xE0 => ld_n_val_a!(self, mem, param),
+            0xEE => xor_param!(self, param),
             0xF0 => ld_a_n_val!(self, mem, param),
 
             0xE6 => and_param!(self, param),
@@ -529,13 +561,71 @@ impl Cpu {
             println!("sp: {:x}", get_sp!(self));
         }
 
-        let opcode = self.get_opcode(mem);
-
-        if cfg!(debug_assertions = true) {
-            println!("opcode: {:x}", opcode);
+        if self.ime == 1 {
+            let val = self.handle_int(mem);
+            if val != 0 {
+                return val;
+            }
         }
 
-        return self.exec_dispatcher(mem, opcode);
+        // If we're not halted run the next instruction
+        // otherwise burn a cycle
+        if self.halt == 0 {
+            let opcode = self.get_opcode(mem);
+
+            if cfg!(debug_assertions = true) {
+                println!("opcode: {:x}", opcode);
+            }
+
+            return self.exec_dispatcher(mem, opcode);
+        }
+        return 1;
+    }
+
+    // Handle interrupts
+    pub fn handle_int(&mut self, mem: &mut Mmu) -> u8 {
+        let interrupts = mem.get_mem_u8(0xFFFF) & mem.get_mem_u8(0xFF0F);
+        if cfg!(debug_assertions = true) {
+            println!("interrupts: {:b}", interrupts);
+        }
+
+        if interrupts != 0 {
+            self.halt = 0;
+            let mut addr_to_call: u16 = 0;
+            if interrupts & 0b00000001 == 0b00000001 {
+                addr_to_call = 0x40;
+                mem.set_mem_u8(0xFF0F, interrupts - 0b00000001);
+            }
+            else if interrupts & 0b00000010 == 0b00000010 {
+                addr_to_call = 0x48;
+                mem.set_mem_u8(0xFF0F, interrupts - 0b00000010);
+            }
+            else if interrupts & 0b00000100 == 0b00000100 {
+                addr_to_call = 0x50;
+                mem.set_mem_u8(0xFF0F, interrupts - 0b00000100);
+            }
+            else if interrupts & 0b00001000 == 0b00001000 {
+                addr_to_call = 0x58;
+                mem.set_mem_u8(0xFF0F, interrupts - 0b00001000);
+            }
+            else if interrupts & 0b00010000 == 0b00010000 {
+                addr_to_call = 0x60;
+                mem.set_mem_u8(0xFF0F, interrupts - 0b00010000);
+            }
+
+            println!("handling interrupt, jump to: {:x}", addr_to_call);
+
+            // Disable interrupts
+            self.ime = 0;
+
+            // Push current PC
+            mem.push_u16(get_sp_mut!(self), get_pc!(self));
+
+            // Jump
+            set_pc!(self, addr_to_call);
+            return 4;
+        }
+        return 0;
     }
 }
 

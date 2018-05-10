@@ -8,7 +8,7 @@ pub struct Mmu {
     video_ram: [u8; 8192],
     oam: [u8; 160],
     bios: [u8; 256],
-    io_ports: [u8; 0x80],
+    io_ports: [u8; 0x4C],
     bios_mapped: u8,
 
     // Interrupts enabled reg
@@ -25,7 +25,7 @@ impl Mmu {
             oam: [0; 160],
             bios: [0; 256],
 
-            io_ports: [0; 0x80],
+            io_ports: [0; 0x4C],
             bios_mapped: 0,
 
             ie: 0,
@@ -46,7 +46,7 @@ impl Mmu {
             0xC000 ... 0xDFFF => return self.ram[location - 0xC000],
             0xE000 ... 0xFDFF => return self.ram[location - 0xE000],
             0xFE00 ... 0xFE9F => return self.oam[location - 0xFE00],
-            0xFF00 ... 0xFF7F => return self.io_ports[location - 0xFF00],
+            0xFF00 ... 0xFF4B => return self.io_ports[location - 0xFF00],
             0xFF50 => return self.bios_mapped,
             0xFF80 ... 0xFFFE => return self.small_ram[location - 0xFF80],
             0xFFFF => return self.ie,
@@ -69,7 +69,7 @@ impl Mmu {
             0xE000 ... 0xFDFF => self.ram[location - 0xE000] = val,
             0xFE00 ... 0xFE9F => self.oam[location - 0xFE00] = val,
             0xFEA0 ... 0xFEFF => {},
-            0xFF00 ... 0xFF7F => self.io_ports[location - 0xFF00] = val,
+            0xFF00 ... 0xFF4B => self.io_ports[location - 0xFF00] = val,
             0xFF50 => self.bios_mapped = val,
             0xFF80 ... 0xFFFE => self.small_ram[location - 0xFF80] = val,
             0xFFFF => self.ie = val,
@@ -106,7 +106,7 @@ impl Mmu {
     }
 
 
-    // bios goes from 0x0000 -> 0x00FF
+    // bios goes from 0x0000 -> 0x00FF, overlays onto cartridge space
     pub fn load_bios(&mut self, rom_path: &str) {
         let mut f = File::open(rom_path).expect("rom not found");
 
@@ -117,7 +117,7 @@ impl Mmu {
         }
     }
 
-    // cartridge starts at 0x0100
+    // Cartridge goes from 0x0000 -> 0x7FFF
     pub fn load_rom(&mut self, rom_path: &str) {
         let mut f = File::open(rom_path).expect("rom not found");
 

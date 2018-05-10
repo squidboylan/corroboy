@@ -15,3 +15,4 @@ cpuprofiler = "0.0.3"
 
 [profile.dev]
 overflow-checks = false
+opt-level = 3

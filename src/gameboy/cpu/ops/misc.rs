@@ -30,16 +30,6 @@ macro_rules! cpl {
     }};
 }
 
-// CALL nn
-
-macro_rules! call_nn {
-    ($self_: ident, $mem: ident, $param: expr) => {{
-        $mem.push_u16(get_sp_mut!($self_), get_pc!($self_));
-        set_pc!($self_, $param);
-        return 3;
-    }};
-}
-
 // CCF
 // compliment carry flag
 
@@ -78,7 +68,23 @@ macro_rules! nop {
 
 macro_rules! halt {
     ($self_: ident) => {{
+        $self_.halt = 1;
         return 1;
     }};
 }
 
+// Disable and enable interrupts
+macro_rules! di {
+    ($self_: ident) => {{
+        $self_.ime = 0;
+        return 1;
+    }};
+}
+
+macro_rules! ei {
+    ($self_: ident) => {{
+        $self_.ime = 1;
+        return 1;
+    }};
+
+}
