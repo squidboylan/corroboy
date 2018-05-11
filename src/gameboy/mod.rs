@@ -15,13 +15,13 @@ mod mmu;
 
 mod gpu;
 
+mod timer;
+
 pub struct Gameboy {
     mem: mmu::Mmu,
     cpu: cpu::Cpu,
     gpu: gpu::Gpu,
-    clock_speed: u64,
-    nanos_per_cycle: Duration,
-    cycles_per_frame: u64,
+    timer: timer::Timer,
     // This counts the number of cycles we have to burn after the last instruction for proper timing
     burn_count: u8,
 }
@@ -32,9 +32,7 @@ impl Gameboy {
             mem: mmu::Mmu::new(),
             cpu: cpu::Cpu::new(),
             gpu: gpu::Gpu::new(),
-            clock_speed: 4194304,
-            nanos_per_cycle: Duration::from_nanos((1_000_000_000/(4194304/4))),
-            cycles_per_frame: (4194304/4)/60,
+            timer: timer::Timer::new(),
             burn_count: 0,
         }
     }
@@ -63,6 +61,7 @@ impl Gameboy {
             }
 
             self.gpu.update(&mut self.mem);
+            self.timer.update(&mut self.mem);
         }
     }
 
