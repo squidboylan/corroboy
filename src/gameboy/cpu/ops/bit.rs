@@ -7,6 +7,6 @@ macro_rules! bit_7_h {
         set_h_flag!($self_);
         if ((get_h!($self_) & 0b10000000) >> 7) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 2;
+        2
     }};
 }

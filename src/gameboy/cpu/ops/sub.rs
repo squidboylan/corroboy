@@ -14,7 +14,7 @@ macro_rules! sub_a_a {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 1;
+        1
     }};
 }
 
@@ -32,7 +32,7 @@ macro_rules! sub_a_b {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 1;
+        1
     }};
 }
 
@@ -50,7 +50,7 @@ macro_rules! sub_a_c {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 1;
+        1
     }};
 }
 
@@ -68,7 +68,7 @@ macro_rules! sub_a_d {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 1;
+        1
     }};
 }
 
@@ -86,7 +86,7 @@ macro_rules! sub_a_e {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 1;
+        1
     }};
 }
 
@@ -104,7 +104,7 @@ macro_rules! sub_a_h {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 1;
+        1
     }};
 }
 
@@ -122,7 +122,7 @@ macro_rules! sub_a_l {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 1;
+        1
     }};
 }
 
@@ -141,7 +141,7 @@ macro_rules! sub_a_hl_val {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 2;
+        2
     }};
 }
 
@@ -159,6 +159,6 @@ macro_rules! sub_a_param {
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { set_z_flag!($self_); }
 
-        return 2;
+        2
     }};
 }

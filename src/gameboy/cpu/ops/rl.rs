@@ -10,7 +10,7 @@ macro_rules! rl_a {
         set_a!($self_, (get_a!($self_) << 1) + tmp);
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 2;
+        2
     }};
 }
 
@@ -24,7 +24,7 @@ macro_rules! rl_b {
         set_b!($self_, (get_b!($self_) << 1) + tmp);
         if get_b!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 2;
+        2
     }};
 }
 
@@ -38,7 +38,7 @@ macro_rules! rl_c {
         set_c!($self_, (get_c!($self_) << 1) + tmp);
         if get_c!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 2;
+        2
     }};
 }
 
@@ -52,7 +52,7 @@ macro_rules! rl_d {
         set_d!($self_, (get_d!($self_) << 1) + tmp);
         if get_d!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 2;
+        2
     }};
 }
 
@@ -66,7 +66,7 @@ macro_rules! rl_e {
         set_e!($self_, (get_e!($self_) << 1) + tmp);
         if get_e!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 2;
+        2
     }};
 }
 
@@ -80,7 +80,7 @@ macro_rules! rl_h {
         set_h!($self_, (get_h!($self_) << 1) + tmp);
         if get_h!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 2;
+        2
     }};
 }
 
@@ -94,7 +94,7 @@ macro_rules! rl_l {
         set_l!($self_, (get_l!($self_) << 1) + tmp);
         if get_l!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 2;
+        2
     }};
 }
 
@@ -109,7 +109,7 @@ macro_rules! rlca {
         set_a!($self_, (get_a!($self_) << 1));
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -125,7 +125,7 @@ macro_rules! rla {
         set_a!($self_, (get_a!($self_) << 1) + tmp);
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        return 1;
+        1
     }};
 }
 

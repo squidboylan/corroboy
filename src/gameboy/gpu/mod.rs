@@ -321,8 +321,8 @@ impl Gpu {
 
     pub fn initialize(&mut self, mem: &mut Mmu) {
         println!("initializing screen");
-        let FF40 = mem.get_mem_u8(0xFF40);
-        if (FF40 & 0b00010000) >> 4 == 0 {
+        let ff40 = mem.get_mem_u8(0xFF40);
+        if (ff40 & 0b00010000) >> 4 == 0 {
             self.background_data_bot = 0x8800;
             self.background_data_top = 0x97FF;
         }
@@ -331,7 +331,7 @@ impl Gpu {
             self.background_data_top = 0x8FFF;
         }
 
-        if (FF40 & 0b00001000) >> 3 == 0 {
+        if (ff40 & 0b00001000) >> 3 == 0 {
             self.tile_map_bot = 0x9800;
             self.tile_map_top = 0x9BFF;
         }
@@ -344,11 +344,11 @@ impl Gpu {
     }
 
     pub fn set_bg_palette(&mut self, mem: &mut Mmu) {
-        let FF47 = mem.get_mem_u8(0xFF47);
-        self.bg_palette[0] = (FF47 & 0b00000011) as usize;
-        self.bg_palette[1] = ((FF47 & 0b00001100) >> 2) as usize;
-        self.bg_palette[2] = ((FF47 & 0b00110000) >> 4) as usize;
-        self.bg_palette[3] = ((FF47 & 0b11000000) >> 6) as usize;
+        let ff47 = mem.get_mem_u8(0xFF47);
+        self.bg_palette[0] = (ff47 & 0b00000011) as usize;
+        self.bg_palette[1] = ((ff47 & 0b00001100) >> 2) as usize;
+        self.bg_palette[2] = ((ff47 & 0b00110000) >> 4) as usize;
+        self.bg_palette[3] = ((ff47 & 0b11000000) >> 6) as usize;
     }
 
     fn build_tile_data(&mut self, mem: &mut Mmu) {

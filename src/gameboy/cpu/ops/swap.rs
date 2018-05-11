@@ -8,7 +8,7 @@ macro_rules! swap_a {
         unset_n_flag!($self_);
         unset_h_flag!($self_);
         unset_c_flag!($self_);
-        return 2;
+        2
     }};
 }
 
@@ -20,7 +20,7 @@ macro_rules! swap_b {
         unset_n_flag!($self_);
         unset_h_flag!($self_);
         unset_c_flag!($self_);
-        return 2;
+        2
     }};
 }
 
@@ -32,7 +32,7 @@ macro_rules! swap_c {
         unset_n_flag!($self_);
         unset_h_flag!($self_);
         unset_c_flag!($self_);
-        return 2;
+        2
     }};
 }
 
@@ -44,7 +44,7 @@ macro_rules! swap_d {
         unset_n_flag!($self_);
         unset_h_flag!($self_);
         unset_c_flag!($self_);
-        return 2;
+        2
     }};
 }
 
@@ -56,7 +56,7 @@ macro_rules! swap_e {
         unset_n_flag!($self_);
         unset_h_flag!($self_);
         unset_c_flag!($self_);
-        return 2;
+        2
     }};
 }
 
@@ -68,7 +68,7 @@ macro_rules! swap_h {
         unset_n_flag!($self_);
         unset_h_flag!($self_);
         unset_c_flag!($self_);
-        return 2;
+        2
     }};
 }
 
@@ -80,7 +80,7 @@ macro_rules! swap_l {
         unset_n_flag!($self_);
         unset_h_flag!($self_);
         unset_c_flag!($self_);
-        return 2;
+        2
     }};
 }
 
@@ -94,6 +94,6 @@ macro_rules! swap_hl_val {
         unset_n_flag!($self_);
         unset_h_flag!($self_);
         unset_c_flag!($self_);
-        return 4;
+        4
     }};
 }

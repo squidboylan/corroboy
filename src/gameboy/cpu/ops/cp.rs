@@ -8,7 +8,7 @@ macro_rules! cp_a {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_a!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 1;
+            1
     }};
 }
 
@@ -21,7 +21,7 @@ macro_rules! cp_b {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_b!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 1;
+            1
     }};
 }
 
@@ -34,7 +34,7 @@ macro_rules! cp_c {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_c!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 1;
+            1
     }};
 }
 
@@ -47,7 +47,7 @@ macro_rules! cp_d {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_d!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 1;
+            1
     }};
 }
 
@@ -60,7 +60,7 @@ macro_rules! cp_e {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_e!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 1;
+            1
     }};
 }
 
@@ -73,7 +73,7 @@ macro_rules! cp_h {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_h!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 1;
+            1
     }};
 }
 
@@ -86,7 +86,7 @@ macro_rules! cp_l {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_l!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 1;
+            1
     }};
 }
 
@@ -99,7 +99,7 @@ macro_rules! cp_n {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < ($param & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 2;
+            2
     }};
 }
 
@@ -113,7 +113,7 @@ macro_rules! cp_hl_val {
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (val & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
-            return 2;
+            2
     }};
 }
 

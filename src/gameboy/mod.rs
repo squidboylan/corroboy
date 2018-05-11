@@ -1,5 +1,4 @@
 use std::time::{Duration, Instant};
-use std::thread;
 
 use piston::window::WindowSettings;
 use piston::event_loop::*;

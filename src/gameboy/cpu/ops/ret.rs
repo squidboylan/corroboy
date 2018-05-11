@@ -3,7 +3,7 @@
 macro_rules! ret {
     ($self_: ident, $mem: ident) => {{
         set_pc!($self_, $mem.pop_u16(get_sp_mut!($self_)));
-        return 2;
+        2
     }};
 }
 
@@ -13,7 +13,7 @@ macro_rules! reti {
     ($self_: ident, $mem: ident) => {{
         set_pc!($self_, $mem.pop_u16(get_sp_mut!($self_)));
         $self_.ime = 1;
-        return 2;
+        2
     }};
 }
 
@@ -23,7 +23,7 @@ macro_rules! ret_nz {
         if get_z_flag!($self_) == 0 {
             ret!($self_, $mem);
         }
-        return 2;
+        2
     }};
 }
 
@@ -32,7 +32,7 @@ macro_rules! ret_z {
         if get_z_flag!($self_) == 1 {
             ret!($self_, $mem);
         }
-        return 2;
+        2
     }};
 }
 
@@ -41,7 +41,7 @@ macro_rules! ret_nc {
         if get_c_flag!($self_) == 0 {
             ret!($self_, $mem);
         }
-        return 2;
+        2
     }};
 }
 
@@ -50,7 +50,7 @@ macro_rules! ret_c {
         if get_c_flag!($self_) == 1 {
             ret!($self_, $mem);
         }
-        return 2;
+        2
     }};
 }
 

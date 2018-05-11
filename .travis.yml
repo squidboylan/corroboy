@@ -1,0 +1,14 @@
+language: rust
+cache: cargo
+rust:
+  - stable
+  - beta
+  - nightly
+matrix:
+  allow_failures:
+    - rust: nightly
+  fast_finish: true
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libgoogle-perftools-dev

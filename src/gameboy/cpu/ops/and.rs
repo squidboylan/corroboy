@@ -8,7 +8,7 @@ macro_rules! and_a {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -20,7 +20,7 @@ macro_rules! and_b {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -33,7 +33,7 @@ macro_rules! and_c {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -45,7 +45,7 @@ macro_rules! and_d {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -57,7 +57,7 @@ macro_rules! and_e {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -69,7 +69,7 @@ macro_rules! and_h {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -81,7 +81,7 @@ macro_rules! and_l {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -93,7 +93,7 @@ macro_rules! and_hl_val {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 2;
+        2
     }};
 }
 
@@ -105,6 +105,6 @@ macro_rules! and_param {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         set_h_flag!($self_);
-        return 2;
+        2
     }};
 }

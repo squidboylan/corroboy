@@ -8,7 +8,7 @@ macro_rules! or_a {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -20,7 +20,7 @@ macro_rules! or_b {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -33,7 +33,7 @@ macro_rules! or_c {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -45,7 +45,7 @@ macro_rules! or_d {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -57,7 +57,7 @@ macro_rules! or_e {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -69,7 +69,7 @@ macro_rules! or_h {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -81,7 +81,7 @@ macro_rules! or_l {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
-        return 1;
+        1
     }};
 }
 
@@ -93,7 +93,18 @@ macro_rules! or_hl_val {
         unset_n_flag!($self_);
         unset_c_flag!($self_);
         unset_h_flag!($self_);
-        return 2;
+        2
     }};
 }
 
+macro_rules! or_param {
+    ($self_: ident, $param: expr) => {{
+        set_a!($self_, get_a!($self_) | $param);
+        if get_a!($self_) == 0 { set_z_flag!($self_); }
+        else { unset_z_flag!($self_); }
+        unset_n_flag!($self_);
+        unset_c_flag!($self_);
+        unset_h_flag!($self_);
+        2
+    }};
+}

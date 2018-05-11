@@ -1,8 +1,11 @@
 #[macro_use]
-pub mod ops;
+mod ops;
 
 #[macro_use]
-pub mod registers;
+mod registers;
+
+#[cfg(test)]
+mod tests;
 
 use super::mmu::Mmu;
 
@@ -117,271 +120,274 @@ impl Cpu {
             0xE6 => return self.op_param_8_bit(mem, opcode),
             0xEE => return self.op_param_8_bit(mem, opcode),
             0xF0 => return self.op_param_8_bit(mem, opcode),
+            0xF6 => return self.op_param_8_bit(mem, opcode),
             0xFE => return self.op_param_8_bit(mem, opcode),
 
-            0x3C => inc_a!(self),
-            0x04 => inc_b!(self),
-            0x0C => inc_c!(self),
-            0x14 => inc_d!(self),
-            0x1C => inc_e!(self),
-            0x24 => inc_h!(self),
-            0x2C => inc_l!(self),
-            0x34 => inc_hl_val!(self, mem),
+            0x3C => return inc_a!(self),
+            0x04 => return inc_b!(self),
+            0x0C => return inc_c!(self),
+            0x14 => return inc_d!(self),
+            0x1C => return inc_e!(self),
+            0x24 => return inc_h!(self),
+            0x2C => return inc_l!(self),
+            0x34 => return inc_hl_val!(self, mem),
 
-            0xBE => cp_hl_val!(self, mem),
-            0xBF => cp_a!(self),
-            0xB8 => cp_b!(self),
-            0xB9 => cp_c!(self),
-            0xBA => cp_d!(self),
-            0xBB => cp_e!(self),
-            0xBC => cp_h!(self),
-            0xBD => cp_l!(self),
+            0xBE => return cp_hl_val!(self, mem),
+            0xBF => return cp_a!(self),
+            0xB8 => return cp_b!(self),
+            0xB9 => return cp_c!(self),
+            0xBA => return cp_d!(self),
+            0xBB => return cp_e!(self),
+            0xBC => return cp_h!(self),
+            0xBD => return cp_l!(self),
 
-            0x35 => dec_hl_val!(self, mem),
-            0x3D => dec_a!(self),
-            0x05 => dec_b!(self),
-            0x0D => dec_c!(self),
-            0x15 => dec_d!(self),
-            0x1D => dec_e!(self),
-            0x25 => dec_h!(self),
-            0x2D => dec_l!(self),
+            0x35 => return dec_hl_val!(self, mem),
+            0x3D => return dec_a!(self),
+            0x05 => return dec_b!(self),
+            0x0D => return dec_c!(self),
+            0x15 => return dec_d!(self),
+            0x1D => return dec_e!(self),
+            0x25 => return dec_h!(self),
+            0x2D => return dec_l!(self),
 
-            0x87 => add_a_a!(self),
-            0x80 => add_a_b!(self),
-            0x81 => add_a_c!(self),
-            0x82 => add_a_d!(self),
-            0x83 => add_a_e!(self),
-            0x84 => add_a_h!(self),
-            0x85 => add_a_l!(self),
-            0x86 => add_a_hl_val!(self, mem),
+            0x87 => return add_a_a!(self),
+            0x80 => return add_a_b!(self),
+            0x81 => return add_a_c!(self),
+            0x82 => return add_a_d!(self),
+            0x83 => return add_a_e!(self),
+            0x84 => return add_a_h!(self),
+            0x85 => return add_a_l!(self),
+            0x86 => return add_a_hl_val!(self, mem),
 
-            0x09 => add_hl_bc!(self),
-            0x19 => add_hl_de!(self),
-            0x29 => add_hl_hl!(self),
-            0x39 => add_hl_sp!(self),
+            0x09 => return add_hl_bc!(self),
+            0x19 => return add_hl_de!(self),
+            0x29 => return add_hl_hl!(self),
+            0x39 => return add_hl_sp!(self),
 
-            0x03 => inc_bc!(self),
-            0x13 => inc_de!(self),
-            0x23 => inc_hl!(self),
-            0x33 => inc_sp!(self),
+            0x03 => return inc_bc!(self),
+            0x13 => return inc_de!(self),
+            0x23 => return inc_hl!(self),
+            0x33 => return inc_sp!(self),
 
-            0x0B => dec_bc!(self),
-            0x1B => dec_de!(self),
-            0x2B => dec_hl!(self),
-            0x3B => dec_sp!(self),
+            0x0B => return dec_bc!(self),
+            0x1B => return dec_de!(self),
+            0x2B => return dec_hl!(self),
+            0x3B => return dec_sp!(self),
 
-            0xCB37 => swap_a!(self),
-            0xCB30 => swap_b!(self),
-            0xCB31 => swap_c!(self),
-            0xCB32 => swap_d!(self),
-            0xCB33 => swap_e!(self),
-            0xCB34 => swap_h!(self),
-            0xCB35 => swap_h!(self),
-            0xCB36 => swap_hl_val!(self, mem),
+            0xCB37 => return swap_a!(self),
+            0xCB30 => return swap_b!(self),
+            0xCB31 => return swap_c!(self),
+            0xCB32 => return swap_d!(self),
+            0xCB33 => return swap_e!(self),
+            0xCB34 => return swap_h!(self),
+            0xCB35 => return swap_h!(self),
+            0xCB36 => return swap_hl_val!(self, mem),
 
-            0x27 => daa!(self),
-            0x2F => cpl!(self),
+            0x27 => return daa!(self),
+            0x2F => return cpl!(self),
 
-            0x37 => ccf!(self),
-            0x3F => scf!(self),
+            0x37 => return ccf!(self),
+            0x3F => return scf!(self),
 
             // JP (HL)
-            0xE9 => jp_hl!(self, param),
+            0xE9 => return jp_hl!(self, param),
 
             // RST nn
-            0xC7 => rst_nn!(self, 0x00),
-            0xCF => rst_nn!(self, 0x08),
-            0xD7 => rst_nn!(self, 0x10),
-            0xDF => rst_nn!(self, 0x18),
-            0xE7 => rst_nn!(self, 0x20),
-            0xEF => rst_nn!(self, 0x28),
-            0xF7 => rst_nn!(self, 0x30),
-            0xFF => rst_nn!(self, 0x38),
+            0xC7 => return rst_nn!(self, 0x00),
+            0xCF => return rst_nn!(self, 0x08),
+            0xD7 => return rst_nn!(self, 0x10),
+            0xDF => return rst_nn!(self, 0x18),
+            0xE7 => return rst_nn!(self, 0x20),
+            0xEF => return rst_nn!(self, 0x28),
+            0xF7 => return rst_nn!(self, 0x30),
+            0xFF => return rst_nn!(self, 0x38),
 
-            0x7F => ld_a_a!(self),
-            0x78 => ld_a_b!(self),
-            0x79 => ld_a_c!(self),
-            0x7A => ld_a_d!(self),
-            0x7B => ld_a_e!(self),
-            0x7C => ld_a_h!(self),
-            0x7D => ld_a_l!(self),
-            0x7E => ld_a_hl_val!(self, mem),
-            0x47 => ld_b_a!(self),
-            0x40 => ld_b_b!(self),
-            0x41 => ld_b_c!(self),
-            0x42 => ld_b_d!(self),
-            0x43 => ld_b_e!(self),
-            0x44 => ld_b_h!(self),
-            0x45 => ld_b_l!(self),
-            0x46 => ld_b_hl_val!(self, mem),
-            0x4F => ld_c_a!(self),
-            0x48 => ld_c_b!(self),
-            0x49 => ld_c_c!(self),
-            0x4A => ld_c_d!(self),
-            0x4B => ld_c_e!(self),
-            0x4C => ld_c_h!(self),
-            0x4D => ld_c_l!(self),
-            0x4E => ld_c_hl_val!(self, mem),
-            0x57 => ld_d_a!(self),
-            0x50 => ld_d_b!(self),
-            0x51 => ld_d_c!(self),
-            0x52 => ld_d_d!(self),
-            0x53 => ld_d_e!(self),
-            0x54 => ld_d_h!(self),
-            0x55 => ld_d_l!(self),
-            0x56 => ld_d_hl_val!(self, mem),
-            0x5F => ld_e_a!(self),
-            0x58 => ld_e_b!(self),
-            0x59 => ld_e_c!(self),
-            0x5A => ld_e_d!(self),
-            0x5B => ld_e_e!(self),
-            0x5C => ld_e_h!(self),
-            0x5D => ld_e_l!(self),
-            0x5E => ld_e_hl_val!(self, mem),
-            0x67 => ld_h_a!(self),
-            0x60 => ld_h_b!(self),
-            0x61 => ld_h_c!(self),
-            0x62 => ld_h_d!(self),
-            0x63 => ld_h_e!(self),
-            0x64 => ld_h_h!(self),
-            0x65 => ld_h_l!(self),
-            0x66 => ld_h_hl_val!(self, mem),
-            0x6F => ld_l_a!(self),
-            0x68 => ld_l_b!(self),
-            0x69 => ld_l_c!(self),
-            0x6A => ld_l_d!(self),
-            0x6B => ld_l_e!(self),
-            0x6C => ld_l_h!(self),
-            0x6D => ld_l_l!(self),
-            0x6E => ld_l_hl_val!(self, mem),
+            0x7F => return ld_a_a!(self),
+            0x78 => return ld_a_b!(self),
+            0x79 => return ld_a_c!(self),
+            0x7A => return ld_a_d!(self),
+            0x7B => return ld_a_e!(self),
+            0x7C => return ld_a_h!(self),
+            0x7D => return ld_a_l!(self),
+            0x7E => return ld_a_hl_val!(self, mem),
+            0x47 => return ld_b_a!(self),
+            0x40 => return ld_b_b!(self),
+            0x41 => return ld_b_c!(self),
+            0x42 => return ld_b_d!(self),
+            0x43 => return ld_b_e!(self),
+            0x44 => return ld_b_h!(self),
+            0x45 => return ld_b_l!(self),
+            0x46 => return ld_b_hl_val!(self, mem),
+            0x4F => return ld_c_a!(self),
+            0x48 => return ld_c_b!(self),
+            0x49 => return ld_c_c!(self),
+            0x4A => return ld_c_d!(self),
+            0x4B => return ld_c_e!(self),
+            0x4C => return ld_c_h!(self),
+            0x4D => return ld_c_l!(self),
+            0x4E => return ld_c_hl_val!(self, mem),
+            0x57 => return ld_d_a!(self),
+            0x50 => return ld_d_b!(self),
+            0x51 => return ld_d_c!(self),
+            0x52 => return ld_d_d!(self),
+            0x53 => return ld_d_e!(self),
+            0x54 => return ld_d_h!(self),
+            0x55 => return ld_d_l!(self),
+            0x56 => return ld_d_hl_val!(self, mem),
+            0x5F => return ld_e_a!(self),
+            0x58 => return ld_e_b!(self),
+            0x59 => return ld_e_c!(self),
+            0x5A => return ld_e_d!(self),
+            0x5B => return ld_e_e!(self),
+            0x5C => return ld_e_h!(self),
+            0x5D => return ld_e_l!(self),
+            0x5E => return ld_e_hl_val!(self, mem),
+            0x67 => return ld_h_a!(self),
+            0x60 => return ld_h_b!(self),
+            0x61 => return ld_h_c!(self),
+            0x62 => return ld_h_d!(self),
+            0x63 => return ld_h_e!(self),
+            0x64 => return ld_h_h!(self),
+            0x65 => return ld_h_l!(self),
+            0x66 => return ld_h_hl_val!(self, mem),
+            0x6F => return ld_l_a!(self),
+            0x68 => return ld_l_b!(self),
+            0x69 => return ld_l_c!(self),
+            0x6A => return ld_l_d!(self),
+            0x6B => return ld_l_e!(self),
+            0x6C => return ld_l_h!(self),
+            0x6D => return ld_l_l!(self),
+            0x6E => return ld_l_hl_val!(self, mem),
 
-            0x0A => ld_a_bc_val!(self, mem),
-            0x1A => ld_a_de_val!(self, mem),
+            0x0A => return ld_a_bc_val!(self, mem),
+            0x1A => return ld_a_de_val!(self, mem),
 
-            0x77 => ld_hl_val_a!(self, mem),
-            0x70 => ld_hl_val_b!(self, mem),
-            0x71 => ld_hl_val_c!(self, mem),
-            0x72 => ld_hl_val_d!(self, mem),
-            0x73 => ld_hl_val_e!(self, mem),
-            0x74 => ld_hl_val_h!(self, mem),
-            0x75 => ld_hl_val_l!(self, mem),
-            0x02 => ld_bc_val_a!(self, mem),
-            0x12 => ld_de_val_a!(self, mem),
+            0x77 => return ld_hl_val_a!(self, mem),
+            0x70 => return ld_hl_val_b!(self, mem),
+            0x71 => return ld_hl_val_c!(self, mem),
+            0x72 => return ld_hl_val_d!(self, mem),
+            0x73 => return ld_hl_val_e!(self, mem),
+            0x74 => return ld_hl_val_h!(self, mem),
+            0x75 => return ld_hl_val_l!(self, mem),
+            0x02 => return ld_bc_val_a!(self, mem),
+            0x12 => return ld_de_val_a!(self, mem),
 
-            0xA7 => and_a!(self),
-            0xA0 => and_b!(self),
-            0xA1 => and_c!(self),
-            0xA2 => and_d!(self),
-            0xA3 => and_e!(self),
-            0xA4 => and_h!(self),
-            0xA5 => and_l!(self),
-            0xA6 => and_hl_val!(self, mem),
+            0xA7 => return and_a!(self),
+            0xA0 => return and_b!(self),
+            0xA1 => return and_c!(self),
+            0xA2 => return and_d!(self),
+            0xA3 => return and_e!(self),
+            0xA4 => return and_h!(self),
+            0xA5 => return and_l!(self),
+            0xA6 => return and_hl_val!(self, mem),
 
-            0xB7 => or_a!(self),
-            0xB0 => or_b!(self),
-            0xB1 => or_c!(self),
-            0xB2 => or_d!(self),
-            0xB3 => or_e!(self),
-            0xB4 => or_h!(self),
-            0xB5 => or_l!(self),
-            0xB6 => or_hl_val!(self, mem),
+            0xB7 => return or_a!(self),
+            0xB0 => return or_b!(self),
+            0xB1 => return or_c!(self),
+            0xB2 => return or_d!(self),
+            0xB3 => return or_e!(self),
+            0xB4 => return or_h!(self),
+            0xB5 => return or_l!(self),
+            0xB6 => return or_hl_val!(self, mem),
 
-            0xAF => xor_a!(self),
-            0xA8 => xor_b!(self),
-            0xA9 => xor_c!(self),
-            0xAA => xor_d!(self),
-            0xAB => xor_e!(self),
-            0xAC => xor_h!(self),
-            0xAD => xor_l!(self),
-            0xAE => xor_hl_val!(self, mem),
+            0xAF => return xor_a!(self),
+            0xA8 => return xor_b!(self),
+            0xA9 => return xor_c!(self),
+            0xAA => return xor_d!(self),
+            0xAB => return xor_e!(self),
+            0xAC => return xor_h!(self),
+            0xAD => return xor_l!(self),
+            0xAE => return xor_hl_val!(self, mem),
 
-            0xF5 => push_af!(self, mem),
-            0xC5 => push_bc!(self, mem),
-            0xD5 => push_de!(self, mem),
-            0xE5 => push_hl!(self, mem),
+            0xF5 => return push_af!(self, mem),
+            0xC5 => return push_bc!(self, mem),
+            0xD5 => return push_de!(self, mem),
+            0xE5 => return push_hl!(self, mem),
 
-            0x97 => sub_a_a!(self),
-            0x90 => sub_a_b!(self),
-            0x91 => sub_a_c!(self),
-            0x92 => sub_a_d!(self),
-            0x93 => sub_a_e!(self),
-            0x94 => sub_a_h!(self),
-            0x95 => sub_a_l!(self),
-            0x96 => sub_a_hl_val!(self, mem),
+            0x97 => return sub_a_a!(self),
+            0x90 => return sub_a_b!(self),
+            0x91 => return sub_a_c!(self),
+            0x92 => return sub_a_d!(self),
+            0x93 => return sub_a_e!(self),
+            0x94 => return sub_a_h!(self),
+            0x95 => return sub_a_l!(self),
+            0x96 => return sub_a_hl_val!(self, mem),
 
-            0xF9 => ld_sp_hl!(self),
+            0xF9 => return ld_sp_hl!(self),
 
-            0xE2 => ld_c_val_a!(self, mem),
-            0xF2 => ld_a_c_val!(self, mem),
+            0xE2 => return ld_c_val_a!(self, mem),
+            0xF2 => return ld_a_c_val!(self, mem),
 
-            0x22 => ldi_hl_a!(self, mem),
-            0x2A => ldi_a_hl!(self, mem),
+            0x22 => return ldi_hl_a!(self, mem),
+            0x2A => return ldi_a_hl!(self, mem),
 
-            0x32 => ldd_hl_a!(self, mem),
-            0x3A => ldd_a_hl!(self, mem),
+            0x32 => return ldd_hl_a!(self, mem),
+            0x3A => return ldd_a_hl!(self, mem),
 
-            0xF1 => pop_af!(self, mem),
-            0xC1 => pop_bc!(self, mem),
-            0xD1 => pop_de!(self, mem),
-            0xE1 => pop_hl!(self, mem),
+            0xF1 => return pop_af!(self, mem),
+            0xC1 => return pop_bc!(self, mem),
+            0xD1 => return pop_de!(self, mem),
+            0xE1 => return pop_hl!(self, mem),
 
             // RET
-            0xC9 => ret!(self, mem),
-            0xC0 => ret_nz!(self, mem),
-            0xC8 => ret_z!(self, mem),
-            0xD0 => ret_nc!(self, mem),
-            0xD8 => ret_c!(self, mem),
+            0xC9 => return ret!(self, mem),
+            0xC0 => return ret_nz!(self, mem),
+            0xC8 => return ret_z!(self, mem),
+            0xD0 => return ret_nc!(self, mem),
+            0xD8 => return ret_c!(self, mem),
 
-            0x8F => adc_a_a!(self),
-            0x88 => adc_a_b!(self),
-            0x89 => adc_a_c!(self),
-            0x8A => adc_a_d!(self),
-            0x8B => adc_a_e!(self),
-            0x8C => adc_a_h!(self),
-            0x8D => adc_a_l!(self),
-            0x8E => adc_a_hl_val!(self, mem),
+            0x8F => return adc_a_a!(self),
+            0x88 => return adc_a_b!(self),
+            0x89 => return adc_a_c!(self),
+            0x8A => return adc_a_d!(self),
+            0x8B => return adc_a_e!(self),
+            0x8C => return adc_a_h!(self),
+            0x8D => return adc_a_l!(self),
+            0x8E => return adc_a_hl_val!(self, mem),
 
-            0x9F => sbc_a_a!(self),
-            0x98 => sbc_a_b!(self),
-            0x99 => sbc_a_c!(self),
-            0x9A => sbc_a_d!(self),
-            0x9B => sbc_a_e!(self),
-            0x9C => sbc_a_h!(self),
-            0x9D => sbc_a_l!(self),
-            0x9E => sbc_a_hl_val!(self, mem),
+            0x9F => return sbc_a_a!(self),
+            0x98 => return sbc_a_b!(self),
+            0x99 => return sbc_a_c!(self),
+            0x9A => return sbc_a_d!(self),
+            0x9B => return sbc_a_e!(self),
+            0x9C => return sbc_a_h!(self),
+            0x9D => return sbc_a_l!(self),
+            0x9E => return sbc_a_hl_val!(self, mem),
 
             // Interrupt disabling and enabling
-            0xF3 => di!(self),
-            0xFB => ei!(self),
+            0xF3 => return di!(self),
+            0xFB => return ei!(self),
 
-            0xD9 => reti!(self, mem),
+            0xD9 => return reti!(self, mem),
 
-            0x07 => rlca!(self),
-            0x17 => rla!(self),
+            0x07 => return rlca!(self),
+            0x17 => return rla!(self),
 
-            0x0F => rrca!(self),
-            0x1F => rra!(self),
+            0x0F => return rrca!(self),
+            0x1F => return rra!(self),
 
             // HALT
-            0x76 => halt!(self),
+            0x76 => return halt!(self),
 
-            0xCB17 => rl_a!(self),
-            0xCB10 => rl_b!(self),
-            0xCB11 => rl_c!(self),
-            0xCB12 => rl_d!(self),
-            0xCB13 => rl_e!(self),
-            0xCB14 => rl_h!(self),
-            0xCB15 => rl_l!(self),
+            0xCB17 => return rl_a!(self),
+            0xCB10 => return rl_b!(self),
+            0xCB11 => return rl_c!(self),
+            0xCB12 => return rl_d!(self),
+            0xCB13 => return rl_e!(self),
+            0xCB14 => return rl_h!(self),
+            0xCB15 => return rl_l!(self),
 
-            0xCB1F => rr_a!(self),
-            0xCB18 => rr_b!(self),
-            0xCB19 => rr_c!(self),
-            0xCB1A => rr_d!(self),
-            0xCB1B => rr_e!(self),
-            0xCB1C => rr_h!(self),
-            0xCB1D => rr_l!(self),
+            0xCB1F => return rr_a!(self),
+            0xCB18 => return rr_b!(self),
+            0xCB19 => return rr_c!(self),
+            0xCB1A => return rr_d!(self),
+            0xCB1B => return rr_e!(self),
+            0xCB1C => return rr_h!(self),
+            0xCB1D => return rr_l!(self),
 
-            0xCB7C => bit_7_h!(self),
+            0xCB7C => return bit_7_h!(self),
+
+            0xCB87 => return res_7_a!(self),
 
             _ => { println!("opcode dispatch broke :( opcode: {:x}", opcode); return 1; },
         }
@@ -390,32 +396,32 @@ impl Cpu {
     fn op_param_16_bit(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         let param = self.get_param_16_bit(mem);
         match opcode {
-            0x01 => ld_bc_param!(self, param),
-            0x11 => ld_de_param!(self, param),
-            0x21 => ld_hl_param!(self, param),
-            0x31 => ld_sp_param!(self, param),
+            0x01 => return ld_bc_param!(self, param),
+            0x11 => return ld_de_param!(self, param),
+            0x21 => return ld_hl_param!(self, param),
+            0x31 => return ld_sp_param!(self, param),
 
-            0xEA => ld_nn_val_a!(self, mem, param),
+            0xEA => return ld_nn_val_a!(self, mem, param),
 
-            0x08 => ld_param_val_sp!(self, mem, param),
+            0x08 => return ld_param_val_sp!(self, mem, param),
 
             // CALL
-            0xCD => call_nn!(self, mem, param),
+            0xCD => return call_nn!(self, mem, param),
 
-            0xC4 => call_nz_nn!(self, mem, param),
-            0xCC => call_z_nn!(self, mem, param),
-            0xD4 => call_nc_nn!(self, mem, param),
-            0xDC => call_c_nn!(self, mem, param),
+            0xC4 => return call_nz_nn!(self, mem, param),
+            0xCC => return call_z_nn!(self, mem, param),
+            0xD4 => return call_nc_nn!(self, mem, param),
+            0xDC => return call_c_nn!(self, mem, param),
 
             // JUMP
-            0xC3 => jp_nn!(self,  param),
+            0xC3 => return jp_nn!(self,  param),
 
-            0xC2 => jp_nz_nn!(self,  param),
-            0xCA => jp_z_nn!(self,  param),
-            0xD2 => jp_nc_nn!(self,  param),
-            0xDA => jp_c_nn!(self,  param),
+            0xC2 => return jp_nz_nn!(self,  param),
+            0xCA => return jp_z_nn!(self,  param),
+            0xD2 => return jp_nc_nn!(self,  param),
+            0xDA => return jp_c_nn!(self,  param),
 
-            0xFA => ld_a_nn_val!(self, mem, param),
+            0xFA => return ld_a_nn_val!(self, mem, param),
 
             _ => { println!("opcode dispatched to 16 bit param executer but that didnt match the op"); return 1; },
         };
@@ -424,133 +430,41 @@ impl Cpu {
     fn op_param_8_bit(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         let param = self.get_param_8_bit(mem);
         match opcode {
-            0x3E => ld_a_param!(self, param),
-            0x06 => ld_b_param!(self, param),
-            0x0E => ld_c_param!(self, param),
-            0x16 => ld_d_param!(self, param),
-            0x1E => ld_e_param!(self, param),
-            0x26 => ld_h_param!(self, param),
-            0x2E => ld_l_param!(self, param),
+            0x3E => return ld_a_param!(self, param),
+            0x06 => return ld_b_param!(self, param),
+            0x0E => return ld_c_param!(self, param),
+            0x16 => return ld_d_param!(self, param),
+            0x1E => return ld_e_param!(self, param),
+            0x26 => return ld_h_param!(self, param),
+            0x2E => return ld_l_param!(self, param),
 
-            0x36 => ld_hl_val_n!(self, mem, param),
-            0xE0 => ld_n_val_a!(self, mem, param),
-            0xEE => xor_param!(self, param),
-            0xF0 => ld_a_n_val!(self, mem, param),
+            0x36 => return ld_hl_val_n!(self, mem, param),
+            0xE0 => return ld_n_val_a!(self, mem, param),
+            0xEE => return xor_param!(self, param),
+            0xF6 => return or_param!(self, param),
+            0xF0 => return ld_a_n_val!(self, mem, param),
 
-            0xE6 => and_param!(self, param),
-            0xC6 => add_a_param!(self, param),
+            0xE6 => return and_param!(self, param),
+            0xC6 => return add_a_param!(self, param),
 
-            0xD6 => sub_a_param!(self, param),
+            0xD6 => return sub_a_param!(self, param),
 
-            0xCE => adc_a_param!(self, param),
+            0xCE => return adc_a_param!(self, param),
 
-            0xDE => sbc_a_param!(self, param),
+            0xDE => return sbc_a_param!(self, param),
 
-            0xFE => cp_n!(self, param),
+            0xFE => return cp_n!(self, param),
             // Jumps
-            0x18 => jr_n!(self, param),
+            0x18 => return jr_n!(self, param),
 
-            0x20 => jr_nz_n!(self, param),
-            0x28 => jr_z_n!(self, param),
-            0x30 => jr_nc_n!(self, param),
-            0x38 => jr_c_n!(self, param),
+            0x20 => return jr_nz_n!(self, param),
+            0x28 => return jr_z_n!(self, param),
+            0x30 => return jr_nc_n!(self, param),
+            0x38 => return jr_c_n!(self, param),
 
-            0xF8 => ldhl_sp_n!(self, param),
+            0xF8 => return ldhl_sp_n!(self, param),
             _ => { println!("opcode dispatched to 8 bit param executer but that didnt match the op"); return 1; },
         };
-    }
-
-    pub fn test_registers(&mut self) {
-        set_a!(self, 1);
-        set_f!(self, 2);
-
-        assert_eq!(get_a!(self), 1);
-        assert_eq!(get_f!(self), 2);
-        assert_eq!(get_af!(self), 258);
-
-        set_af!(self, 512);
-        assert_eq!(get_a!(self), 2);
-        assert_eq!(get_f!(self), 0);
-        assert_eq!(get_af!(self), 512);
-
-        set_pc!(self, 10);
-        assert_eq!(get_pc!(self), 10);
-
-        set_hl!(self, 2);
-        assert_eq!(get_hl!(self), 2);
-        set_hl!(self, get_hl!(self) - 1);
-        assert_eq!(get_hl!(self), 1);
-    }
-
-    pub fn test_opcodes(&mut self, mem: &mut Mmu) {
-        // 0x06 arg
-        mem.set_mem_u8(0, 0x01);
-        // 0x0E arg
-        mem.set_mem_u8(1, 0b10);
-        //self.op_param_8_bit(0x06, 0b00000001);
-        self.exec_dispatcher(mem, 0x06);
-        assert_eq!(get_b!(self), 0b00000001);
-        self.exec_dispatcher(mem, 0x0E);
-        assert_eq!(get_c!(self), 0b00000010);
-        assert_eq!(get_bc!(self), 0b0000000100000010);
-    }
-
-    pub fn test_flag_bits(&mut self) {
-        set_z_flag!(self);
-        assert_eq!(get_z_flag!(self), 1);
-        set_z_flag!(self);
-        assert_eq!(get_z_flag!(self), 1);
-        set_z_flag!(self);
-        assert_eq!(get_z_flag!(self), 1);
-        unset_z_flag!(self);
-        assert_eq!(get_z_flag!(self), 0);
-        set_h_flag!(self);
-        assert_eq!(get_h_flag!(self), 1);
-        unset_h_flag!(self);
-        assert_eq!(get_h_flag!(self), 0);
-        set_n_flag!(self);
-        assert_eq!(get_n_flag!(self), 1);
-        unset_n_flag!(self);
-        assert_eq!(get_n_flag!(self), 0);
-        set_c_flag!(self);
-        assert_eq!(get_c_flag!(self), 1);
-        unset_c_flag!(self);
-        assert_eq!(get_c_flag!(self), 0);
-    }
-
-    pub fn test_get_opcode(&mut self, mem: &mut Mmu) {
-        mem.set_mem_u8(0, 0xCB);
-        mem.set_mem_u8(1, 0x10);
-        mem.set_mem_u8(2, 0x20);
-
-        set_pc!(self, 0);
-        assert_eq!(self.get_opcode(mem), 0xCB10);
-        assert_eq!(get_pc!(self), 2);
-        assert_eq!(self.get_opcode(mem), 0x20);
-        assert_eq!(get_pc!(self), 3);
-    }
-
-    pub fn test_get_param(&mut self, mem: &mut Mmu) {
-        mem.set_mem_u8(3, 0x10);
-        mem.set_mem_u8(4, 0x20);
-        mem.set_mem_u8(5, 0x30);
-
-        set_pc!(self, 3);
-        assert_eq!(self.get_param_8_bit(mem), 0x10);
-        assert_eq!(self.get_param_16_bit(mem), 0x3020);
-        assert_eq!(get_pc!(self), 6);
-    }
-
-    pub fn test_stack(&mut self, mem: &mut Mmu) {
-        set_sp!(self, 0xFFFE);
-        mem.push_u8(get_sp_mut!(self), 10);
-        mem.push_u8(get_sp_mut!(self), 20);
-        mem.push_u16(get_sp_mut!(self), 0x3020);
-
-        assert_eq!(get_sp!(self), 0xFFFA);
-        assert_eq!(mem.pop_u16(get_sp_mut!(self)), 0x3020);
-        assert_eq!(mem.pop_u8(get_sp_mut!(self)), 20);
-        assert_eq!(mem.pop_u8(get_sp_mut!(self)), 10);
     }
 
     // Exec the next instruction and return how many machine cycles it takes (cycles/4)
@@ -559,6 +473,7 @@ impl Cpu {
             println!("a: {:x}", get_a!(self));
             println!("pc: {:x}", get_pc!(self));
             println!("sp: {:x}", get_sp!(self));
+            println!("hl: {:x}", get_hl!(self));
         }
 
         if self.ime == 1 {
@@ -574,7 +489,7 @@ impl Cpu {
             let opcode = self.get_opcode(mem);
 
             if cfg!(debug_assertions = true) {
-                println!("opcode: {:x}", opcode);
+                println!("opcode: {:x}\n", opcode);
             }
 
             return self.exec_dispatcher(mem, opcode);
@@ -627,50 +542,4 @@ impl Cpu {
         }
         return 0;
     }
-}
-
-#[test]
-fn test_registers() {
-    // Get a new CPU in to start at a known state
-    let mut derp = Cpu::new();
-    derp.test_registers();
-}
-
-#[test]
-fn test_opcodes() {
-    // Get a new CPU in to start at a known state
-    let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
-    derp.test_opcodes(&mut mem);
-}
-
-#[test]
-fn test_flag_bits() {
-    // Get a new CPU in to start at a known state
-    let mut derp = Cpu::new();
-    derp.test_flag_bits();
-}
-
-#[test]
-fn test_get_opcode() {
-    // Get a new CPU in to start at a known state
-    let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
-    derp.test_get_opcode(&mut mem);
-}
-
-#[test]
-fn test_get_param() {
-    // Get a new CPU in to start at a known state
-    let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
-    derp.test_get_param(&mut mem);
-}
-
-#[test]
-fn test_stack() {
-    // Get a new CPU in to start at a known state
-    let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
-    derp.test_stack(&mut mem);
 }

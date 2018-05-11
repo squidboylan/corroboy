@@ -11,7 +11,7 @@ macro_rules! adc_a_a {
         else { unset_c_flag!($self_); }
         if (get_a!($self_) + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -26,7 +26,7 @@ macro_rules! adc_a_b {
         else { unset_c_flag!($self_); }
         if (get_b!($self_) + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -41,7 +41,7 @@ macro_rules! adc_a_c {
         else { unset_c_flag!($self_); }
         if (get_c!($self_) + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -56,7 +56,7 @@ macro_rules! adc_a_d {
         else { unset_c_flag!($self_); }
         if (get_d!($self_) + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -71,7 +71,7 @@ macro_rules! adc_a_d {
         else { unset_c_flag!($self_); }
         if (get_d!($self_) + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -86,7 +86,7 @@ macro_rules! adc_a_e {
         else { unset_c_flag!($self_); }
         if (get_e!($self_) + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -101,7 +101,7 @@ macro_rules! adc_a_h {
         else { unset_c_flag!($self_); }
         if (get_h!($self_) + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -116,7 +116,7 @@ macro_rules! adc_a_l {
         else { unset_c_flag!($self_); }
         if (get_l!($self_) + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 1;
+        1
     }};
 }
 
@@ -132,7 +132,7 @@ macro_rules! adc_a_hl_val {
         else { unset_c_flag!($self_); }
         if (hl_val + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 2;
+        2
     }};
 }
 
@@ -147,6 +147,6 @@ macro_rules! adc_a_param {
         else { unset_c_flag!($self_); }
         if ($param + get_c_flag!($self_)) & 0b00001111 + old_a & 0b00001111 >= 0b00010000 { unset_h_flag!($self_); }
         else { set_h_flag!($self_); }
-        return 2;
+        2
     }};
 }
