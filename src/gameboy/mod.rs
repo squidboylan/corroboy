@@ -94,12 +94,14 @@ impl Gameboy {
                 if input_split[1] == "regs" {
                     self.cpu.print_regs();
                 }
-
                 else if input_split[1] == "flags" {
                     self.cpu.print_flags();
                 }
                 else if input_split[1] == "disasm" {
                     disassembler::display_disassembly(&self.mem, usize::from_str_radix(input_split[2], 16).unwrap());
+                }
+                else if input_split[1] == "mem" {
+                    println!("val: {:02x}", self.mem.get_mem_u8(usize::from_str_radix(input_split[2], 16).unwrap()));
                 }
                 stdout().flush().unwrap();
             }

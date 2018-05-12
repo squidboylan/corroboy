@@ -217,14 +217,14 @@ impl Cpu {
             0xE9 => return jp_hl!(self, param),
 
             // RST nn
-            0xC7 => return rst_nn!(self, 0x00),
-            0xCF => return rst_nn!(self, 0x08),
-            0xD7 => return rst_nn!(self, 0x10),
-            0xDF => return rst_nn!(self, 0x18),
-            0xE7 => return rst_nn!(self, 0x20),
-            0xEF => return rst_nn!(self, 0x28),
-            0xF7 => return rst_nn!(self, 0x30),
-            0xFF => return rst_nn!(self, 0x38),
+            0xC7 => return rst_nn!(self, mem, 0x00),
+            0xCF => return rst_nn!(self, mem, 0x08),
+            0xD7 => return rst_nn!(self, mem, 0x10),
+            0xDF => return rst_nn!(self, mem, 0x18),
+            0xE7 => return rst_nn!(self, mem, 0x20),
+            0xEF => return rst_nn!(self, mem, 0x28),
+            0xF7 => return rst_nn!(self, mem, 0x30),
+            0xFF => return rst_nn!(self, mem, 0x38),
 
             0x7F => return ld_a_a!(self),
             0x78 => return ld_a_b!(self),
@@ -497,18 +497,18 @@ impl Cpu {
 
     // Exec the next instruction and return how many machine cycles it takes (cycles/4)
     pub fn exec_next(&mut self, mem: &mut Mmu) -> u8 {
-        if cfg!(debug_assertions = true) {
-            println!("a: {:x}", get_a!(self));
-            println!("pc: {:x}", get_pc!(self));
-            println!("sp: {:x}", get_sp!(self));
-            println!("hl: {:x}", get_hl!(self));
-        }
-
         if self.ime == 1 {
             let val = self.handle_int(mem);
             if val != 0 {
                 return val;
             }
+        }
+
+        if cfg!(debug_assertions = true) {
+            println!("a: {:x}", get_a!(self));
+            println!("pc: {:x}", get_pc!(self));
+            println!("sp: {:x}", get_sp!(self));
+            println!("hl: {:x}", get_hl!(self));
         }
 
         // If we're not halted run the next instruction
