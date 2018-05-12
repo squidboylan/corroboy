@@ -39,10 +39,11 @@ impl Cpu {
     }
 
     pub fn test_opcodes(&mut self, mem: &mut Mmu) {
+        set_pc!(self, 0xC000);
         // 0x06 arg
-        mem.set_mem_u8(0, 0x01);
+        mem.set_mem_u8(0xC000, 0x01);
         // 0x0E arg
-        mem.set_mem_u8(1, 0b10);
+        mem.set_mem_u8(0xC001, 0b10);
         //self.op_param_8_bit(0x06, 0b00000001);
         self.exec_dispatcher(mem, 0x06);
         assert_eq!(get_b!(self), 0b00000001);
@@ -75,26 +76,26 @@ impl Cpu {
     }
 
     pub fn test_get_opcode(&mut self, mem: &mut Mmu) {
-        mem.set_mem_u8(0, 0xCB);
-        mem.set_mem_u8(1, 0x10);
-        mem.set_mem_u8(2, 0x20);
+        mem.set_mem_u8(0xC000, 0xCB);
+        mem.set_mem_u8(0xC001, 0x10);
+        mem.set_mem_u8(0xC002, 0x20);
 
-        set_pc!(self, 0);
+        set_pc!(self, 0xC000);
         assert_eq!(self.get_opcode(mem), 0xCB10);
-        assert_eq!(get_pc!(self), 2);
+        assert_eq!(get_pc!(self), 0xC002);
         assert_eq!(self.get_opcode(mem), 0x20);
-        assert_eq!(get_pc!(self), 3);
+        assert_eq!(get_pc!(self), 0xC003);
     }
 
     pub fn test_get_param(&mut self, mem: &mut Mmu) {
-        mem.set_mem_u8(3, 0x10);
-        mem.set_mem_u8(4, 0x20);
-        mem.set_mem_u8(5, 0x30);
+        mem.set_mem_u8(0xC003, 0x10);
+        mem.set_mem_u8(0xC004, 0x20);
+        mem.set_mem_u8(0xC005, 0x30);
 
-        set_pc!(self, 3);
+        set_pc!(self, 0xC003);
         assert_eq!(self.get_param_8_bit(mem), 0x10);
         assert_eq!(self.get_param_16_bit(mem), 0x3020);
-        assert_eq!(get_pc!(self), 6);
+        assert_eq!(get_pc!(self), 0xC006);
     }
 
     pub fn test_stack(&mut self, mem: &mut Mmu) {

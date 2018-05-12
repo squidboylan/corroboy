@@ -59,14 +59,7 @@ impl Mmu {
 
     pub fn set_mem_u8(&mut self, location: usize, val: u8) {
         match location {
-            0 ... 0xFF => { if self.bios_mapped == 0 {
-                    self.bios[location] = val;
-                }
-                else {
-                    self.cartridge[location] = val;
-                }
-            },
-            0x100 ... 0x7FFF => self.cartridge[location] = val,
+            0x0000 ... 0x7FFF => {},
             0x8000 ... 0x9FFF => self.video_ram[location - 0x8000] = val,
             0xC000 ... 0xDFFF => self.ram[location - 0xC000] = val,
             0xE000 ... 0xFDFF => self.ram[location - 0xE000] = val,
@@ -74,6 +67,7 @@ impl Mmu {
             0xFEA0 ... 0xFEFF => {},
             0xFF00 ... 0xFF4B => self.io_ports[location - 0xFF00] = val,
             0xFF50 => self.bios_mapped = val,
+            0xFE51 ... 0xFF7F => {},
             0xFF80 ... 0xFFFE => self.small_ram[location - 0xFF80] = val,
             0xFFFF => self.ie = val,
             _ => println!("set mem u8 that mmu cant handle, location: {:x}", location),
