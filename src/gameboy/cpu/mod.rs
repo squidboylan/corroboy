@@ -123,6 +123,9 @@ impl Cpu {
             0xF6 => return self.op_param_8_bit(mem, opcode),
             0xFE => return self.op_param_8_bit(mem, opcode),
 
+            0xE8 => return self.op_param_8_bit(mem, opcode),
+            0x10 => return self.op_param_8_bit(mem, opcode),
+
             0x3C => return inc_a!(self),
             0x04 => return inc_b!(self),
             0x0C => return inc_c!(self),
@@ -447,6 +450,8 @@ impl Cpu {
             0xE6 => return and_param!(self, param),
             0xC6 => return add_a_param!(self, param),
 
+            0xE8 => return add_sp_param!(self, param),
+
             0xD6 => return sub_a_param!(self, param),
 
             0xCE => return adc_a_param!(self, param),
@@ -454,6 +459,8 @@ impl Cpu {
             0xDE => return sbc_a_param!(self, param),
 
             0xFE => return cp_n!(self, param),
+
+            0x10 => return stop!(self),
             // Jumps
             0x18 => return jr_n!(self, param),
 

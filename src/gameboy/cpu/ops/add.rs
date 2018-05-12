@@ -158,3 +158,15 @@ macro_rules! add_a_param {
         2
     }};
 }
+
+macro_rules! add_sp_param {
+    ($self_: ident, $param: expr) => {{ let old_hl = get_hl!($self_);
+        set_hl!($self_, (get_hl!($self_) as i16 + (($param as i8) as i16)) as u16);
+        unset_n_flag!($self_);
+        if old_hl > get_hl!($self_) { set_c_flag!($self_); }
+        else{ unset_c_flag!($self_); }
+        if (old_hl & 0b0000111111111111) as i16 + ((($param as i8) as i16) & 0b0000111111111111) >= 0b0001000000000000 { set_h_flag!($self_); }
+        else { unset_h_flag!($self_); }
+        4
+    }};
+}

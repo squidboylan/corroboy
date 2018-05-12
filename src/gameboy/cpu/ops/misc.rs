@@ -73,6 +73,13 @@ macro_rules! halt {
     }};
 }
 
+macro_rules! stop {
+    ($self_: ident) => {{
+        $self_.halt = 1;
+        2
+    }};
+}
+
 // Disable and enable interrupts
 macro_rules! di {
     ($self_: ident) => {{
