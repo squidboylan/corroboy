@@ -124,6 +124,14 @@ fn main() {
             if let Some(u) = e.update_args() {
                 gb.run_game();
             }
+
+            if let Some(inp) = e.press_args() {
+                gb.press_input(inp);
+            }
+
+            if let Some(inp) = e.release_args() {
+                gb.release_input(inp);
+            }
         }
         PROFILER.lock().unwrap().stop().unwrap();
     }

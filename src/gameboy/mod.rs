@@ -16,6 +16,8 @@ mod mmu;
 
 mod gpu;
 
+mod joypad;
+
 mod timer;
 
 pub struct Gameboy {
@@ -23,6 +25,7 @@ pub struct Gameboy {
     cpu: cpu::Cpu,
     gpu: gpu::Gpu,
     timer: timer::Timer,
+    p1: joypad::Joypad,
     // This counts the number of cycles we have to burn after the last instruction for proper timing
     burn_count: u8,
 }
@@ -34,6 +37,7 @@ impl Gameboy {
             cpu: cpu::Cpu::new(),
             gpu: gpu::Gpu::new(),
             timer: timer::Timer::new(),
+            p1: joypad::Joypad::new(),
             burn_count: 0,
         }
     }
@@ -48,6 +52,7 @@ impl Gameboy {
 
     pub fn run_game(&mut self) {
         // run the machine cycles for this frame
+        self.p1.update(&mut self.mem);
         for i in 0..(70224/4) {
             if self.burn_count == 0 {
                 self.burn_count = self.cpu.exec_next(&mut self.mem) - 1;
@@ -72,6 +77,7 @@ impl Gameboy {
         let mut get_input = true;
         let mut break_addr: i32 = -1;
         loop {
+            self.p1.update(&mut self.mem);
             print!("debugger> ");
             let mut input_text = String::new();
             stdout().flush();
@@ -161,6 +167,14 @@ impl Gameboy {
 
     pub fn render(&mut self, window: &mut Window, e: &Event) {
         self.gpu.render(window, e);
+    }
+
+    pub fn press_input(&mut self, but: Button) {
+        self.p1.press_input(but);
+    }
+
+    pub fn release_input(&mut self, but: Button) {
+        self.p1.release_input(but);
     }
 
 }
