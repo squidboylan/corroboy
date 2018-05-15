@@ -33,6 +33,27 @@ impl Cpu {
         Cpu {af, bc, de, hl, sp, pc, ime: 0, halt: 0}
     }
 
+    // functions for debugging
+    pub fn print_regs(&self) {
+        println!("AF: 0x{:04x}", get_af!(self));
+        println!("BC: 0x{:04x}", get_bc!(self));
+        println!("DE: 0x{:04x}", get_de!(self));
+        println!("HL: 0x{:04x}", get_hl!(self));
+        println!("sp: 0x{:04x}", get_sp!(self));
+        println!("pc: 0x{:04x}", get_pc!(self));
+    }
+
+    pub fn print_flags(&self) {
+        println!("Z: {}", get_z_flag!(self));
+        println!("N: {}", get_n_flag!(self));
+        println!("H: {}", get_h_flag!(self));
+        println!("C: {}", get_c_flag!(self));
+    }
+
+    pub fn get_pc(&self) -> u16 {
+        get_pc!(self)
+    }
+
     fn get_opcode(&mut self, mem: &mut Mmu) -> u16 {
         let mut pc = get_pc!(self);
         let temp = mem.get_mem_u8(pc as usize);

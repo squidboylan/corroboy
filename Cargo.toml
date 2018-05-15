@@ -12,6 +12,7 @@ piston2d-opengl_graphics = "0.53.0"
 image = "0.19.0"
 gfx = "0.17.1"
 cpuprofiler = "0.0.3"
+getopts = "0.2"
 
 [profile.dev]
 overflow-checks = false

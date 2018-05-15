@@ -1,4 +1,6 @@
 use std::time::{Duration, Instant};
+use std::io::{stdin,stdout,Write};
+use std::io;
 
 use piston::window::WindowSettings;
 use piston::event_loop::*;
@@ -61,6 +63,99 @@ impl Gameboy {
 
             self.gpu.update(&mut self.mem);
             self.timer.update(&mut self.mem);
+        }
+    }
+
+    pub fn run_game_debug(&mut self) {
+        let mut i = 0;
+        let mut input_text = String::new();
+        let mut get_input = true;
+        let mut break_addr: i32 = -1;
+        loop {
+            print!("debugger> ");
+            let mut input_text = String::new();
+            stdout().flush();
+            stdin().read_line(&mut input_text).expect("failed to read from stdin");
+            let input_split = input_text.trim().to_string();
+            let input_split = input_split.split(" ").collect::<Vec<&str>>();
+            if input_split[0] == "step" {
+                if input_split.len() == 1 {
+                    self.step(1);
+                }
+                else {
+                    self.step(u64::from_str_radix(input_split[1], 10).unwrap());
+                }
+            }
+
+            else if input_split[0] == "show" {
+                if input_split[1] == "regs" {
+                    self.cpu.print_regs();
+                }
+
+                else if input_split[1] == "flags" {
+                    self.cpu.print_flags();
+                }
+                stdout().flush();
+            }
+
+            else if input_split[0] == "break" {
+                break_addr = i32::from_str_radix(input_split[1], 16).unwrap();
+            }
+
+            else if input_split[0] == "run" {
+                self.run_to_break(break_addr);
+            }
+
+            else if input_split[0] == "help" {
+                println!("available commands: 'step', 'show regs', 'show flags'");
+            }
+        }
+    }
+
+    fn step(&mut self, steps: u64) {
+        let mut i: u64 = 0;
+        while i < steps {
+            self.burn_count = self.cpu.exec_next(&mut self.mem) - 1;
+            while self.burn_count > 0 {
+                self.burn_count -= 1;
+
+                self.gpu.update(&mut self.mem);
+                self.timer.update(&mut self.mem);
+            }
+            i += 1;
+        }
+    }
+
+    fn run_to_break(&mut self, break_addr: i32) {
+        if break_addr < 0 {
+            loop {
+                if self.burn_count == 0 {
+                    self.burn_count = self.cpu.exec_next(&mut self.mem) - 1;
+                }
+                if self.burn_count > 0 {
+                    self.burn_count -= 1;
+
+                    self.gpu.update(&mut self.mem);
+                    self.timer.update(&mut self.mem);
+                }
+            }
+        }
+
+        if break_addr >= 0 {
+            loop {
+                if self.burn_count == 0 {
+                    if (self.cpu.get_pc() == break_addr as u16) {
+                        return;
+                    }
+                    self.burn_count = self.cpu.exec_next(&mut self.mem) - 1;
+                }
+                if self.burn_count > 0 {
+                    self.burn_count -= 1;
+
+                    self.gpu.update(&mut self.mem);
+                    self.timer.update(&mut self.mem);
+                }
+            }
         }
     }
 

@@ -8,6 +8,7 @@ extern crate opengl_graphics;
 extern crate image;
 extern crate gfx;
 extern crate cpuprofiler;
+extern crate getopts;
 
 use piston::window::WindowSettings;
 use piston::event_loop::*;
@@ -17,51 +18,113 @@ use piston_window::PistonWindow as Window;
 use opengl_graphics::{ GlGraphics, OpenGL };
 use std::time::{Duration, Instant};
 use cpuprofiler::PROFILER;
-
-
+use getopts::Options;
 
 use std::env;
+
+fn print_usage(program: &str, opts: Options) {
+    let brief = format!("Usage: {} -b PATH -R PATH [options]", program);
+    print!("{}", opts.usage(&brief));
+}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     let opengl = OpenGL::V3_2;
+    let mut opts = Options::new();
+    let program = args[0].clone();
 
-    let mut window: Window =  WindowSettings::new(
-            "gameboy-emu",
-            [432, 480]
-        )
-        .opengl(opengl)
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
+    // Arg parsing
+    opts.optopt("b", "bios", "Bios rom file", "PATH");
+    opts.optopt("R", "rom", "Game rom file", "PATH");
+    opts.optflag("d", "debug", "debug mode");
+    opts.optflag("h", "help", "print this help menu");
 
+    let matches = match opts.parse(&args[1..]) {
+        Ok(m) => { m }
+        Err(f) => { panic!(f.to_string()) }
+    };
+
+    if matches.opt_present("h") {
+        print_usage(&program, opts);
+        return;
+    }
+
+    let mut bios_path_option: Option<String> = matches.opt_str("b");
+    let mut rom_path_option: Option<String> = matches.opt_str("R");
+
+    /*
+    match bios_path_option {
+        Some(i) => { let bios_path = i; },
+        _ => {
+            print_usage(&program, opts);
+            return;
+        },
+    };
+    */
+    let mut bios_path: String = String::new();
+    if bios_path_option == None {
+        print_usage(&program, opts);
+        return;
+    }
+    else {
+        bios_path = bios_path_option.unwrap();
+    }
+
+    /*
+    match rom_path_option {
+        Some(i) => {let rom_path = i;},
+        _ => {
+            print_usage(&program, opts);
+            return;
+        },
+    };
+    */
+    let mut rom_path: String = String::new();
+    if rom_path_option == None {
+        print_usage(&program, opts);
+        return;
+    }
+    else {
+        rom_path = rom_path_option.unwrap();
+    }
+
+    // Get a gameboy object
     let mut gb = gameboy::Gameboy::new();
 
-    if args.len() == 3 {
-        gb.load_bios(&args[1]);
-        gb.load_rom(&args[2]);
-    }
+    println!("bios_path: {}, rom_path: {}", bios_path, rom_path);
 
-    if args.len() == 2 {
-        gb.load_bios(&args[1]);
-    }
+    gb.load_bios(&bios_path);
+    gb.load_rom(&rom_path);
 
-    if args.len() == 1 {
-        panic!("pass bios as arg 1 and a rom as arg 2");
+    // If -d was passed run in debug mode
+    if matches.opt_present("d") {
+        gb.run_game_debug();
     }
+    // If we're not in debug mode run the normal way
+    else {
+        // Setup graphics window
+        let mut window: Window =  WindowSettings::new(
+                "gameboy-emu",
+                [432, 480]
+            )
+            .opengl(opengl)
+            .exit_on_esc(true)
+            .build()
+            .unwrap();
 
-    let mut events: Events = Events::new(EventSettings::new());
-    events.set_ups(60);
-    events.set_max_fps(60);
-    PROFILER.lock().unwrap().start("./my-prof.profile").unwrap();
-    while let Some(e) = events.next(&mut window) {
-        if let Some(r) = e.render_args() {
-            gb.render(&mut window, &e);
+        let mut events: Events = Events::new(EventSettings::new());
+        events.set_ups(60);
+        events.set_max_fps(60);
+        PROFILER.lock().unwrap().start("./my-prof.profile").unwrap();
+        while let Some(e) = events.next(&mut window) {
+            if let Some(r) = e.render_args() {
+                gb.render(&mut window, &e);
+            }
+
+            if let Some(u) = e.update_args() {
+                gb.run_game();
+            }
         }
-
-        if let Some(u) = e.update_args() {
-            gb.run_game();
-        }
+        PROFILER.lock().unwrap().stop().unwrap();
     }
-    PROFILER.lock().unwrap().stop().unwrap();
 }
