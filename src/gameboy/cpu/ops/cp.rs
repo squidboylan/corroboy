@@ -4,7 +4,7 @@ macro_rules! cp_a {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < get_a!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_a!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
@@ -17,7 +17,7 @@ macro_rules! cp_b {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < get_b!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_b!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
@@ -30,7 +30,7 @@ macro_rules! cp_c {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < get_c!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_c!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
@@ -43,7 +43,7 @@ macro_rules! cp_d {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < get_d!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_d!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
@@ -56,7 +56,7 @@ macro_rules! cp_e {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < get_e!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_e!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
@@ -69,7 +69,7 @@ macro_rules! cp_h {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < get_h!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_h!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
@@ -82,7 +82,7 @@ macro_rules! cp_l {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < get_l!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (get_l!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
@@ -95,7 +95,7 @@ macro_rules! cp_n {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < $param { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < ($param & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
@@ -109,7 +109,7 @@ macro_rules! cp_hl_val {
             if tmp == 0 { set_z_flag!($self_); }
             else { unset_z_flag!($self_); }
             set_n_flag!($self_);
-            if get_a!($self_) < tmp { set_c_flag!($self_); }
+            if get_a!($self_) < val { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
             if (get_a!($self_) & 0b00001111) < (val & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
