@@ -121,7 +121,7 @@ impl Mmu {
         let mut f = File::open(rom_path).expect("rom not found");
 
         let mut contents: Vec<u8> = vec![];
-        f.read_to_end(&mut contents);
+        f.read_to_end(&mut contents).unwrap();
         for (index, i) in contents.iter().enumerate() {
             self.bios[index] = *i;
         }
@@ -132,30 +132,10 @@ impl Mmu {
         let mut f = File::open(rom_path).expect("rom not found");
 
         let mut contents: Vec<u8> = vec![];
-        f.read_to_end(&mut contents);
+        f.read_to_end(&mut contents).unwrap();
         for (index, i) in contents.iter().enumerate() {
             self.cartridge[index] = *i;
         }
-    }
-
-    pub fn push_u8(&mut self, sp: &mut u16, val: u8) {
-        match *sp {
-            0xC000 ... 0xDFFF => { *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = val; },
-            0x8000 ... 0x9FFF => { *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = val; },
-            0xFF80 ... 0xFFFE => { *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = val; },
-            _ => println!("push to mem u8 that mmu cant handle, location: {:x}", *sp),
-        }
-    }
-
-    pub fn pop_u8(&mut self, sp: &mut u16) -> u8{
-        let mut val: u8 = 0;
-        match *sp {
-            0xC000 ... 0xDFFF => { val = self.ram[(*sp - 0xC000) as usize]; *sp = *sp + 1; },
-            0x8000 ... 0x9FFF => { val = self.video_ram[(*sp - 0x8000) as usize]; *sp = *sp + 1; },
-            0xFF80 ... 0xFFFE => { val = self.small_ram[(*sp - 0xFF80) as usize]; *sp = *sp + 1; },
-            _ => println!("pop mem u8 that mmu cant handle, location: {:x}", *sp),
-        }
-        val
     }
 
     pub fn push_u16(&mut self, sp: &mut u16, val: u16) {

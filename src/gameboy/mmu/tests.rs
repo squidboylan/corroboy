@@ -24,12 +24,6 @@ fn stack_functions() {
     let mut sp: u16 = 0xDFFF;
 
     derp.push_u16(&mut sp, 0x3210);
-    derp.push_u8(&mut sp, 0x01);
-    derp.push_u8(&mut sp, 0xF1);
-    derp.push_u8(&mut sp, 0x0F);
-    assert_eq!(derp.pop_u8(&mut sp), 0x0F);
-    assert_eq!(derp.pop_u8(&mut sp), 0xF1);
-    assert_eq!(derp.pop_u8(&mut sp), 0x01);
     assert_eq!(derp.pop_u16(&mut sp), 0x3210);
 
 }

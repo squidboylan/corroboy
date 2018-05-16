@@ -1,4 +1,3 @@
-use piston::input::Input;
 use piston::input::Button;
 use piston::input::Key;
 use gameboy::mmu::Mmu;

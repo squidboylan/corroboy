@@ -1,17 +1,12 @@
-
-use piston::window::WindowSettings;
-use piston::event_loop::*;
-use piston::input::*;
-//use glutin_window::GlutinWindow as Window;
+//use piston::window::WindowSettings;
+//use piston::event_loop::*;
 use piston_window::PistonWindow as Window;
 use piston_window::Texture;
+use piston::input::*; 
 use piston_window;
 use piston_window::TextureSettings;
-use opengl_graphics::{ GlGraphics, OpenGL };
 use graphics::*;
-//use graphics::image::*;
 use image::*;
-use gfx;
 
 use super::mmu::Mmu;
 
@@ -56,6 +51,8 @@ impl Tile {
             raw_val: [[0 ;8]; 8],
         }
     }
+
+    #[allow(dead_code)]
     fn display_ascii(&self) {
         for i in 0..8 {
             for j in 0..8 {
@@ -68,11 +65,6 @@ impl Tile {
 }
 
 pub struct Gpu {
-    //tiles: Vec<Tile>,
-    cycle: u32,
-    line_rendering: u16,
-    lcd_w: u8,
-    lcd_h: u8,
     state: u8,
 
     background_data_bot: usize,
@@ -103,10 +95,6 @@ pub struct Gpu {
 impl Gpu {
     pub fn new() -> Gpu {
         Gpu {
-            cycle: 0,
-            line_rendering: 0,
-            lcd_w: 160,
-            lcd_h: 144,
             state: 0,
             background_data_bot: 0,
             background_data_top: 0,
@@ -122,6 +110,7 @@ impl Gpu {
         }
     }
 
+    #[allow(dead_code)]
     fn print_tile_map(&self) {
         for i in 0..32 {
             for j in 0..32 {
@@ -131,6 +120,7 @@ impl Gpu {
         }
     }
 
+    #[allow(dead_code)]
     fn display_ascii(&self) {
         if self.bg_tiles.len() == 256{
             for i in 0..32 {
@@ -148,14 +138,14 @@ impl Gpu {
     }
 
     pub fn render(&mut self, window: &mut Window, e: &Event)  {
-        const screen_size_x: u32 = 160;
-        const screen_size_y: u32 = 144;
-        let mut img: RgbaImage = ImageBuffer::new(screen_size_x * 3, screen_size_y * 3);
+        const SCREEN_SIZE_X: u32 = 160;
+        const SCREEN_SIZE_Y: u32 = 144;
+        let mut img: RgbaImage = ImageBuffer::new(SCREEN_SIZE_X * 3, SCREEN_SIZE_Y * 3);
 
         let colors = [[255, 255, 255, 255], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
 
-        for y in 0..screen_size_y as usize {
-            for x in 0..screen_size_x as usize {
+        for y in 0..SCREEN_SIZE_Y as usize {
+            for x in 0..SCREEN_SIZE_X as usize {
                 let color = colors[self.pixel_map[y][x]];
                 for i in 0..3 as usize {
                     for j in 0..3 as usize {

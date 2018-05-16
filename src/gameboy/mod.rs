@@ -1,14 +1,7 @@
-use std::time::{Duration, Instant};
 use std::io::{stdin,stdout,Write};
-use std::io;
 
-use piston::window::WindowSettings;
-use piston::event_loop::*;
 use piston::input::*;
 use piston_window::PistonWindow as Window;
-//use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{ GlGraphics, OpenGL };
-use graphics::*;
 
 mod cpu;
 
@@ -82,7 +75,7 @@ impl Gameboy {
             self.p1.update(&mut self.mem);
             print!("debugger> ");
             let mut input_text = String::new();
-            stdout().flush();
+            stdout().flush().unwrap();
             stdin().read_line(&mut input_text).expect("failed to read from stdin");
             let input_split = input_text.trim().to_string();
             let input_split = input_split.split(" ").collect::<Vec<&str>>();
@@ -94,7 +87,7 @@ impl Gameboy {
                     self.step(u64::from_str_radix(input_split[1], 10).unwrap());
                 }
                 disassembler::display_disassembly(&self.mem, self.cpu.get_pc() as usize);
-                stdout().flush();
+                stdout().flush().unwrap();
             }
 
             else if input_split[0] == "show" {
@@ -108,7 +101,7 @@ impl Gameboy {
                 else if input_split[1] == "disasm" {
                     disassembler::display_disassembly(&self.mem, usize::from_str_radix(input_split[2], 16).unwrap());
                 }
-                stdout().flush();
+                stdout().flush().unwrap();
             }
 
             else if input_split[0] == "break" {

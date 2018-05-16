@@ -99,14 +99,10 @@ impl Cpu {
 
     pub fn test_stack(&mut self, mem: &mut Mmu) {
         set_sp!(self, 0xFFFE);
-        mem.push_u8(get_sp_mut!(self), 10);
-        mem.push_u8(get_sp_mut!(self), 20);
         mem.push_u16(get_sp_mut!(self), 0x3020);
 
-        assert_eq!(get_sp!(self), 0xFFFA);
+        assert_eq!(get_sp!(self), 0xFFFC);
         assert_eq!(mem.pop_u16(get_sp_mut!(self)), 0x3020);
-        assert_eq!(mem.pop_u8(get_sp_mut!(self)), 20);
-        assert_eq!(mem.pop_u8(get_sp_mut!(self)), 10);
     }
 }
 

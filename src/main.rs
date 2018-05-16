@@ -14,8 +14,8 @@ use piston::window::WindowSettings;
 use piston::event_loop::*;
 use piston::input::*;
 use piston_window::PistonWindow as Window;
-//use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{ GlGraphics, OpenGL };
+use opengl_graphics::{ OpenGL };
+#[allow(unused_imports)]
 use std::time::{Duration, Instant};
 use cpuprofiler::PROFILER;
 use getopts::Options;
@@ -52,15 +52,6 @@ fn main() {
     let mut bios_path_option: Option<String> = matches.opt_str("b");
     let mut rom_path_option: Option<String> = matches.opt_str("R");
 
-    /*
-    match bios_path_option {
-        Some(i) => { let bios_path = i; },
-        _ => {
-            print_usage(&program, opts);
-            return;
-        },
-    };
-    */
     let mut bios_path: String = String::new();
     if bios_path_option == None {
         print_usage(&program, opts);
@@ -70,15 +61,6 @@ fn main() {
         bios_path = bios_path_option.unwrap();
     }
 
-    /*
-    match rom_path_option {
-        Some(i) => {let rom_path = i;},
-        _ => {
-            print_usage(&program, opts);
-            return;
-        },
-    };
-    */
     let mut rom_path: String = String::new();
     if rom_path_option == None {
         print_usage(&program, opts);
@@ -90,8 +72,6 @@ fn main() {
 
     // Get a gameboy object
     let mut gb = gameboy::Gameboy::new();
-
-    println!("bios_path: {}, rom_path: {}", bios_path, rom_path);
 
     gb.load_bios(&bios_path);
     gb.load_rom(&rom_path);
