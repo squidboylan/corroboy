@@ -47,9 +47,9 @@ impl Gameboy {
 
     pub fn run_game(&mut self) {
         // run the machine cycles for this frame
-        self.p1.update(&mut self.mem);
         for i in 0..(70224/4) {
             if self.burn_count == 0 {
+                self.p1.update(&mut self.mem);
                 self.burn_count = self.cpu.exec_next(&mut self.mem) - 1;
             }
             else {
@@ -74,7 +74,6 @@ impl Gameboy {
 
         disassembler::display_disassembly(&self.mem, self.cpu.get_pc() as usize);
         loop {
-            self.p1.update(&mut self.mem);
             print!("debugger> ");
             let mut input_text = String::new();
             stdout().flush().unwrap();
@@ -133,6 +132,7 @@ impl Gameboy {
 
                 self.gpu.update(&mut self.mem);
                 self.timer.update(&mut self.mem);
+                self.p1.update(&mut self.mem);
             }
             i += 1;
         }
@@ -149,6 +149,7 @@ impl Gameboy {
 
                     self.gpu.update(&mut self.mem);
                     self.timer.update(&mut self.mem);
+                    self.p1.update(&mut self.mem);
                 }
             }
         }
@@ -166,6 +167,7 @@ impl Gameboy {
 
                     self.gpu.update(&mut self.mem);
                     self.timer.update(&mut self.mem);
+                    self.p1.update(&mut self.mem);
                 }
             }
         }

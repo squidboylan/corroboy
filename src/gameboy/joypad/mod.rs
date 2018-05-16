@@ -87,9 +87,9 @@ impl Joypad {
         let bit_4 = ff00 & 0b00010000;
         let bit_5 = ff00 & 0b00100000;
 
-        let mut new_ff00 = 0b00001111 + bit_4 + bit_5;
+        let mut new_ff00 = 0b11001111 + bit_4 + bit_5;
 
-        if bit_4 == 0b00010000 && bit_5 == 0b00100000 {
+        if bit_4 == 0 && bit_5 == 0 {
             if self.down == true || self.start == true {
                 new_ff00 -= 0b00001000
             }
@@ -104,7 +104,7 @@ impl Joypad {
             }
         }
 
-        else if bit_4 == 0b00010000 {
+        else if bit_4 == 0 {
             if self.start == true {
                 new_ff00 -= 0b00001000
             }
@@ -119,7 +119,7 @@ impl Joypad {
             }
         }
 
-        else if bit_5 == 0b00100000 {
+        else if bit_5 == 0 {
             if self.down == true {
                 new_ff00 -= 0b00001000
             }

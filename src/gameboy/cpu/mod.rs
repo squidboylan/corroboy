@@ -556,8 +556,6 @@ impl Cpu {
                 mem.set_mem_u8(0xFF0F, interrupts - 0b00010000);
             }
 
-            println!("handling interrupt, jump to: {:x}", addr_to_call);
-
             // Disable interrupts
             self.ime = 0;
 
