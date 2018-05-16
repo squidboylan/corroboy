@@ -115,7 +115,7 @@ impl Gameboy {
             else if input_split[0] == "run" {
                 self.run_to_break(break_addr);
                 disassembler::display_disassembly(&self.mem, self.cpu.get_pc() as usize);
-                stdout().flush();
+                stdout().flush().unwrap();
             }
 
             else if input_split[0] == "help" {
@@ -172,7 +172,7 @@ impl Gameboy {
     }
 
     pub fn render(&mut self, window: &mut Window, e: &Event) {
-        self.gpu.render(window, e);
+        self.gpu.render(window, e, &mut self.mem);
     }
 
     pub fn press_input(&mut self, but: Button) {

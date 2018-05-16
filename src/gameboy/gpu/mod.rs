@@ -137,7 +137,7 @@ impl Gpu {
         }
     }
 
-    pub fn render(&mut self, window: &mut Window, e: &Event)  {
+    pub fn render(&mut self, window: &mut Window, e: &Event, mem: &mut Mmu)  {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
         let mut img: RgbaImage = ImageBuffer::new(SCREEN_SIZE_X * 3, SCREEN_SIZE_Y * 3);
@@ -160,7 +160,7 @@ impl Gpu {
         tex_settings.set_mag(piston_window::Filter::Nearest);
         let tex = Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap();
 
-        if self.state == 0 {
+        if self.get_current_state(mem) == 0 {
             window.draw_2d(e, |c, g| {
                 clear([0.0; 4], g);
             });
@@ -183,6 +183,7 @@ impl Gpu {
     }
 
     pub fn update(&mut self, mem: &mut Mmu) {
+        /*
         if self.state == 0 {
             if self.get_current_state(mem) == 1 {
                 self.state = 1;
@@ -203,6 +204,19 @@ impl Gpu {
                 self.set_mode(mem, 0b01);
                 return;
             }
+        }
+        */
+        if self.state == 0 && self.get_current_state(mem) == 1 {
+            self.state = 1;
+            self.initialize(mem);
+            self.count = 0;
+            self.set_curr_line(mem, 0);
+            self.set_mode(mem, 0);
+        }
+        else if self.state == 9 && self.get_current_state(mem) == 1 {
+            self.state = 0;
+            self.set_mode(mem, 0b01);
+            return;
         }
 
         // Do stuff here that happens once per frame
