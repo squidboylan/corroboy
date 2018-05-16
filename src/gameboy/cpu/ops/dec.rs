@@ -4,7 +4,7 @@ macro_rules! dec_a {
         set_n_flag!($self_);
         if get_a!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        if (get_a!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
+        if (get_a!($self_) & 0b00001111) == 0b00001111 { set_h_flag!($self_); }
         else { unset_h_flag!($self_); }
         1
     }};
@@ -15,7 +15,7 @@ macro_rules! dec_b {
         set_n_flag!($self_);
         if get_b!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        if (get_b!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
+        if (get_b!($self_) & 0b00001111) == 0b00001111 { set_h_flag!($self_); }
         else { unset_h_flag!($self_); }
         1
     }};
@@ -26,7 +26,7 @@ macro_rules! dec_c {
         set_n_flag!($self_);
         if get_c!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        if (get_c!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
+        if (get_c!($self_) & 0b00001111) == 0b00001111 { set_h_flag!($self_); }
         else { unset_h_flag!($self_); }
         1
     }};
@@ -37,7 +37,7 @@ macro_rules! dec_d {
         set_n_flag!($self_);
         if get_d!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        if (get_d!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
+        if (get_d!($self_) & 0b00001111) == 0b00001111 { set_h_flag!($self_); }
         else { unset_h_flag!($self_); }
         1
     }};
@@ -48,7 +48,7 @@ macro_rules! dec_e {
         set_n_flag!($self_);
         if get_e!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        if (get_e!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
+        if (get_e!($self_) & 0b00001111) == 0b00001111 { set_h_flag!($self_); }
         else { unset_h_flag!($self_); }
         1
     }};
@@ -59,7 +59,7 @@ macro_rules! dec_h {
         set_n_flag!($self_);
         if get_h!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        if (get_h!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
+        if (get_h!($self_) & 0b00001111) == 0b00001111 { set_h_flag!($self_); }
         else { unset_h_flag!($self_); }
         1
     }};
@@ -70,7 +70,7 @@ macro_rules! dec_l {
         set_n_flag!($self_);
         if get_l!($self_) == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        if (get_l!($self_) & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
+        if (get_l!($self_) & 0b00001111) == 0b00001111 { set_h_flag!($self_); }
         else { unset_h_flag!($self_); }
         1
     }};
@@ -82,7 +82,7 @@ macro_rules! dec_hl_val {
         set_n_flag!($self_);
         if val == 0 { set_z_flag!($self_); }
         else { unset_z_flag!($self_); }
-        if (val & 0b00011111) == 0b00001111 { unset_h_flag!($self_); }
+        if (val & 0b00001111) == 0b00001111 { set_h_flag!($self_); }
         else { unset_h_flag!($self_); }
         3
     }};

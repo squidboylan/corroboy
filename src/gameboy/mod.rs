@@ -71,6 +71,8 @@ impl Gameboy {
         let mut input_text = String::new();
         let mut get_input = true;
         let mut break_addr: i32 = -1;
+
+        disassembler::display_disassembly(&self.mem, self.cpu.get_pc() as usize);
         loop {
             self.p1.update(&mut self.mem);
             print!("debugger> ");
@@ -112,6 +114,8 @@ impl Gameboy {
 
             else if input_split[0] == "run" {
                 self.run_to_break(break_addr);
+                disassembler::display_disassembly(&self.mem, self.cpu.get_pc() as usize);
+                stdout().flush();
             }
 
             else if input_split[0] == "help" {

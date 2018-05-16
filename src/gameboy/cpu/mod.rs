@@ -411,7 +411,7 @@ impl Cpu {
 
             0xCB7C => return bit_7_h!(self),
 
-            0xCB87 => return res_7_a!(self),
+            0xCB87 => return res_0_a!(self),
 
             _ => { println!("opcode dispatch broke :( opcode: {:x}", opcode); return 1; },
         }

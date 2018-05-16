@@ -7,3 +7,10 @@ macro_rules! res_7_a {
         2
     }};
 }
+
+macro_rules! res_0_a {
+    ($self_: ident) => {{
+        set_a!($self_, get_a!($self_) & 0b11111110);
+        2
+    }};
+}

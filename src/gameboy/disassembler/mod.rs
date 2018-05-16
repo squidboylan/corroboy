@@ -7,7 +7,7 @@ pub fn display_disassembly(mem: &Mmu, loc: usize) {
     if opcode == 0xCB {
         opcode = ((opcode) << 8) + mem.get_mem_u8(loc+1) as u16;
     }
-    print!("{:x}: ", loc);
+    print!("0x{:04x}: ", loc);
     match opcode {
         0x00 => println!("nop"),
         0x01 => println!("ld    BC,0x{:04x}", mem.get_mem_u16(loc + 1)),
@@ -252,11 +252,11 @@ pub fn display_disassembly(mem: &Mmu, loc: usize) {
         0xE2 => println!("LD    (0xFF00+C),A"),
         0xF2 => println!("LD    A,(0xFF00+C)"),
 
-        0x22 => println!("ldd    A,(HL)"),
+        0x22 => println!("ldi    (HL),A"),
         0x2A => println!("ldi    A,(HL)"),
 
         0x32 => println!("ldd    (HL),A"),
-        0x3A => println!("ldi    (HL),A"),
+        0x3A => println!("ldd    A,(HL)"),
 
         0xF1 => println!("pop  AF"),
         0xC1 => println!("pop  BC"),
@@ -321,7 +321,7 @@ pub fn display_disassembly(mem: &Mmu, loc: usize) {
 
         0xCB7C => println!("bit     7,H"),
 
-        0xCB87 => println!("res     7,A"),
+        0xCB87 => println!("res     0,A"),
 
         _ => { println!("opcode: {:x} ; disassembler broke", opcode) },
     };

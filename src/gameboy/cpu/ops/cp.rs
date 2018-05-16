@@ -6,7 +6,7 @@ macro_rules! cp_a {
             set_n_flag!($self_);
             if get_a!($self_) < get_a!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < (get_a!($self_) & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > (get_a!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             1
     }};
@@ -19,7 +19,7 @@ macro_rules! cp_b {
             set_n_flag!($self_);
             if get_a!($self_) < get_b!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < (get_b!($self_) & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > (get_b!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             1
     }};
@@ -32,7 +32,7 @@ macro_rules! cp_c {
             set_n_flag!($self_);
             if get_a!($self_) < get_c!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < (get_c!($self_) & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > (get_c!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             1
     }};
@@ -45,7 +45,7 @@ macro_rules! cp_d {
             set_n_flag!($self_);
             if get_a!($self_) < get_d!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < (get_d!($self_) & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > (get_d!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             1
     }};
@@ -58,7 +58,7 @@ macro_rules! cp_e {
             set_n_flag!($self_);
             if get_a!($self_) < get_e!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < (get_e!($self_) & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > (get_e!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             1
     }};
@@ -71,7 +71,7 @@ macro_rules! cp_h {
             set_n_flag!($self_);
             if get_a!($self_) < get_h!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < (get_h!($self_) & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > (get_h!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             1
     }};
@@ -84,7 +84,7 @@ macro_rules! cp_l {
             set_n_flag!($self_);
             if get_a!($self_) < get_l!($self_) { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < (get_l!($self_) & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > (get_l!($self_) & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             1
     }};
@@ -97,7 +97,7 @@ macro_rules! cp_n {
             set_n_flag!($self_);
             if get_a!($self_) < $param { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < ($param & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > ($param & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             2
     }};
@@ -111,7 +111,7 @@ macro_rules! cp_hl_val {
             set_n_flag!($self_);
             if get_a!($self_) < val { set_c_flag!($self_); }
             else { unset_c_flag!($self_); }
-            if (get_a!($self_) & 0b00001111) < (val & 0b00001111) { unset_h_flag!($self_); }
+            if (get_a!($self_) & 0b00001111) > (val & 0b00001111) { unset_h_flag!($self_); }
             else { set_h_flag!($self_); }
             2
     }};
