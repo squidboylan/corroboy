@@ -20,6 +20,8 @@ mod joypad;
 
 mod timer;
 
+mod disassembler;
+
 pub struct Gameboy {
     mem: mmu::Mmu,
     cpu: cpu::Cpu,
@@ -84,13 +86,15 @@ impl Gameboy {
             stdin().read_line(&mut input_text).expect("failed to read from stdin");
             let input_split = input_text.trim().to_string();
             let input_split = input_split.split(" ").collect::<Vec<&str>>();
-            if input_split[0] == "step" {
+            if input_split[0] == "step" || input_text == "\n" {
                 if input_split.len() == 1 {
                     self.step(1);
                 }
                 else {
                     self.step(u64::from_str_radix(input_split[1], 10).unwrap());
                 }
+                disassembler::display_disassembly(&self.mem, self.cpu.get_pc() as usize);
+                stdout().flush();
             }
 
             else if input_split[0] == "show" {
@@ -100,6 +104,9 @@ impl Gameboy {
 
                 else if input_split[1] == "flags" {
                     self.cpu.print_flags();
+                }
+                else if input_split[1] == "disasm" {
+                    disassembler::display_disassembly(&self.mem, usize::from_str_radix(input_split[2], 16).unwrap());
                 }
                 stdout().flush();
             }

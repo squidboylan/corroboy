@@ -204,7 +204,7 @@ impl Cpu {
             0xCB32 => return swap_d!(self),
             0xCB33 => return swap_e!(self),
             0xCB34 => return swap_h!(self),
-            0xCB35 => return swap_h!(self),
+            0xCB35 => return swap_l!(self),
             0xCB36 => return swap_hl_val!(self, mem),
 
             0x27 => return daa!(self),
