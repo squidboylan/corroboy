@@ -104,7 +104,6 @@ fn main() {
                 gb.run_game();
             }
 
-            /*
             if let Some(inp) = e.press_args() {
                 gb.press_input(inp);
             }
@@ -112,7 +111,6 @@ fn main() {
             if let Some(inp) = e.release_args() {
                 gb.release_input(inp);
             }
-            */
         }
         PROFILER.lock().unwrap().stop().unwrap();
     }
