@@ -8,6 +8,7 @@ extern crate opengl_graphics;
 extern crate image;
 extern crate cpuprofiler;
 extern crate getopts;
+extern crate gfx_device_gl;
 
 use piston::window::WindowSettings;
 use piston::event_loop::*;
@@ -69,8 +70,18 @@ fn main() {
         rom_path = rom_path_option.unwrap();
     }
 
+    // Setup graphics window
+    let mut window: Window =  WindowSettings::new(
+            "gameboy-emu",
+            [432, 480]
+        )
+        .opengl(opengl)
+        .exit_on_esc(true)
+        .build()
+        .unwrap();
+
     // Get a gameboy object
-    let mut gb = gameboy::Gameboy::new();
+    let mut gb = gameboy::Gameboy::new(&mut window);
 
     gb.load_bios(&bios_path);
     gb.load_rom(&rom_path);
@@ -81,16 +92,6 @@ fn main() {
     }
     // If we're not in debug mode run the normal way
     else {
-        // Setup graphics window
-        let mut window: Window =  WindowSettings::new(
-                "gameboy-emu",
-                [432, 480]
-            )
-            .opengl(opengl)
-            .exit_on_esc(true)
-            .build()
-            .unwrap();
-
         let mut events: Events = Events::new(EventSettings::new());
         events.set_ups(60);
         events.set_max_fps(60);

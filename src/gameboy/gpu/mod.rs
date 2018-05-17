@@ -1,5 +1,3 @@
-//use piston::window::WindowSettings;
-//use piston::event_loop::*;
 use piston_window::PistonWindow as Window;
 use piston_window::Texture;
 use piston::input::*; 
@@ -7,6 +5,7 @@ use piston_window;
 use piston_window::TextureSettings;
 use graphics::*;
 use image::*;
+use gfx_device_gl;
 
 use super::mmu::Mmu;
 
@@ -84,6 +83,10 @@ pub struct Gpu {
     // 2 - dark gray
     // 3 - black
     pixel_map: [[usize; 160]; 144],
+    last_pixel_map: [[usize; 160]; 144],
+
+    tex: piston_window::Texture<gfx_device_gl::Resources>,
+    //tex: Texture<>,
 
     // This represents the number of (machine) cycles we are into rendering the current line
     count: u16,
@@ -93,7 +96,8 @@ pub struct Gpu {
 }
 
 impl Gpu {
-    pub fn new() -> Gpu {
+    pub fn new(window: &mut Window) -> Gpu {
+        let mut factory = window.factory.clone();
         Gpu {
             state: 0,
             background_data_bot: 0,
@@ -103,7 +107,9 @@ impl Gpu {
             tile_map_top: 0,
             tile_map: [[0; 32]; 32],
             bg_palette: [0; 4],
-            pixel_map: [[1; 160]; 144],
+            pixel_map: [[0; 160]; 144],
+            last_pixel_map: [[0; 160]; 144],
+            tex: Texture::empty(&mut factory).unwrap(),
             count: 0,
             scx: 0,
             scy: 0,
@@ -140,37 +146,61 @@ impl Gpu {
     pub fn render(&mut self, window: &mut Window, e: &Event, mem: &mut Mmu)  {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
-        let mut img: RgbaImage = ImageBuffer::new(SCREEN_SIZE_X * 3, SCREEN_SIZE_Y * 3);
+        let mut new_map = false;
 
-        let colors = [[255, 255, 255, 255], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
-
-        for y in 0..SCREEN_SIZE_Y as usize {
-            for x in 0..SCREEN_SIZE_X as usize {
-                let color = colors[self.pixel_map[y][x]];
-                for i in 0..3 as usize {
-                    for j in 0..3 as usize {
-                        img.put_pixel((x * 3 + i) as u32, (y * 3 + j) as u32, Rgba { data: color});
-                    }
+        // Check if the new pixel_map is the same as last frame
+        let mut x = 0;
+        let mut y = 0;
+        while y < SCREEN_SIZE_Y as usize && new_map == false {
+            while x < SCREEN_SIZE_X as usize && new_map == false {
+                if self.pixel_map[y][x] != self.last_pixel_map[y][x] {
+                    new_map = true;
                 }
+                x += 1;
             }
+            x = 0;
+            y += 1;
         }
 
-        let factory = window.factory.clone();
-        let mut tex_settings = TextureSettings::new();
-        tex_settings.set_mag(piston_window::Filter::Nearest);
-        let tex = Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap();
+        if new_map == true {
+            let mut img: RgbaImage = ImageBuffer::new(SCREEN_SIZE_X * 3, SCREEN_SIZE_Y * 3);
 
-        if self.get_current_state(mem) == 0 {
-            window.draw_2d(e, |c, g| {
-                clear([0.0; 4], g);
-            });
-        }
-        else {
-            window.draw_2d(e, |c, g| {
-                clear([1.0; 4], g);
+            let colors = [[255, 255, 255, 255], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
 
-                image(&tex, c.transform, g);
-            });
+            let mut x = 0;
+            let mut y = 0;
+            while y < SCREEN_SIZE_Y as usize {
+                while x < SCREEN_SIZE_X as usize {
+                    let color = colors[self.pixel_map[y][x]];
+                    self.last_pixel_map[y][x] = self.pixel_map[y][x];
+                    for i in 0..3 as usize {
+                        for j in 0..3 as usize {
+                            img.put_pixel((x * 3 + i) as u32, (y * 3 + j) as u32, Rgba { data: color});
+                        }
+                    }
+                    x += 1;
+                }
+                x = 0;
+                y += 1;
+            }
+
+            let factory = window.factory.clone();
+            let mut tex_settings = TextureSettings::new();
+            tex_settings.set_mag(piston_window::Filter::Nearest);
+            self.tex = Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap();
+
+            if self.get_current_state(mem) == 0 {
+                window.draw_2d(e, |c, g| {
+                    clear([0.0; 4], g);
+                });
+            }
+            else {
+                window.draw_2d(e, |c, g| {
+                    clear([1.0; 4], g);
+
+                    image(&self.tex, c.transform, g);
+                });
+            }
         }
     }
 
@@ -183,29 +213,6 @@ impl Gpu {
     }
 
     pub fn update(&mut self, mem: &mut Mmu) {
-        /*
-        if self.state == 0 {
-            if self.get_current_state(mem) == 1 {
-                self.state = 1;
-                self.initialize(mem);
-                self.count = 0;
-                self.set_curr_line(mem, 0);
-                self.set_mode(mem, 2);
-            }
-            else {
-                self.state = 0;
-                self.set_mode(mem, 0b01);
-                return;
-            }
-        }
-        else {
-            if self.get_current_state(mem) == 0 {
-                self.state = 0;
-                self.set_mode(mem, 0b01);
-                return;
-            }
-        }
-        */
         if self.state == 0 && self.get_current_state(mem) == 1 {
             self.state = 1;
             self.initialize(mem);
@@ -225,6 +232,7 @@ impl Gpu {
             self.build_tile_data(mem);
         }
 
+        /*
         match self.get_mode(mem) {
             // H-blank
             0b00 => self.h_blank(mem),
@@ -235,6 +243,21 @@ impl Gpu {
             // Drawing Line
             0b11 => self.render_line(mem),
             _ => panic!("This should never happen, LCD mode not 0 - 3, it is {}", self.get_mode(mem)),
+        }
+        */
+
+        let mode = self.get_mode(mem);
+        if mode == 0 {
+            self.h_blank(mem);
+        }
+        else if mode == 1 {
+            self.v_blank(mem);
+        }
+        else if mode == 2 {
+            self.setup_line(mem);
+        }
+        else if mode == 3 {
+            self.render_line(mem);
         }
     }
 
