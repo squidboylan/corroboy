@@ -56,6 +56,12 @@ pub mod rl;
 pub mod rr;
 
 #[macro_use]
+pub mod sl;
+
+#[macro_use]
+pub mod sr;
+
+#[macro_use]
 pub mod bit;
 
 #[macro_use]
