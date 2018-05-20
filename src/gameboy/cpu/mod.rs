@@ -137,6 +137,7 @@ impl Cpu {
             0x36 => return self.op_param_8_bit(mem, opcode),
             0x38 => return self.op_param_8_bit(mem, opcode),
             0xC6 => return self.op_param_8_bit(mem, opcode),
+            0xD6 => return self.op_param_8_bit(mem, opcode),
             0xE0 => return self.op_param_8_bit(mem, opcode),
             0xE6 => return self.op_param_8_bit(mem, opcode),
             0xEE => return self.op_param_8_bit(mem, opcode),
