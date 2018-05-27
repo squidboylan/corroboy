@@ -1,6 +1,6 @@
 use piston_window::PistonWindow as Window;
 use piston_window::Texture;
-use piston::input::*; 
+use piston::input::*;
 use piston_window;
 use piston_window::TextureSettings;
 use graphics::*;
@@ -8,6 +8,8 @@ use image::*;
 use gfx_device_gl;
 
 use super::mmu::Mmu;
+
+mod sprite;
 
 // TERMS:
 // OAM: Object Attribute Memory or sprite attribute table
@@ -85,7 +87,7 @@ pub struct Gpu {
     pixel_map: [[usize; 160]; 144],
     last_pixel_map: [[usize; 160]; 144],
 
-    tex: piston_window::Texture<gfx_device_gl::Resources>,
+    tex: Texture<gfx_device_gl::Resources>,
     //tex: Texture<>,
 
     // This represents the number of (machine) cycles we are into rendering the current line
@@ -93,11 +95,14 @@ pub struct Gpu {
 
     scx: u8,
     scy: u8,
+
+    sprite_manager: sprite::SpriteManager,
 }
 
 impl Gpu {
     pub fn new(window: &mut Window) -> Gpu {
         let mut factory = window.factory.clone();
+
         Gpu {
             state: 0,
             background_data_bot: 0,
@@ -113,6 +118,7 @@ impl Gpu {
             count: 0,
             scx: 0,
             scy: 0,
+            sprite_manager: sprite::SpriteManager::new(window),
         }
     }
 
@@ -188,18 +194,49 @@ impl Gpu {
             tex_settings.set_mag(piston_window::Filter::Nearest);
             self.tex = Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap();
 
-            if self.get_current_state(mem) == 0 {
-                window.draw_2d(e, |_c, g| {
-                    clear([0.0; 4], g);
-                });
-            }
-            else {
-                window.draw_2d(e, |c, g| {
-                    clear([1.0; 4], g);
+        }
 
-                    image(&self.tex, c.transform, g);
-                });
-            }
+        if self.sprite_manager.sprites_enabled == true {
+            self.sprite_manager.generate_sprite_textures(window);
+        }
+
+        if self.get_current_state(mem) == 0 {
+            window.draw_2d(e, |_c, g| {
+                clear([0.0; 4], g);
+            });
+        }
+
+        else {
+            window.draw_2d(e, |c, g| {
+                clear([1.0; 4], g);
+
+                image(&self.tex, c.transform, g);
+
+                if self.sprite_manager.sprites_enabled == true {
+                    for i in self.sprite_manager.sprites.iter() {
+                        if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 {
+                            let mut context = c.transform;
+                            if i.x_flip == 1 && i.y_flip == 1 {
+                                context = context.trans((i.x as isize * 3) as f64, (i.y as isize * 3) as f64).zoom(3.0);
+                                context = context.flip_hv();
+                            }
+                            else if i.x_flip == 1 {
+                                context = context.trans((i.x as isize * 3) as f64, ((i.y as isize - 16) * 3) as f64).zoom(3.0);
+                                context = context.flip_h();
+                            }
+                            else if i.y_flip == 1 {
+                                context = context.trans(((i.x as isize - 8) * 3) as f64, (i.y as isize * 3) as f64).zoom(3.0);
+                                context = context.flip_v();
+                            }
+                            else {
+                                context = context.trans(((i.x as isize - 8) * 3) as f64, ((i.y as isize - 16) * 3) as f64).zoom(3.0);
+                            }
+                            image(&i.tex, context, g);
+                        }
+                    }
+                }
+
+            });
         }
     }
 
@@ -219,7 +256,7 @@ impl Gpu {
             self.set_curr_line(mem, 0);
             self.set_mode(mem, 0);
         }
-        else if self.state == 9 && self.get_current_state(mem) == 1 {
+        else if self.state == 1 && self.get_current_state(mem) == 0 {
             self.state = 0;
             self.set_mode(mem, 0b01);
             return;
@@ -229,21 +266,12 @@ impl Gpu {
         if self.count == 0 && self.get_curr_line(mem) == 0 {
             self.build_tile_map(mem);
             self.build_tile_data(mem);
+            if self.sprite_manager.sprites_enabled == true {
+                self.sprite_manager.build_sprites(mem);
+            }
+            //self.build_pattern_data(mem);
+            self.sprite_manager.set_sprite_palettes(mem);
         }
-
-        /*
-        match self.get_mode(mem) {
-            // H-blank
-            0b00 => self.h_blank(mem),
-            // V-blank
-            0b01 => self.v_blank(mem),
-            // Reading OAM
-            0b10 => self.setup_line(mem),
-            // Drawing Line
-            0b11 => self.render_line(mem),
-            _ => panic!("This should never happen, LCD mode not 0 - 3, it is {}", self.get_mode(mem)),
-        }
-        */
 
         let mode = self.get_mode(mem);
         if mode == 0 {
@@ -351,13 +379,15 @@ impl Gpu {
         if (ff40 & 0b00010000) >> 4 == 0 {
             self.background_data_bot = 0x8800;
             self.background_data_top = 0x97FF;
+            println!("background_data_bot: {:x}", self.background_data_bot);
         }
         else {
             self.background_data_bot = 0x8000;
             self.background_data_top = 0x8FFF;
+            println!("background_data_bot: {:x}", self.background_data_bot);
         }
 
-        if (ff40 & 0b00001000) >> 3 == 0 {
+        if ff40 & 0b00001000 == 0 {
             self.tile_map_bot = 0x9800;
             self.tile_map_top = 0x9BFF;
         }
@@ -366,7 +396,25 @@ impl Gpu {
             self.tile_map_top = 0x9FFF;
         }
 
+        if ff40 & 0b00000100 == 0 {
+            self.sprite_manager.sprite_height = 8;
+        }
+        else {
+            self.sprite_manager.sprite_height = 16;
+        }
+
+        if ff40 & 0b00000010 == 0 {
+            self.sprite_manager.sprites_enabled = false;
+        }
+        else {
+            self.sprite_manager.sprites_enabled = true;
+        }
+
         self.build_tile_data(mem);
+        if self.sprite_manager.sprites_enabled == true {
+            self.sprite_manager.build_sprites(mem);
+        }
+        self.sprite_manager.build_pattern_data(mem);
     }
 
     pub fn set_bg_palette(&mut self, mem: &mut Mmu) {
@@ -378,25 +426,70 @@ impl Gpu {
     }
 
     fn build_tile_data(&mut self, mem: &mut Mmu) {
-        self.bg_tiles = Vec::new();
-        for i in 0..256 {
-            let mut new = Tile::new();
-            for j in 0..8 {
-                let left = mem.get_mem_u8(self.background_data_bot + (i*16) + (j * 2));
-                let right = mem.get_mem_u8(self.background_data_bot + (i*16) + 1 + (j * 2));
-                new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
-                new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
-                new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
-                new.raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
-                new.raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
-                new.raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
-                new.raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
-                new.raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+        if self.background_data_bot == 0x8000 {
+            self.bg_tiles = Vec::new();
+            let mut curr = self.background_data_bot;
+            for i in 0..256 {
+                let mut new = Tile::new();
+                for j in 0..8 {
+                    let left = mem.get_mem_u8(self.background_data_bot + (i*16) + (j * 2));
+                    let right = mem.get_mem_u8(self.background_data_bot + (i*16) + 1 + (j * 2));
+                    new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                    new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                    new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                    new.raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                    new.raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                    new.raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                    new.raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                    new.raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+                }
+                //new.display_ascii();
+                self.bg_tiles.push(new);
             }
-            //new.display_ascii();
-            self.bg_tiles.push(new);
+        }
+        else {
+            self.bg_tiles = Vec::new();
+            let mut curr = 0x9000;
+            for i in 0..128 {
+                let mut new = Tile::new();
+                for j in 0..8 {
+                    let left = mem.get_mem_u8(self.background_data_bot + (i*16) + (j * 2));
+                    let right = mem.get_mem_u8(self.background_data_bot + (i*16) + 1 + (j * 2));
+                    new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                    new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                    new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                    new.raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                    new.raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                    new.raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                    new.raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                    new.raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+                }
+                //new.display_ascii();
+                self.bg_tiles.push(new);
+            }
+
+            curr = self.background_data_bot;
+            for i in 0..128 {
+                let mut new = Tile::new();
+                for j in 0..8 {
+                    let left = mem.get_mem_u8(self.background_data_bot + (i*16) + (j * 2));
+                    let right = mem.get_mem_u8(self.background_data_bot + (i*16) + 1 + (j * 2));
+                    new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                    new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                    new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                    new.raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                    new.raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                    new.raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                    new.raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                    new.raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+                }
+                //new.display_ascii();
+                self.bg_tiles.push(new);
+            }
         }
     }
+
+
 
     #[inline(always)]
     fn get_mode(&self, mem: &mut Mmu) -> u8 {
@@ -424,5 +517,4 @@ impl Gpu {
     fn get_current_state(&self, mem: &mut Mmu) -> u8 {
         (mem.get_mem_u8(0xFF40) & 0b10000000) >> 7
     }
-
 }

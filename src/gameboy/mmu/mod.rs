@@ -65,7 +65,9 @@ impl Mmu {
             0xE000 ... 0xFDFF => self.ram[location - 0xE000] = val,
             0xFE00 ... 0xFE9F => self.oam[location - 0xFE00] = val,
             0xFEA0 ... 0xFEFF => {},
-            0xFF00 ... 0xFF4B => self.io_ports[location - 0xFF00] = val,
+            0xFF00 ... 0xFF45 => self.io_ports[location - 0xFF00] = val,
+            0xFF46 => self.dma_transfer(val),
+            0xFF47 ... 0xFF4B => self.io_ports[location - 0xFF00] = val,
             0xFF50 => self.bios_mapped = val,
             0xFE51 ... 0xFF7F => {},
             0xFF80 ... 0xFFFE => self.small_ram[location - 0xFF80] = val,
@@ -150,5 +152,18 @@ impl Mmu {
             _ => println!("pop mem u16 that mmu cant handle, location: {:x}", *sp),
         }
         val
+    }
+
+    // DMA transfers data from XX00 - XX9F to FE00 - FE9F, should take 160us, but will try make it
+    // immediate and see what breaks.
+    pub fn dma_transfer(&mut self, ff46: u8) {
+        //println!("dma_transfer");
+        let start = ((ff46 & 0xF1) as usize) << 8;
+        let mut i: usize = 0;
+        while i < 0xA0 {
+            let val = self.get_mem_u8(start + i);
+            self.set_mem_u8(0xFE00 + i, val);
+            i += 1;
+        }
     }
 }
