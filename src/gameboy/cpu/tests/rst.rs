@@ -1,32 +1,28 @@
 use super::super::super::mmu::Mmu;
 use gameboy::cpu::Cpu;
+use gameboy::cpu::ops::rst;
 
 impl Cpu {
     pub fn test_rst(&mut self, mem: &mut Mmu) {
         set_pc!(self, 0xFFF0);
-        let ret = rst_nn!(self, mem, 0x20);
+        rst(0x20, mem, get_mut_sp!(self), get_mut_pc!(self));
         assert_eq!(get_pc!(self), 0x20);
-        assert_eq!(ret, 8);
 
         set_pc!(self, 0xF0F0);
-        let ret = rst_nn!(self, mem, 0x28);
+        rst(0x28, mem, get_mut_sp!(self), get_mut_pc!(self));
         assert_eq!(get_pc!(self), 0x28);
-        assert_eq!(ret, 8);
 
         set_pc!(self, 0xF0F0);
-        let ret = rst_nn!(self, mem, 0x30);
+        rst(0x30, mem, get_mut_sp!(self), get_mut_pc!(self));
         assert_eq!(get_pc!(self), 0x30);
-        assert_eq!(ret, 8);
 
         set_pc!(self, 0xF0F0);
-        let ret = rst_nn!(self, mem, 0x38);
+        rst(0x38, mem, get_mut_sp!(self), get_mut_pc!(self));
         assert_eq!(get_pc!(self), 0x38);
-        assert_eq!(ret, 8);
 
         set_pc!(self, 0xF0F0);
-        let ret = rst_nn!(self, mem, 0x40);
+        rst(0x40, mem, get_mut_sp!(self), get_mut_pc!(self));
         assert_eq!(get_pc!(self), 0x40);
-        assert_eq!(ret, 8);
     }
 
 }

@@ -1,61 +1,8 @@
 // LD a,r2
 
-macro_rules! ld_a_a {
-    ($self_: ident) => {{
-        set_a!($self_, get_a!($self_));
-        1
-    }};
+pub fn ld_reg(val: u8, reg: &mut u8) {
+    *reg = val;
 }
-
-macro_rules! ld_a_b {
-    ($self_: ident) => {{
-        set_a!($self_, get_b!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_a_c {
-    ($self_: ident) => {{
-        set_a!($self_, get_c!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_a_d {
-    ($self_: ident) => {{
-        set_a!($self_, get_d!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_a_e {
-    ($self_: ident) => {{
-        set_a!($self_, get_e!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_a_h {
-    ($self_: ident) => {{
-        set_a!($self_, get_h!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_a_l {
-    ($self_: ident) => {{
-        set_a!($self_, get_l!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_a_param {
-    ($self_: ident, $param: expr) => {{
-        set_a!($self_, $param);
-        2
-    }};
-}
-
 macro_rules! ld_a_bc_val {
     ($self_: ident, $mem: ident) => {{
         set_a!($self_, $mem.get_mem_u8(get_bc!($self_) as usize));
@@ -79,62 +26,6 @@ macro_rules! ld_a_hl_val {
 
 // LD b,r2
 
-macro_rules! ld_b_a {
-    ($self_: ident) => {{
-        set_b!($self_, get_a!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_b_b {
-    ($self_: ident) => {{
-        set_b!($self_, get_b!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_b_c {
-    ($self_: ident) => {{
-        set_b!($self_, get_c!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_b_d {
-    ($self_: ident) => {{
-        set_b!($self_, get_d!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_b_e {
-    ($self_: ident) => {{
-        set_b!($self_, get_e!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_b_h {
-    ($self_: ident) => {{
-        set_b!($self_, get_h!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_b_l {
-    ($self_: ident) => {{
-        set_b!($self_, get_l!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_b_param {
-    ($self_: ident, $param: expr) => {{
-        set_b!($self_, $param);
-        2
-    }};
-}
-
 macro_rules! ld_b_hl_val {
     ($self_: ident, $mem: ident) => {{
         set_b!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
@@ -143,63 +34,6 @@ macro_rules! ld_b_hl_val {
 }
 
 // LD c,r2
-
-macro_rules! ld_c_a {
-    ($self_: ident) => {{
-        set_c!($self_, get_a!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_c_b {
-    ($self_: ident) => {{
-        set_c!($self_, get_b!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_c_c {
-    ($self_: ident) => {{
-        set_c!($self_, get_c!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_c_d {
-    ($self_: ident) => {{
-        set_c!($self_, get_d!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_c_e {
-    ($self_: ident) => {{
-        set_c!($self_, get_e!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_c_h {
-    ($self_: ident) => {{
-        set_c!($self_, get_h!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_c_l {
-    ($self_: ident) => {{
-        set_c!($self_, get_l!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_c_param {
-    ($self_: ident, $param: expr) => {{
-        set_c!($self_, $param);
-        2
-    }};
-}
-
 
 macro_rules! ld_c_hl_val {
     ($self_: ident, $mem: ident) => {{
@@ -210,62 +44,6 @@ macro_rules! ld_c_hl_val {
 
 // LD d,r2
 
-macro_rules! ld_d_a {
-    ($self_: ident) => {{
-        set_d!($self_, get_a!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_d_b {
-    ($self_: ident) => {{
-        set_d!($self_, get_b!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_d_c {
-    ($self_: ident) => {{
-        set_d!($self_, get_c!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_d_d {
-    ($self_: ident) => {{
-        set_d!($self_, get_d!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_d_e {
-    ($self_: ident) => {{
-        set_d!($self_, get_e!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_d_h {
-    ($self_: ident) => {{
-        set_d!($self_, get_h!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_d_l {
-    ($self_: ident) => {{
-        set_d!($self_, get_l!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_d_param {
-    ($self_: ident, $param: expr) => {{
-        set_d!($self_, $param);
-        2
-    }};
-}
-
 macro_rules! ld_d_hl_val {
     ($self_: ident, $mem: ident) => {{
         set_d!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
@@ -274,63 +52,6 @@ macro_rules! ld_d_hl_val {
 }
 
 // LD e,r2
-
-macro_rules! ld_e_a {
-    ($self_: ident) => {{
-        set_e!($self_, get_a!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_e_b {
-    ($self_: ident) => {{
-        set_e!($self_, get_b!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_e_c {
-    ($self_: ident) => {{
-        set_e!($self_, get_c!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_e_d {
-    ($self_: ident) => {{
-        set_e!($self_, get_d!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_e_e {
-    ($self_: ident) => {{
-        set_e!($self_, get_e!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_e_h {
-    ($self_: ident) => {{
-        set_e!($self_, get_h!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_e_l {
-    ($self_: ident) => {{
-        set_e!($self_, get_l!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_e_param {
-    ($self_: ident, $param: expr) => {{
-        set_e!($self_, $param);
-        2
-    }};
-}
-
 
 macro_rules! ld_e_hl_val {
     ($self_: ident, $mem: ident) => {{
@@ -341,62 +62,6 @@ macro_rules! ld_e_hl_val {
 
 // LD h,r2
 
-macro_rules! ld_h_a {
-    ($self_: ident) => {{
-        set_h!($self_, get_a!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_h_b {
-    ($self_: ident) => {{
-        set_h!($self_, get_b!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_h_c {
-    ($self_: ident) => {{
-        set_h!($self_, get_c!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_h_d {
-    ($self_: ident) => {{
-        set_h!($self_, get_d!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_h_e {
-    ($self_: ident) => {{
-        set_h!($self_, get_e!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_h_h {
-    ($self_: ident) => {{
-        set_h!($self_, get_h!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_h_l {
-    ($self_: ident) => {{
-        set_h!($self_, get_l!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_h_param {
-    ($self_: ident, $param: expr) => {{
-        set_h!($self_, $param);
-        2
-    }};
-}
-
 macro_rules! ld_h_hl_val {
     ($self_: ident, $mem: ident) => {{
         set_h!($self_, $mem.get_mem_u8(get_hl!($self_) as usize));
@@ -405,62 +70,6 @@ macro_rules! ld_h_hl_val {
 }
 
 // LD l,r2
-
-macro_rules! ld_l_a {
-    ($self_: ident) => {{
-        set_l!($self_, get_a!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_l_b {
-    ($self_: ident) => {{
-        set_l!($self_, get_b!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_l_c {
-    ($self_: ident) => {{
-        set_l!($self_, get_c!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_l_d {
-    ($self_: ident) => {{
-        set_l!($self_, get_d!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_l_e {
-    ($self_: ident) => {{
-        set_l!($self_, get_e!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_l_h {
-    ($self_: ident) => {{
-        set_l!($self_, get_h!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_l_l {
-    ($self_: ident) => {{
-        set_l!($self_, get_l!($self_));
-        1
-    }};
-}
-
-macro_rules! ld_l_param {
-    ($self_: ident, $param: expr) => {{
-        set_l!($self_, $param);
-        2
-    }};
-}
 
 macro_rules! ld_l_hl_val {
     ($self_: ident, $mem: ident) => {{

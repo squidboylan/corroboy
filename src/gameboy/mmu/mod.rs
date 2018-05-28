@@ -141,7 +141,7 @@ impl Mmu {
         }
     }
 
-    pub fn pop_u16(&mut self, sp: &mut u16) -> u16{
+    pub fn pop_u16(&self, sp: &mut u16) -> u16{
         let mut val: u16 = 0;
         match *sp {
             0xC000 ... 0xDFFF => { val = (self.ram[(*sp - 0xC000) as usize] as u16); *sp = *sp + 1; val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8); *sp = *sp + 1; },

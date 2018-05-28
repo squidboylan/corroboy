@@ -1,42 +1,36 @@
 use super::super::super::mmu::Mmu;
 use gameboy::cpu::Cpu;
+use gameboy::cpu::ops::dec::*;
 
 impl Cpu {
     pub fn test_dec(&mut self, mem: &mut Mmu) {
         set_a!(self, 0xFF);
-        let ret = dec_a!(self);
+        dec(get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0xFE);
-        assert_eq!(ret, 1);
 
         set_b!(self, 0x0F);
-        let ret = dec_b!(self);
+        dec(get_mut_b!(self), get_mut_f!(self));
         assert_eq!(get_b!(self), 0x0E);
-        assert_eq!(ret, 1);
 
         set_c!(self, 0xF0);
-        let ret = dec_c!(self);
+        dec(get_mut_c!(self), get_mut_f!(self));
         assert_eq!(get_c!(self), 0xEF);
-        assert_eq!(ret, 1);
 
         set_d!(self, 0xF0);
-        let ret = dec_d!(self);
+        dec(get_mut_d!(self), get_mut_f!(self));
         assert_eq!(get_d!(self), 0xEF);
-        assert_eq!(ret, 1);
 
         set_e!(self, 0xF0);
-        let ret = dec_e!(self);
+        dec(get_mut_e!(self), get_mut_f!(self));
         assert_eq!(get_e!(self), 0xEF);
-        assert_eq!(ret, 1);
 
         set_h!(self, 0x00);
-        let ret = dec_h!(self);
+        dec(get_mut_h!(self), get_mut_f!(self));
         assert_eq!(get_h!(self), 0xFF);
-        assert_eq!(ret, 1);
 
         set_l!(self, 0xF0);
-        let ret = dec_l!(self);
+        dec(get_mut_l!(self), get_mut_f!(self));
         assert_eq!(get_l!(self), 0xEF);
-        assert_eq!(ret, 1);
 
         set_hl!(self, 0xC000);
         mem.set_mem_u8(get_hl!(self) as usize, 0x10);

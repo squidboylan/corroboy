@@ -1,69 +1,61 @@
 use super::super::super::mmu::Mmu;
 use gameboy::cpu::Cpu;
+use gameboy::cpu::ops::sub::*;
 
 impl Cpu {
     pub fn test_sub(&mut self, mem: &mut Mmu) {
         set_a!(self, 0xFF);
-        let ret = sub_a_a!(self);
+        sub(get_a!(self), get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0x0);
-        assert_eq!(ret, 1);
         assert_eq!(get_z_flag!(self), 1);
         assert_eq!(get_c_flag!(self), 1);
 
         set_a!(self, 0xF0);
         set_b!(self, 0x0F);
-        let ret = sub_a_b!(self);
+        sub(get_b!(self), get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0xE1);
-        assert_eq!(ret, 1);
         assert_eq!(get_c_flag!(self), 1);
 
         set_a!(self, 0x80);
         set_c!(self, 0x08);
-        let ret = sub_a_c!(self);
+        sub(get_c!(self), get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0x78);
-        assert_eq!(ret, 1);
         assert_eq!(get_c_flag!(self), 1);
 
         set_a!(self, 0xF0);
         set_d!(self, 0x0F);
-        let ret = sub_a_d!(self);
+        sub(get_d!(self), get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0xE1);
-        assert_eq!(ret, 1);
         assert_eq!(get_c_flag!(self), 1);
 
         set_a!(self, 0x0F);
         set_e!(self, 0xF0);
-        let ret = sub_a_e!(self);
+        sub(get_e!(self), get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0x1F);
-        assert_eq!(ret, 1);
         assert_eq!(get_c_flag!(self), 0);
 
         set_a!(self, 0xFF);
         set_h!(self, 0x80);
-        let ret = sub_a_h!(self);
+        sub(get_h!(self), get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0x7F);
-        assert_eq!(ret, 1);
         assert_eq!(get_c_flag!(self), 1);
 
         set_a!(self, 0xFF);
         set_l!(self, 0x70);
-        let ret = sub_a_l!(self);
+        sub(get_l!(self), get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0x8F);
-        assert_eq!(ret, 1);
         assert_eq!(get_c_flag!(self), 1);
 
         set_a!(self, 0xFF);
         set_hl!(self, 0xC000);
         mem.set_mem_u8(get_hl!(self) as usize, 0x01);
-        let ret = sub_a_hl_val!(self, mem);
+        sub(mem.get_mem_u8(get_hl!(self) as usize), get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0xFE);
-        assert_eq!(ret, 2);
         assert_eq!(get_c_flag!(self), 1);
 
         set_a!(self, 0x00);
-        let ret = sub_a_param!(self, 0x10);
+        sub(0x10, get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0xF0);
-        assert_eq!(ret, 2);
         assert_eq!(get_c_flag!(self), 0);
     }
 }

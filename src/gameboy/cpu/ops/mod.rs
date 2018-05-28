@@ -6,48 +6,62 @@
 
 #[macro_use]
 pub mod and;
+pub use self::and::*;
 
 #[macro_use]
 pub mod or;
+pub use self::or::*;
 
 #[macro_use]
 pub mod xor;
+pub use self::xor::*;
 
 #[macro_use]
 pub mod inc;
+pub use self::inc::*;
 
 #[macro_use]
 pub mod dec;
+pub use self::dec::*;
 
 #[macro_use]
 pub mod cp;
+pub use self::cp::*;
 
 #[macro_use]
 pub mod add;
+pub use self::add::*;
 
 #[macro_use]
 pub mod sub;
+pub use self::sub::*;
 
 #[macro_use]
 pub mod swap;
+pub use self::swap::*;
 
 #[macro_use]
 pub mod misc;
+pub use self::misc::*;
 
 #[macro_use]
 pub mod ld;
+pub use self::ld::*;
 
 #[macro_use]
 pub mod push;
+pub use self::push::*;
 
 #[macro_use]
 pub mod pop;
+pub use self::pop::*;
 
 #[macro_use]
 pub mod sbc;
 
 #[macro_use]
 pub mod adc;
+pub use self::adc::*;
 
 #[macro_use]
 pub mod rl;
@@ -63,18 +77,23 @@ pub mod sr;
 
 #[macro_use]
 pub mod bit;
+pub use self::bit::*;
 
 #[macro_use]
 pub mod res;
+pub use self::res::*;
 
 #[macro_use]
 pub mod set;
+pub use self::set::*;
 
 #[macro_use]
 pub mod jump;
+pub use self::jump::*;
 
 #[macro_use]
 pub mod rst;
+pub use self::rst::*;
 
 #[macro_use]
 pub mod ret;

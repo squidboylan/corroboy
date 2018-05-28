@@ -126,10 +126,34 @@ macro_rules! get_f {
     }
 }
 
+macro_rules! get_mut_a {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.af.split.upper
+        }
+    }
+}
+
+macro_rules! get_mut_f {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.af.split.lower
+        }
+    }
+}
+
 macro_rules! get_af {
     ($self_: ident) => {
         unsafe {
             $self_.af.whole
+        }
+    }
+}
+
+macro_rules! get_mut_af {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.af.whole
         }
     }
 }
@@ -158,6 +182,30 @@ macro_rules! get_bc {
     }
 }
 
+macro_rules! get_mut_b {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.bc.split.upper
+        }
+    }
+}
+
+macro_rules! get_mut_c {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.bc.split.lower
+        }
+    }
+}
+
+macro_rules! get_mut_bc {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.bc.whole
+        }
+    }
+}
+
 macro_rules! get_d {
     ($self_: ident) => {
         unsafe {
@@ -178,6 +226,30 @@ macro_rules! get_de {
     ($self_: ident) => {
         unsafe {
             $self_.de.whole
+        }
+    }
+}
+
+macro_rules! get_mut_d {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.de.split.upper
+        }
+    }
+}
+
+macro_rules! get_mut_e {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.de.split.lower
+        }
+    }
+}
+
+macro_rules! get_mut_de {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.de.whole
         }
     }
 }
@@ -206,10 +278,42 @@ macro_rules! get_hl {
     }
 }
 
+macro_rules! get_mut_h {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.hl.split.upper
+        }
+    }
+}
+
+macro_rules! get_mut_l {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.hl.split.lower
+        }
+    }
+}
+
+macro_rules! get_mut_hl {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.hl.whole
+        }
+    }
+}
+
 macro_rules! get_sp {
     ($self_: ident) => {
         unsafe {
             $self_.sp.whole
+        }
+    }
+}
+
+macro_rules! get_mut_sp {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.sp.whole
         }
     }
 }
@@ -226,6 +330,14 @@ macro_rules! get_pc {
     ($self_: ident) => {
         unsafe {
             $self_.pc.whole
+        }
+    }
+}
+
+macro_rules! get_mut_pc {
+    ($self_: ident) => {
+        unsafe {
+            &mut $self_.pc.whole
         }
     }
 }
