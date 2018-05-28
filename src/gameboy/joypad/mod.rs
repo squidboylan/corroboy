@@ -91,46 +91,46 @@ impl Joypad {
 
         if bit_4 == 0 && bit_5 == 0 {
             if self.down == true || self.start == true {
-                new_ff00 -= 0b00001000
+                new_ff00 -= 0b00001000;
             }
             if self.up == true || self.select == true {
-                new_ff00 -= 0b00000100
+                new_ff00 -= 0b00000100;
             }
             if self.left == true || self.b == true {
-                new_ff00 -= 0b00000010
+                new_ff00 -= 0b00000010;
             }
             if self.right == true || self.a == true {
-                new_ff00 -= 0b00000001
-            }
-        }
-
-        else if bit_4 == 0 {
-            if self.start == true {
-                new_ff00 -= 0b00001000
-            }
-            if self.select == true {
-                new_ff00 -= 0b00000100
-            }
-            if self.b == true {
-                new_ff00 -= 0b00000010
-            }
-            if self.a == true {
-                new_ff00 -= 0b00000001
+                new_ff00 -= 0b00000001;
             }
         }
 
         else if bit_5 == 0 {
+            if self.start == true {
+                new_ff00 -= 0b00001000;
+            }
+            if self.select == true {
+                new_ff00 -= 0b00000100;
+            }
+            if self.b == true {
+                new_ff00 -= 0b00000010;
+            }
+            if self.a == true {
+                new_ff00 -= 0b00000001;
+            }
+        }
+
+        else if bit_4 == 0 {
             if self.down == true {
-                new_ff00 -= 0b00001000
+                new_ff00 -= 0b00001000;
             }
             if self.up == true {
-                new_ff00 -= 0b00000100
+                new_ff00 -= 0b00000100;
             }
             if self.left == true {
-                new_ff00 -= 0b00000010
+                new_ff00 -= 0b00000010;
             }
             if self.right == true {
-                new_ff00 -= 0b00000001
+                new_ff00 -= 0b00000001;
             }
         }
 
