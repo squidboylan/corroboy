@@ -156,7 +156,7 @@ impl Cpu {
             0x1C => { inc(get_mut_e!(self), get_mut_f!(self)); return 1; },
             0x24 => { inc(get_mut_h!(self), get_mut_f!(self)); return 1; },
             0x2C => { inc(get_mut_l!(self), get_mut_f!(self)); return 1; },
-            0x34 => return inc_hl_val!(self, mem),
+            0x34 => { inc_mem(mem, get_hl!(self), get_mut_f!(self)); return 3; },
 
             0xBF => { cp(get_a!(self), get_a!(self), get_mut_f!(self)); return 1; },
             0xB8 => { cp(get_b!(self), get_a!(self), get_mut_f!(self)); return 1; },
@@ -174,7 +174,7 @@ impl Cpu {
             0x1D => { dec(get_mut_e!(self), get_mut_f!(self)); return 1; },
             0x25 => { dec(get_mut_h!(self), get_mut_f!(self)); return 1; },
             0x2D => { dec(get_mut_l!(self), get_mut_f!(self)); return 1; },
-            0x35 => return dec_hl_val!(self, mem),
+            0x35 => { dec_mem(mem, get_hl!(self), get_mut_f!(self)); return 3; },
 
             0x87 => { add(get_a!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
             0x80 => { add(get_b!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
@@ -207,7 +207,7 @@ impl Cpu {
             0xCB33 => { swap(get_mut_e!(self), get_mut_f!(self)); return 2; },
             0xCB34 => { swap(get_mut_h!(self), get_mut_f!(self)); return 2; },
             0xCB35 => { swap(get_mut_l!(self), get_mut_f!(self)); return 2; },
-            0xCB36 => return swap_hl_val!(self, mem),
+            0xCB36 => { swap_mem(mem, get_hl!(self), get_mut_f!(self)); return 4; },
 
             0x27 => { daa(get_mut_a!(self), get_mut_f!(self)); return 1; },
             0x2F => { cpl(get_mut_a!(self), get_mut_f!(self)); return 1; },
@@ -402,7 +402,7 @@ impl Cpu {
             0xCB03 => { rlc_reg(get_mut_e!(self), get_mut_f!(self)); return 2; },
             0xCB04 => { rlc_reg(get_mut_h!(self), get_mut_f!(self)); return 2; },
             0xCB05 => { rlc_reg(get_mut_l!(self), get_mut_f!(self)); return 2; },
-            0xCB06 => return rlc_hl_val!(self, mem),
+            0xCB06 => { rlc_mem(mem, get_hl!(self), get_mut_f!(self)); return 4; },
 
             0xCB0F => { rrc_reg(get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xCB08 => { rrc_reg(get_mut_b!(self), get_mut_f!(self)); return 2; },
@@ -411,7 +411,7 @@ impl Cpu {
             0xCB0B => { rrc_reg(get_mut_e!(self), get_mut_f!(self)); return 2; },
             0xCB0C => { rrc_reg(get_mut_h!(self), get_mut_f!(self)); return 2; },
             0xCB0D => { rrc_reg(get_mut_l!(self), get_mut_f!(self)); return 2; },
-            0xCB0E => return rrc_hl_val!(self, mem),
+            0xCB0E => { rrc_mem(mem, get_hl!(self), get_mut_f!(self)); return 4; },
 
             0xCB17 => { rl_reg(get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xCB10 => { rl_reg(get_mut_b!(self), get_mut_f!(self)); return 2; },
@@ -420,7 +420,7 @@ impl Cpu {
             0xCB13 => { rl_reg(get_mut_e!(self), get_mut_f!(self)); return 2; },
             0xCB14 => { rl_reg(get_mut_h!(self), get_mut_f!(self)); return 2; },
             0xCB15 => { rl_reg(get_mut_l!(self), get_mut_f!(self)); return 2; },
-            0xCB16 => return rl_hl_val!(self, mem),
+            0xCB16 => { rl_mem(mem, get_hl!(self), get_mut_f!(self)); return 4; },
 
             0xCB1F => { rr_reg(get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xCB18 => { rr_reg(get_mut_b!(self), get_mut_f!(self)); return 2; },
@@ -429,7 +429,7 @@ impl Cpu {
             0xCB1B => { rr_reg(get_mut_e!(self), get_mut_f!(self)); return 2; },
             0xCB1C => { rr_reg(get_mut_h!(self), get_mut_f!(self)); return 2; },
             0xCB1D => { rr_reg(get_mut_l!(self), get_mut_f!(self)); return 2; },
-            0xCB1E => return rr_hl_val!(self, mem),
+            0xCB1E => { rr_mem(mem, get_hl!(self), get_mut_f!(self)); return 4; },
 
             0xCB27 => { sla_reg(get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xCB20 => { sla_reg(get_mut_b!(self), get_mut_f!(self)); return 2; },
@@ -438,7 +438,7 @@ impl Cpu {
             0xCB23 => { sla_reg(get_mut_e!(self), get_mut_f!(self)); return 2; },
             0xCB24 => { sla_reg(get_mut_h!(self), get_mut_f!(self)); return 2; },
             0xCB25 => { sla_reg(get_mut_l!(self), get_mut_f!(self)); return 2; },
-            0xCB26 => return sla_hl_val!(self, mem),
+            0xCB26 => { sla_mem(mem, get_hl!(self), get_mut_f!(self)); return 4; },
 
             0xCB2F => { sra_reg(get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xCB28 => { sra_reg(get_mut_b!(self), get_mut_f!(self)); return 2; },
@@ -447,7 +447,7 @@ impl Cpu {
             0xCB2B => { sra_reg(get_mut_e!(self), get_mut_f!(self)); return 2; },
             0xCB2C => { sra_reg(get_mut_h!(self), get_mut_f!(self)); return 2; },
             0xCB2D => { sra_reg(get_mut_l!(self), get_mut_f!(self)); return 2; },
-            0xCB2E => return sra_hl_val!(self, mem),
+            0xCB2E => { sra_mem(mem, get_hl!(self), get_mut_f!(self)); return 4; },
 
             0xCB3F => { srl_reg(get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xCB38 => { srl_reg(get_mut_b!(self), get_mut_f!(self)); return 2; },
@@ -456,7 +456,7 @@ impl Cpu {
             0xCB3B => { srl_reg(get_mut_e!(self), get_mut_f!(self)); return 2; },
             0xCB3C => { srl_reg(get_mut_h!(self), get_mut_f!(self)); return 2; },
             0xCB3D => { srl_reg(get_mut_l!(self), get_mut_f!(self)); return 2; },
-            0xCB3E => return srl_hl_val!(self, mem),
+            0xCB3E => { srl_mem(mem, get_hl!(self), get_mut_f!(self)); return 4; },
 
             0xCB47 => { bit(get_a!(self), 0, get_mut_f!(self)); return 2; },
             0xCB4F => { bit(get_a!(self), 1, get_mut_f!(self)); return 2; },

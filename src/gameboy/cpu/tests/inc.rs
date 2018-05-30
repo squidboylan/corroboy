@@ -35,8 +35,7 @@ impl Cpu {
 
         set_hl!(self, 0xC000);
         mem.set_mem_u8(get_hl!(self) as usize, 0xF0);
-        let ret = inc_hl_val!(self, mem);
+        inc_mem(mem, get_hl!(self), get_mut_f!(self));
         assert_eq!(mem.get_mem_u8(get_hl!(self) as usize), 0xF1);
-        assert_eq!(ret, 3);
     }
 }

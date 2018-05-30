@@ -1,3 +1,4 @@
+use gameboy::mmu::Mmu;
 // INC n
 
 #[inline(always)]
@@ -10,20 +11,15 @@ pub fn inc(reg: &mut u8, flags: &mut u8) {
     else { *flags &= 0b11010000; }
 }
 
-macro_rules! inc_hl_val {
-    ($self_: ident, $mem: ident) => {{
-        unset_n_flag!($self_);
-        let old_val = $mem.get_mem_u8(get_hl!($self_) as usize);
-        let new_val = old_val + 1;
-        $mem.set_mem_u8(get_hl!($self_) as usize, new_val);
-        if new_val == 0 { set_z_flag!($self_); }
-        else { unset_z_flag!($self_); }
-        if new_val & 0b00011111 == 0b00010000 { set_h_flag!($self_); }
-        else { unset_h_flag!($self_); }
-        3
-    }};
+pub fn inc_mem(mem: &mut Mmu, hl: u16, flags: &mut u8) {
+    let val = mem.get_mem_u8(hl as usize) + 1;
+    mem.set_mem_u8(hl as usize, val);
+    *flags &= 0b10110000;
+    if val == 0 { *flags |= 0b10000000; }
+    else { *flags &= 0b01110000; }
+    if val & 0b00011111 == 0b00010000 { *flags |= 0b00100000; }
+    else { *flags &= 0b11010000; }
 }
-
 
 // INC nn
 
