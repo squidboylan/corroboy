@@ -1,57 +1,32 @@
+use gameboy::mmu::Mmu;
 // JP nn
 
-macro_rules! jp_nn {
-    ($self_: ident, $param: expr) => {{
-        set_pc!($self_, $param);
-        3
-    }};
+pub fn jp(val: u16, pc: &mut u16) {
+    *pc = val;
 }
 
-// JP (HL)
-
-macro_rules! jp_hl {
-    ($self_: ident, $param: expr) => {{
-        set_pc!($self_, get_hl!($self_));
-        3
-    }};
+pub fn jp_nz(val: u16, flags: u8, pc: &mut u16) {
+    if flags & 0b10000000 == 0 {
+        *pc = val;
+    }
 }
 
-// JP cc,nn
-
-macro_rules! jp_nz_nn {
-    ($self_: ident, $param: expr) => {{
-        if get_z_flag!($self_) == 0 {
-            set_pc!($self_, $param);
-        }
-        3
-    }};
+pub fn jp_z(val: u16, flags: u8, pc: &mut u16) {
+    if flags & 0b10000000 != 0 {
+        *pc = val;
+    }
 }
 
-macro_rules! jp_z_nn {
-    ($self_: ident, $param: expr) => {{
-        if get_z_flag!($self_) == 1 {
-            set_pc!($self_, $param);
-        }
-        3
-    }};
+pub fn jp_nc(val: u16, flags: u8, pc: &mut u16) {
+    if flags & 0b00010000 == 0 {
+        *pc = val;
+    }
 }
 
-macro_rules! jp_nc_nn {
-    ($self_: ident, $param: expr) => {{
-        if get_c_flag!($self_) == 0 {
-            set_pc!($self_, $param);
-        }
-        3
-    }};
-}
-
-macro_rules! jp_c_nn {
-    ($self_: ident, $param: expr) => {{
-        if get_c_flag!($self_) == 1 {
-            set_pc!($self_, $param);
-        }
-        3
-    }};
+pub fn jp_c(val: u16, flags: u8, pc: &mut u16) {
+    if flags & 0b00010000 != 0 {
+        *pc = val;
+    }
 }
 
 // JR n
@@ -84,55 +59,35 @@ pub fn jr_c(val: u8, flags: u8, pc: &mut u16) {
     }
 }
 
-// CALL nn
-
-macro_rules! call_nn {
-    ($self_: ident, $mem: ident, $param: expr) => {{
-        $mem.push_u16(get_sp_mut!($self_), get_pc!($self_));
-        set_pc!($self_, $param);
-        3
-    }};
+pub fn call(val: u16, pc: &mut u16, sp: &mut u16, mem: &mut Mmu) {
+    mem.push_u16(sp, *pc);
+    *pc = val;
 }
 
-// CALL cc,nn
-
-macro_rules! call_nz_nn {
-    ($self_: ident, $mem: ident, $param: expr) => {{
-        if get_z_flag!($self_) == 0 {
-            $mem.push_u16(get_sp_mut!($self_), get_pc!($self_));
-            set_pc!($self_, $param);
-        }
-        3
-    }};
+pub fn call_nz(val: u16, flags: u8, pc: &mut u16, sp: &mut u16, mem: &mut Mmu) {
+    if flags & 0b10000000 == 0 {
+        mem.push_u16(sp, *pc);
+        *pc = val;
+    }
 }
 
-macro_rules! call_z_nn {
-    ($self_: ident, $mem: ident, $param: expr) => {{
-        if get_z_flag!($self_) == 1 {
-            $mem.push_u16(get_sp_mut!($self_), get_pc!($self_));
-            set_pc!($self_, $param);
-        }
-        3
-    }};
+pub fn call_z(val: u16, flags: u8, pc: &mut u16, sp: &mut u16, mem: &mut Mmu) {
+    if flags & 0b10000000 != 0 {
+        mem.push_u16(sp, *pc);
+        *pc = val;
+    }
 }
 
-macro_rules! call_nc_nn {
-    ($self_: ident, $mem: ident, $param: expr) => {{
-        if get_c_flag!($self_) == 0 {
-            $mem.push_u16(get_sp_mut!($self_), get_pc!($self_));
-            set_pc!($self_, $param);
-        }
-        3
-    }};
+pub fn call_nc(val: u16, flags: u8, pc: &mut u16, sp: &mut u16, mem: &mut Mmu) {
+    if flags & 0b00010000 == 0 {
+        mem.push_u16(sp, *pc);
+        *pc = val;
+    }
 }
 
-macro_rules! call_c_nn {
-    ($self_: ident, $mem: ident, $param: expr) => {{
-        if get_c_flag!($self_) == 1 {
-            $mem.push_u16(get_sp_mut!($self_), get_pc!($self_));
-            set_pc!($self_, $param);
-        }
-        3
-    }};
+pub fn call_c(val: u16, flags: u8, pc: &mut u16, sp: &mut u16, mem: &mut Mmu) {
+    if flags & 0b00010000 != 0 {
+        mem.push_u16(sp, *pc);
+        *pc = val;
+    }
 }
-

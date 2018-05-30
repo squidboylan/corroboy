@@ -216,7 +216,7 @@ impl Cpu {
             0x3F => { scf(get_mut_f!(self)); return 1; },
 
             // JP (HL)
-            0xE9 => return jp_hl!(self, param),
+            0xE9 => { jp(get_hl!(self), get_mut_pc!(self)); return 3; },
 
             // RST nn
             0xC7 => { rst(0x00, mem, get_mut_sp!(self), get_mut_pc!(self)); return 8; },
@@ -691,20 +691,20 @@ impl Cpu {
             0x08 => { ld_mem_16bit(param, mem, get_sp!(self)); return 5; },
 
             // CALL
-            0xCD => return call_nn!(self, mem, param),
+            0xCD => { call(param, get_mut_pc!(self), get_mut_sp!(self), mem); return 3; },
 
-            0xC4 => return call_nz_nn!(self, mem, param),
-            0xCC => return call_z_nn!(self, mem, param),
-            0xD4 => return call_nc_nn!(self, mem, param),
-            0xDC => return call_c_nn!(self, mem, param),
+            0xC4 => { call_nz(param, get_f!(self), get_mut_pc!(self), get_mut_sp!(self), mem); return 3; },
+            0xCC => { call_z(param, get_f!(self), get_mut_pc!(self), get_mut_sp!(self), mem); return 3; },
+            0xD4 => { call_nc(param, get_f!(self), get_mut_pc!(self), get_mut_sp!(self), mem); return 3; },
+            0xDC => { call_c(param, get_f!(self), get_mut_pc!(self), get_mut_sp!(self), mem); return 3; },
 
             // JUMP
-            0xC3 => return jp_nn!(self,  param),
+            0xC3 => { jp(param, get_mut_pc!(self)); return 3; },
 
-            0xC2 => return jp_nz_nn!(self,  param),
-            0xCA => return jp_z_nn!(self,  param),
-            0xD2 => return jp_nc_nn!(self,  param),
-            0xDA => return jp_c_nn!(self,  param),
+            0xC2 => { jp_nz(param, get_f!(self), get_mut_pc!(self)); return 3; },
+            0xCA => { jp_z(param, get_f!(self), get_mut_pc!(self)); return 3; },
+            0xD2 => { jp_nc(param, get_f!(self), get_mut_pc!(self)); return 3; },
+            0xDA => { jp_c(param, get_f!(self), get_mut_pc!(self)); return 3; },
 
             0xFA => { ld_reg(mem.get_mem_u8(param as usize), get_mut_a!(self)); return 4; },
 
