@@ -235,7 +235,7 @@ impl Cpu {
             0x7B => { ld_reg(get_e!(self), get_mut_a!(self)); return 1; },
             0x7C => { ld_reg(get_h!(self), get_mut_a!(self)); return 1; },
             0x7D => { ld_reg(get_l!(self), get_mut_a!(self)); return 1; },
-            0x7E => return ld_a_hl_val!(self, mem),
+            0x7E => { ld_reg(mem.get_mem_u8(get_hl!(self) as usize), get_mut_a!(self)); return 2; },
             0x47 => { ld_reg(get_a!(self), get_mut_b!(self)); return 1; },
             0x40 => { ld_reg(get_b!(self), get_mut_b!(self)); return 1; },
             0x41 => { ld_reg(get_c!(self), get_mut_b!(self)); return 1; },
@@ -243,7 +243,7 @@ impl Cpu {
             0x43 => { ld_reg(get_e!(self), get_mut_b!(self)); return 1; },
             0x44 => { ld_reg(get_h!(self), get_mut_b!(self)); return 1; },
             0x45 => { ld_reg(get_l!(self), get_mut_b!(self)); return 1; },
-            0x46 => return ld_b_hl_val!(self, mem),
+            0x46 => { ld_reg(mem.get_mem_u8(get_hl!(self) as usize), get_mut_b!(self)); return 2; },
             0x4F => { ld_reg(get_a!(self), get_mut_c!(self)); return 1; },
             0x48 => { ld_reg(get_b!(self), get_mut_c!(self)); return 1; },
             0x49 => { ld_reg(get_c!(self), get_mut_c!(self)); return 1; },
@@ -251,7 +251,7 @@ impl Cpu {
             0x4B => { ld_reg(get_e!(self), get_mut_c!(self)); return 1; },
             0x4C => { ld_reg(get_h!(self), get_mut_c!(self)); return 1; },
             0x4D => { ld_reg(get_l!(self), get_mut_c!(self)); return 1; },
-            0x4E => return ld_c_hl_val!(self, mem),
+            0x4E => { ld_reg(mem.get_mem_u8(get_hl!(self) as usize), get_mut_c!(self)); return 2; },
             0x57 => { ld_reg(get_a!(self), get_mut_d!(self)); return 1; },
             0x50 => { ld_reg(get_b!(self), get_mut_d!(self)); return 1; },
             0x51 => { ld_reg(get_c!(self), get_mut_d!(self)); return 1; },
@@ -259,7 +259,7 @@ impl Cpu {
             0x53 => { ld_reg(get_e!(self), get_mut_d!(self)); return 1; },
             0x54 => { ld_reg(get_h!(self), get_mut_d!(self)); return 1; },
             0x55 => { ld_reg(get_l!(self), get_mut_d!(self)); return 1; },
-            0x56 => return ld_d_hl_val!(self, mem),
+            0x56 => { ld_reg(mem.get_mem_u8(get_hl!(self) as usize), get_mut_d!(self)); return 2; },
             0x5F => { ld_reg(get_a!(self), get_mut_e!(self)); return 1; },
             0x58 => { ld_reg(get_b!(self), get_mut_e!(self)); return 1; },
             0x59 => { ld_reg(get_c!(self), get_mut_e!(self)); return 1; },
@@ -267,7 +267,7 @@ impl Cpu {
             0x5B => { ld_reg(get_e!(self), get_mut_e!(self)); return 1; },
             0x5C => { ld_reg(get_h!(self), get_mut_e!(self)); return 1; },
             0x5D => { ld_reg(get_l!(self), get_mut_e!(self)); return 1; },
-            0x5E => return ld_e_hl_val!(self, mem),
+            0x5E => { ld_reg(mem.get_mem_u8(get_hl!(self) as usize), get_mut_e!(self)); return 2; },
             0x67 => { ld_reg(get_a!(self), get_mut_h!(self)); return 1; },
             0x60 => { ld_reg(get_b!(self), get_mut_h!(self)); return 1; },
             0x61 => { ld_reg(get_c!(self), get_mut_h!(self)); return 1; },
@@ -275,7 +275,7 @@ impl Cpu {
             0x63 => { ld_reg(get_e!(self), get_mut_h!(self)); return 1; },
             0x64 => { ld_reg(get_h!(self), get_mut_h!(self)); return 1; },
             0x65 => { ld_reg(get_l!(self), get_mut_h!(self)); return 1; },
-            0x66 => return ld_h_hl_val!(self, mem),
+            0x66 => { ld_reg(mem.get_mem_u8(get_hl!(self) as usize), get_mut_h!(self)); return 2; },
             0x6F => { ld_reg(get_a!(self), get_mut_l!(self)); return 1; },
             0x68 => { ld_reg(get_b!(self), get_mut_l!(self)); return 1; },
             0x69 => { ld_reg(get_c!(self), get_mut_l!(self)); return 1; },
@@ -283,20 +283,20 @@ impl Cpu {
             0x6B => { ld_reg(get_e!(self), get_mut_l!(self)); return 1; },
             0x6C => { ld_reg(get_h!(self), get_mut_l!(self)); return 1; },
             0x6D => { ld_reg(get_l!(self), get_mut_l!(self)); return 1; },
-            0x6E => return ld_l_hl_val!(self, mem),
+            0x6E => { ld_reg(mem.get_mem_u8(get_hl!(self) as usize), get_mut_l!(self)); return 2; },
 
-            0x0A => return ld_a_bc_val!(self, mem),
-            0x1A => return ld_a_de_val!(self, mem),
+            0x0A => { ld_reg(mem.get_mem_u8(get_bc!(self) as usize), get_mut_a!(self)); return 2; },
+            0x1A => { ld_reg(mem.get_mem_u8(get_de!(self) as usize), get_mut_a!(self)); return 2; },
 
-            0x77 => return ld_hl_val_a!(self, mem),
-            0x70 => return ld_hl_val_b!(self, mem),
-            0x71 => return ld_hl_val_c!(self, mem),
-            0x72 => return ld_hl_val_d!(self, mem),
-            0x73 => return ld_hl_val_e!(self, mem),
-            0x74 => return ld_hl_val_h!(self, mem),
-            0x75 => return ld_hl_val_l!(self, mem),
-            0x02 => return ld_bc_val_a!(self, mem),
-            0x12 => return ld_de_val_a!(self, mem),
+            0x77 => { ld_mem(get_hl!(self), mem, get_a!(self)); return 2; },
+            0x70 => { ld_mem(get_hl!(self), mem, get_b!(self)); return 2; },
+            0x71 => { ld_mem(get_hl!(self), mem, get_c!(self)); return 2; },
+            0x72 => { ld_mem(get_hl!(self), mem, get_d!(self)); return 2; },
+            0x73 => { ld_mem(get_hl!(self), mem, get_e!(self)); return 2; },
+            0x74 => { ld_mem(get_hl!(self), mem, get_h!(self)); return 2; },
+            0x75 => { ld_mem(get_hl!(self), mem, get_l!(self)); return 2; },
+            0x02 => { ld_mem(get_bc!(self), mem, get_a!(self)); return 2; },
+            0x12 => { ld_mem(get_de!(self), mem, get_a!(self)); return 2; },
 
             0xA7 => { and(get_a!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
             0xA0 => { and(get_b!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
@@ -339,16 +339,16 @@ impl Cpu {
             0x95 => { sub(get_l!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
             0x96 => { sub(mem.get_mem_u8(get_hl!(self) as usize), get_mut_a!(self), get_mut_f!(self)); return 1; },
 
-            0xF9 => return ld_sp_hl!(self),
+            0xF9 => { ld_reg_16bit(get_hl!(self), get_mut_sp!(self)); return 2; },
 
-            0xE2 => return ld_c_val_a!(self, mem),
-            0xF2 => return ld_a_c_val!(self, mem),
+            0xE2 => { ld_mem(get_c!(self) as u16 + 0xFF00, mem, get_a!(self)); return 2; },
+            0xF2 => { ld_reg(mem.get_mem_u8(get_c!(self) as usize + 0xFF00), get_mut_a!(self)); return 2; },
 
-            0x22 => return ldi_hl_a!(self, mem),
-            0x2A => return ldi_a_hl!(self, mem),
+            0x22 => { ldi_hl_a(get_mut_a!(self), get_mut_hl!(self), mem); return 2; },
+            0x2A => { ldi_a_hl(get_mut_a!(self), get_mut_hl!(self), mem); return 2; },
 
-            0x32 => return ldd_hl_a!(self, mem),
-            0x3A => return ldd_a_hl!(self, mem),
+            0x32 => { ldd_hl_a(get_mut_a!(self), get_mut_hl!(self), mem); return 2; },
+            0x3A => { ldd_a_hl(get_mut_a!(self), get_mut_hl!(self), mem); return 2; },
 
             0xF1 => { pop(get_mut_af!(self), &mem, get_mut_sp!(self)); return 3; },
             0xC1 => { pop(get_mut_bc!(self), &mem, get_mut_sp!(self)); return 3; },
@@ -681,14 +681,14 @@ impl Cpu {
     fn op_param_16_bit(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         let param = self.get_param_16_bit(mem);
         match opcode {
-            0x01 => return ld_bc_param!(self, param),
-            0x11 => return ld_de_param!(self, param),
-            0x21 => return ld_hl_param!(self, param),
-            0x31 => return ld_sp_param!(self, param),
+            0x01 => { ld_reg_16bit(param, get_mut_bc!(self)); return 3; },
+            0x11 => { ld_reg_16bit(param, get_mut_de!(self)); return 3; },
+            0x21 => { ld_reg_16bit(param, get_mut_hl!(self)); return 3; },
+            0x31 => { ld_reg_16bit(param, get_mut_sp!(self)); return 3; },
 
-            0xEA => return ld_nn_val_a!(self, mem, param),
+            0xEA => { ld_mem(param, mem, get_a!(self)); return 4; },
 
-            0x08 => return ld_param_val_sp!(self, mem, param),
+            0x08 => { ld_mem_16bit(param, mem, get_sp!(self)); return 5; },
 
             // CALL
             0xCD => return call_nn!(self, mem, param),
@@ -706,7 +706,7 @@ impl Cpu {
             0xD2 => return jp_nc_nn!(self,  param),
             0xDA => return jp_c_nn!(self,  param),
 
-            0xFA => return ld_a_nn_val!(self, mem, param),
+            0xFA => { ld_reg(mem.get_mem_u8(param as usize), get_mut_a!(self)); return 4; },
 
             _ => { println!("opcode dispatched to 16 bit param executer but that didnt match the op"); return 1; },
         };
@@ -723,11 +723,11 @@ impl Cpu {
             0x26 => { ld_reg(param, get_mut_h!(self)); return 2; },
             0x2E => { ld_reg(param, get_mut_l!(self)); return 2; },
 
-            0x36 => return ld_hl_val_n!(self, mem, param),
-            0xE0 => return ld_n_val_a!(self, mem, param),
+            0x36 => { ld_mem(get_hl!(self), mem, param); return 3; },
+            0xE0 => { ld_mem(param as u16 + 0xFF00, mem, get_a!(self)); return 3; },
             0xEE => { xor(param, get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xF6 => { or(param, get_mut_a!(self), get_mut_f!(self)); return 2; },
-            0xF0 => return ld_a_n_val!(self, mem, param),
+            0xF0 => { ld_reg(mem.get_mem_u8(param as usize + 0xFF00), get_mut_a!(self)); return 3; }
 
             0xE6 => { and(param, get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xC6 => { add(param, get_mut_a!(self), get_mut_f!(self)); return 2; },
@@ -751,7 +751,7 @@ impl Cpu {
             0x30 => { jr_nc(param, get_f!(self), get_mut_pc!(self)); return 2; },
             0x38 => { jr_c(param, get_f!(self), get_mut_pc!(self)); return 2; },
 
-            0xF8 => return ldhl_sp_n!(self, param),
+            0xF8 => { ldhl_sp_n(param, get_sp!(self), get_mut_hl!(self), get_mut_f!(self)); return 3; },
             _ => { println!("opcode dispatched to 8 bit param executer but that didnt match the op"); return 1; },
         };
     }
