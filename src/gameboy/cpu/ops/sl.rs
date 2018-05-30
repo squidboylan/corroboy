@@ -2,95 +2,13 @@
 // SLA N
 // Shift N left, old bit 7 goes into C flag
 
-macro_rules! sla_a {
-    ($self_: ident) => {{
-        unset_n_flag!($self_);
-        unset_h_flag!($self_);
-        if ((get_a!($self_) & 0b10000000) >> 7) == 1 { set_c_flag!($self_); }
-        else { unset_c_flag!($self_); }
-        set_a!($self_, (get_a!($self_) << 1));
-        if get_a!($self_) == 0 { set_z_flag!($self_); }
-        else { unset_z_flag!($self_); }
-        2
-    }};
-}
-
-macro_rules! sla_b {
-    ($self_: ident) => {{
-        unset_n_flag!($self_);
-        unset_h_flag!($self_);
-        if ((get_b!($self_) & 0b10000000) >> 7) == 1 { set_c_flag!($self_); }
-        else { unset_c_flag!($self_); }
-        set_b!($self_, (get_b!($self_) << 1));
-        if get_b!($self_) == 0 { set_z_flag!($self_); }
-        else { unset_z_flag!($self_); }
-        2
-    }};
-}
-
-macro_rules! sla_c {
-    ($self_: ident) => {{
-        unset_n_flag!($self_);
-        unset_h_flag!($self_);
-        if ((get_c!($self_) & 0b10000000) >> 7) == 1 { set_c_flag!($self_); }
-        else { unset_c_flag!($self_); }
-        set_c!($self_, (get_c!($self_) << 1));
-        if get_c!($self_) == 0 { set_z_flag!($self_); }
-        else { unset_z_flag!($self_); }
-        2
-    }};
-}
-
-macro_rules! sla_d {
-    ($self_: ident) => {{
-        unset_n_flag!($self_);
-        unset_h_flag!($self_);
-        if ((get_d!($self_) & 0b10000000) >> 7) == 1 { set_c_flag!($self_); }
-        else { unset_c_flag!($self_); }
-        set_d!($self_, (get_d!($self_) << 1));
-        if get_d!($self_) == 0 { set_z_flag!($self_); }
-        else { unset_z_flag!($self_); }
-        2
-    }};
-}
-
-macro_rules! sla_e {
-    ($self_: ident) => {{
-        unset_n_flag!($self_);
-        unset_h_flag!($self_);
-        if ((get_e!($self_) & 0b10000000) >> 7) == 1 { set_c_flag!($self_); }
-        else { unset_c_flag!($self_); }
-        set_e!($self_, (get_e!($self_) << 1));
-        if get_e!($self_) == 0 { set_z_flag!($self_); }
-        else { unset_z_flag!($self_); }
-        2
-    }};
-}
-
-macro_rules! sla_h {
-    ($self_: ident) => {{
-        unset_n_flag!($self_);
-        unset_h_flag!($self_);
-        if ((get_h!($self_) & 0b10000000) >> 7) == 1 { set_c_flag!($self_); }
-        else { unset_c_flag!($self_); }
-        set_h!($self_, (get_h!($self_) << 1));
-        if get_h!($self_) == 0 { set_z_flag!($self_); }
-        else { unset_z_flag!($self_); }
-        2
-    }};
-}
-
-macro_rules! sla_l {
-    ($self_: ident) => {{
-        unset_n_flag!($self_);
-        unset_h_flag!($self_);
-        if ((get_l!($self_) & 0b10000000) >> 7) == 1 { set_c_flag!($self_); }
-        else { unset_c_flag!($self_); }
-        set_l!($self_, (get_l!($self_) << 1));
-        if get_l!($self_) == 0 { set_z_flag!($self_); }
-        else { unset_z_flag!($self_); }
-        2
-    }};
+pub fn sla_reg(reg: &mut u8, flags: &mut u8) {
+    *flags &= 0b10010000;
+    if *reg & 0b10000000 == 1 { *flags |= 0b00010000; }
+    else { *flags &= 0b11101111; }
+    *reg = *reg << 1;
+    if *reg == 0 { *flags |= 0b10000000; }
+    else { *flags &= 0b01111111; }
 }
 
 macro_rules! sla_hl_val {

@@ -65,15 +65,19 @@ pub use self::adc::*;
 
 #[macro_use]
 pub mod rl;
+pub use self::rl::*;
 
 #[macro_use]
 pub mod rr;
+pub use self::rr::*;
 
 #[macro_use]
 pub mod sl;
+pub use self::sl::*;
 
 #[macro_use]
 pub mod sr;
+pub use self::sr::*;
 
 #[macro_use]
 pub mod bit;
@@ -97,4 +101,4 @@ pub use self::rst::*;
 
 #[macro_use]
 pub mod ret;
-
+pub use self::ret::*;

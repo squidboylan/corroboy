@@ -1,56 +1,31 @@
+use gameboy::mmu::Mmu;
+
 // RET
 
-macro_rules! ret {
-    ($self_: ident, $mem: ident) => {{
-        set_pc!($self_, $mem.pop_u16(get_sp_mut!($self_)));
-        2
-    }};
+pub fn ret(mem: &mut Mmu, pc: &mut u16, sp: &mut u16) {
+    *pc = mem.pop_u16(sp);
 }
 
-// RETI
-
-macro_rules! reti {
-    ($self_: ident, $mem: ident) => {{
-        set_pc!($self_, $mem.pop_u16(get_sp_mut!($self_)));
-        $self_.ime = 1;
-        2
-    }};
+pub fn ret_nz(mem: &mut Mmu, flags: u8, pc: &mut u16, sp: &mut u16) {
+    if flags & 0b10000000 == 0 {
+        *pc = mem.pop_u16(sp);
+    }
 }
 
-// RET nn
-macro_rules! ret_nz {
-    ($self_: ident, $mem: ident) => {{
-        if get_z_flag!($self_) == 0 {
-            ret!($self_, $mem);
-        }
-        2
-    }};
+pub fn ret_z(mem: &mut Mmu, flags: u8, pc: &mut u16, sp: &mut u16) {
+    if flags & 0b10000000 != 0 {
+        *pc = mem.pop_u16(sp);
+    }
 }
 
-macro_rules! ret_z {
-    ($self_: ident, $mem: ident) => {{
-        if get_z_flag!($self_) == 1 {
-            ret!($self_, $mem);
-        }
-        2
-    }};
+pub fn ret_nc(mem: &mut Mmu, flags: u8, pc: &mut u16, sp: &mut u16) {
+    if flags & 0b00010000 == 0 {
+        *pc = mem.pop_u16(sp);
+    }
 }
 
-macro_rules! ret_nc {
-    ($self_: ident, $mem: ident) => {{
-        if get_c_flag!($self_) == 0 {
-            ret!($self_, $mem);
-        }
-        2
-    }};
+pub fn ret_c(mem: &mut Mmu, flags: u8, pc: &mut u16, sp: &mut u16) {
+    if flags & 0b00010000 != 0 {
+        *pc = mem.pop_u16(sp);
+    }
 }
-
-macro_rules! ret_c {
-    ($self_: ident, $mem: ident) => {{
-        if get_c_flag!($self_) == 1 {
-            ret!($self_, $mem);
-        }
-        2
-    }};
-}
-
