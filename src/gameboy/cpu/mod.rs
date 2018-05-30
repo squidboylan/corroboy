@@ -371,14 +371,14 @@ impl Cpu {
             0x8D => { adc(get_l!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
             0x8E => { adc(mem.get_mem_u8(get_hl!(self) as usize), get_mut_a!(self), get_mut_f!(self)); return 2; },
 
-            0x9F => return sbc_a_a!(self),
-            0x98 => return sbc_a_b!(self),
-            0x99 => return sbc_a_c!(self),
-            0x9A => return sbc_a_d!(self),
-            0x9B => return sbc_a_e!(self),
-            0x9C => return sbc_a_h!(self),
-            0x9D => return sbc_a_l!(self),
-            0x9E => return sbc_a_hl_val!(self, mem),
+            0x9F => { sbc(get_a!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x98 => { sbc(get_b!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x99 => { sbc(get_c!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x9A => { sbc(get_d!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x9B => { sbc(get_e!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x9C => { sbc(get_h!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x9D => { sbc(get_l!(self), get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x9E => { sbc(mem.get_mem_u8(get_hl!(self) as usize), get_mut_a!(self), get_mut_f!(self)); return 2; },
 
             // Interrupt disabling and enabling
             0xF3 => { di(&mut self.ime); return 1; },
@@ -738,7 +738,7 @@ impl Cpu {
 
             0xCE => { adc(param, get_mut_a!(self), get_mut_f!(self)); return 2; },
 
-            0xDE => return sbc_a_param!(self, param),
+            0xDE => { sbc(param, get_mut_a!(self), get_mut_f!(self)); return 2; },
 
             0xFE => { cp(param, get_a!(self), get_mut_f!(self)); return 2; },
 

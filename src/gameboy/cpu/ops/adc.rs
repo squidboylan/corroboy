@@ -1,9 +1,10 @@
 // ADC A,n
 
+// TODO FIX THIS
 pub fn adc(val: u8, a: &mut u8, flags: &mut u8) {
     let old_a = *a;
     *a += val + ((*flags & 0b00010000) >> 4);
-    *flags |= 0b01000000;
+    *flags &= 0b10111111;
     if *a == 0 { *flags |= 0b10000000; }
     else { *flags &= 0b01111111; }
     if old_a > *a { *flags |= 0b00010000; }

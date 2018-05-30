@@ -58,6 +58,7 @@ pub use self::pop::*;
 
 #[macro_use]
 pub mod sbc;
+pub use self::sbc::*;
 
 #[macro_use]
 pub mod adc;
