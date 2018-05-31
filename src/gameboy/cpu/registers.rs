@@ -1,3 +1,4 @@
+#[allow(unused_macros)]
 macro_rules! set_a {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -6,6 +7,7 @@ macro_rules! set_a {
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_f {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -14,14 +16,14 @@ macro_rules! set_f {
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_af {
     ($self_: ident, $x:expr) => {
-        unsafe {
-            $self_.af.whole = $x;
-        }
+        $self_.af.whole = $x;
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_b {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -30,6 +32,7 @@ macro_rules! set_b {
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_c {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -38,14 +41,14 @@ macro_rules! set_c {
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_bc {
     ($self_: ident, $x:expr) => {
-        unsafe {
-            $self_.bc.whole = $x;
-        }
+        $self_.bc.whole = $x;
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_d {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -54,6 +57,7 @@ macro_rules! set_d {
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_e {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -62,14 +66,14 @@ macro_rules! set_e {
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_de {
     ($self_: ident, $x:expr) => {
-        unsafe {
-            $self_.de.whole = $x;
-        }
+        $self_.de.whole = $x;
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_h {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -78,6 +82,7 @@ macro_rules! set_h {
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_l {
     ($self_: ident, $x:expr) => {
         unsafe {
@@ -86,27 +91,24 @@ macro_rules! set_l {
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_hl {
     ($self_: ident, $x:expr) => {
-        unsafe {
-            $self_.hl.whole = $x;
-        }
+        $self_.hl.whole = $x;
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_sp {
     ($self_: ident, $x:expr) => {
-        unsafe {
-            $self_.sp.whole = $x;
-        }
+        $self_.sp.whole = $x;
     };
 }
 
+#[allow(unused_macros)]
 macro_rules! set_pc {
     ($self_: ident, $x:expr) => {
-        unsafe {
-            $self_.pc.whole = $x;
-        }
+        $self_.pc.whole = $x;
     };
 }
 
@@ -342,6 +344,7 @@ macro_rules! get_mut_pc {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! get_z_flag {
     ($self_: ident) => {
         unsafe {
@@ -350,6 +353,7 @@ macro_rules! get_z_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! get_n_flag {
     ($self_: ident) => {
         unsafe {
@@ -358,6 +362,7 @@ macro_rules! get_n_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! get_h_flag {
     ($self_: ident) => {
         unsafe {
@@ -366,6 +371,7 @@ macro_rules! get_h_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! get_c_flag {
     ($self_: ident) => {
         unsafe {
@@ -374,6 +380,7 @@ macro_rules! get_c_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! set_z_flag {
     ($self_: ident) => {
         unsafe {
@@ -382,6 +389,7 @@ macro_rules! set_z_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! set_n_flag {
     ($self_: ident) => {
         unsafe {
@@ -390,6 +398,7 @@ macro_rules! set_n_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! set_h_flag {
     ($self_: ident) => {
         unsafe {
@@ -398,6 +407,7 @@ macro_rules! set_h_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! set_c_flag {
     ($self_: ident) => {
         unsafe {
@@ -406,6 +416,7 @@ macro_rules! set_c_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! unset_z_flag {
     ($self_: ident) => {
         unsafe {
@@ -414,6 +425,7 @@ macro_rules! unset_z_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! unset_n_flag {
     ($self_: ident) => {
         unsafe {
@@ -422,6 +434,7 @@ macro_rules! unset_n_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! unset_h_flag {
     ($self_: ident) => {
         unsafe {
@@ -430,6 +443,7 @@ macro_rules! unset_h_flag {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! unset_c_flag {
     ($self_: ident) => {
         unsafe {

@@ -49,26 +49,22 @@ fn main() {
         return;
     }
 
-    let mut bios_path_option: Option<String> = matches.opt_str("b");
-    let mut rom_path_option: Option<String> = matches.opt_str("R");
+    let bios_path_option: Option<String> = matches.opt_str("b");
+    let rom_path_option: Option<String> = matches.opt_str("R");
 
-    let mut bios_path: String = String::new();
+    let bios_path: String;// = String::new();
     if bios_path_option == None {
         print_usage(&program, opts);
         return;
     }
-    else {
-        bios_path = bios_path_option.unwrap();
-    }
+    bios_path = bios_path_option.unwrap();
 
-    let mut rom_path: String = String::new();
+    let rom_path: String;// = String::new();
     if rom_path_option == None {
         print_usage(&program, opts);
         return;
     }
-    else {
-        rom_path = rom_path_option.unwrap();
-    }
+    rom_path = rom_path_option.unwrap();
 
     // Setup graphics window
     let mut window: Window =  WindowSettings::new(
@@ -97,11 +93,11 @@ fn main() {
         events.set_max_fps(60);
         PROFILER.lock().unwrap().start("./my-prof.profile").unwrap();
         while let Some(e) = events.next(&mut window) {
-            if let Some(r) = e.render_args() {
+            if let Some(_r) = e.render_args() {
                 gb.render(&mut window, &e);
             }
 
-            if let Some(u) = e.update_args() {
+            if let Some(_u) = e.update_args() {
                 gb.run_game();
             }
 

@@ -213,8 +213,7 @@ fn dec() {
 fn bit() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
-    derp.test_bit(&mut mem);
+    derp.test_bit();
 }
 
 #[test]

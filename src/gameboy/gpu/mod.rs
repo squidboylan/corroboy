@@ -184,13 +184,12 @@ impl Gpu {
                 y += 1;
             }
 
-            let factory = window.factory.clone();
             let mut tex_settings = TextureSettings::new();
             tex_settings.set_mag(piston_window::Filter::Nearest);
             self.tex = Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap();
 
             if self.get_current_state(mem) == 0 {
-                window.draw_2d(e, |c, g| {
+                window.draw_2d(e, |_c, g| {
                     clear([0.0; 4], g);
                 });
             }
@@ -380,7 +379,6 @@ impl Gpu {
 
     fn build_tile_data(&mut self, mem: &mut Mmu) {
         self.bg_tiles = Vec::new();
-        let mut curr = self.background_data_bot;
         for i in 0..256 {
             let mut new = Tile::new();
             for j in 0..8 {

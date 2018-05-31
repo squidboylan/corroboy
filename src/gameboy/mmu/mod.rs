@@ -144,9 +144,9 @@ impl Mmu {
     pub fn pop_u16(&self, sp: &mut u16) -> u16{
         let mut val: u16 = 0;
         match *sp {
-            0xC000 ... 0xDFFF => { val = (self.ram[(*sp - 0xC000) as usize] as u16); *sp = *sp + 1; val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8); *sp = *sp + 1; },
-            0x8000 ... 0x9FFF => { val = (self.video_ram[(*sp - 0x8000) as usize] as u16); *sp = *sp + 1; val = val + ((self.video_ram[(*sp - 0x8000) as usize] as u16) << 8); *sp = *sp + 1; },
-            0xFF80 ... 0xFFFE => { val = (self.small_ram[(*sp - 0xFF80) as usize] as u16); *sp = *sp + 1; val = val + ((self.small_ram[(*sp - 0xFF80) as usize] as u16) << 8); *sp = *sp + 1; },
+            0xC000 ... 0xDFFF => { val = self.ram[(*sp - 0xC000) as usize] as u16; *sp = *sp + 1; val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8); *sp = *sp + 1; },
+            0x8000 ... 0x9FFF => { val = self.video_ram[(*sp - 0x8000) as usize] as u16; *sp = *sp + 1; val = val + ((self.video_ram[(*sp - 0x8000) as usize] as u16) << 8); *sp = *sp + 1; },
+            0xFF80 ... 0xFFFE => { val = self.small_ram[(*sp - 0xFF80) as usize] as u16; *sp = *sp + 1; val = val + ((self.small_ram[(*sp - 0xFF80) as usize] as u16) << 8); *sp = *sp + 1; },
             _ => println!("pop mem u16 that mmu cant handle, location: {:x}", *sp),
         }
         val
