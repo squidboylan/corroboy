@@ -6,7 +6,6 @@ extern crate graphics;
 extern crate glutin_window;
 extern crate opengl_graphics;
 extern crate image;
-extern crate cpuprofiler;
 extern crate getopts;
 extern crate gfx_device_gl;
 
@@ -17,7 +16,6 @@ use piston_window::PistonWindow as Window;
 use opengl_graphics::{ OpenGL };
 #[allow(unused_imports)]
 use std::time::{Duration, Instant};
-use cpuprofiler::PROFILER;
 use getopts::Options;
 
 use std::env;
@@ -91,7 +89,6 @@ fn main() {
         let mut events: Events = Events::new(EventSettings::new());
         events.set_ups(60);
         events.set_max_fps(60);
-        PROFILER.lock().unwrap().start("./my-prof.profile").unwrap();
         while let Some(e) = events.next(&mut window) {
             if let Some(_r) = e.render_args() {
                 gb.render(&mut window, &e);
@@ -109,6 +106,5 @@ fn main() {
                 gb.release_input(inp);
             }
         }
-        PROFILER.lock().unwrap().stop().unwrap();
     }
 }
