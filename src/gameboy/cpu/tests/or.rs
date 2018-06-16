@@ -47,6 +47,27 @@ impl Cpu {
         set_a!(self, 0x30);
         or(0x30, get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0x30);
+
+        // Test flags
+        set_f!(self, 0xF0);
+        set_a!(self, 0x00);
+        set_b!(self, 0x00);
+        or(get_b!(self), get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0x00);
+        assert_eq!(get_z_flag!(self), 1);
+        assert_eq!(get_n_flag!(self), 0);
+        assert_eq!(get_h_flag!(self), 0);
+        assert_eq!(get_c_flag!(self), 0);
+
+        set_f!(self, 0xF0);
+        set_a!(self, 0x01);
+        set_b!(self, 0x10);
+        or(get_b!(self), get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0x11);
+        assert_eq!(get_z_flag!(self), 0);
+        assert_eq!(get_n_flag!(self), 0);
+        assert_eq!(get_h_flag!(self), 0);
+        assert_eq!(get_c_flag!(self), 0);
     }
 
 }

@@ -11,6 +11,10 @@ mod bit;
 mod cp;
 mod swap;
 mod rst;
+mod rl;
+mod rr;
+mod sl;
+mod sr;
 
 use super::super::mmu::Mmu;
 use gameboy::cpu::Cpu;
@@ -254,4 +258,35 @@ fn rst() {
     let mut derp = Cpu::new();
     let mut mem = Mmu::new();
     derp.test_rst(&mut mem);
+}
+
+
+#[test]
+fn rl() {
+    // Get a new CPU in to start at a known state
+    let mut derp = Cpu::new();
+    derp.test_rl();
+}
+
+
+#[test]
+fn rr() {
+    // Get a new CPU in to start at a known state
+    let mut derp = Cpu::new();
+    derp.test_rr();
+}
+
+#[test]
+fn sl() {
+    // Get a new CPU in to start at a known state
+    let mut derp = Cpu::new();
+    derp.test_sl();
+}
+
+
+#[test]
+fn sr() {
+    // Get a new CPU in to start at a known state
+    let mut derp = Cpu::new();
+    derp.test_sr();
 }

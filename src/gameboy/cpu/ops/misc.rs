@@ -2,10 +2,17 @@
 // Decimal adjust register A
 
 pub fn daa(a: &mut u8, flags: &mut u8) {
-    if *a & 0b00001111 > 9 || *flags & 0b00100000 != 0 {
+    if *flags & 0b00100000 != 0 {
         *a += 0x06;
     }
-    if (*a & 0b11110000) >> 4 > 9 || *flags & 0b00010000 != 0 {
+    if *a & 0b00001111 > 9 {
+        *a += 0x06;
+    }
+    if *flags & 0b00010000 != 0 {
+        *a += 0x60;
+        *flags |= 0b00010000;
+    }
+    if (*a & 0b11110000) >> 4 > 9 {
         *a += 0x60;
         *flags |= 0b00010000;
     }

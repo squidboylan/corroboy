@@ -55,5 +55,33 @@ impl Cpu {
         cp(mem.get_mem_u8(get_hl!(self) as usize), get_a!(self), get_mut_f!(self));
         assert_eq!(get_z_flag!(self), 1);
         assert_eq!(get_n_flag!(self), 1);
+
+        // Test flags
+        set_f!(self, 0);
+        set_a!(self, 0xFF);
+        set_b!(self, 0x0F);
+        cp(get_b!(self), get_a!(self), get_mut_f!(self));
+        assert_eq!(get_z_flag!(self), 0);
+        assert_eq!(get_n_flag!(self), 1);
+        assert_eq!(get_h_flag!(self), 1);
+        assert_eq!(get_c_flag!(self), 1);
+
+        set_f!(self, 0);
+        set_a!(self, 0x00);
+        set_b!(self, 0x01);
+        cp(get_b!(self), get_a!(self), get_mut_f!(self));
+        assert_eq!(get_z_flag!(self), 0);
+        assert_eq!(get_n_flag!(self), 1);
+        assert_eq!(get_h_flag!(self), 0);
+        assert_eq!(get_c_flag!(self), 0);
+
+        set_f!(self, 0);
+        set_a!(self, 0x04);
+        set_b!(self, 0x04);
+        cp(get_b!(self), get_a!(self), get_mut_f!(self));
+        assert_eq!(get_z_flag!(self), 1);
+        assert_eq!(get_n_flag!(self), 1);
+        assert_eq!(get_h_flag!(self), 1);
+        assert_eq!(get_c_flag!(self), 1);
     }
 }

@@ -58,5 +58,50 @@ impl Cpu {
         set_a!(self, 0x00);
         adc(0x10, get_mut_a!(self), get_mut_f!(self));
         assert_eq!(get_a!(self), 0x11);
+
+        // Test flags
+        set_f!(self, 0);
+        set_c_flag!(self);
+        set_a!(self, 0xF0);
+        set_b!(self, 0x0F);
+        adc(get_b!(self), get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0x00);
+        assert_eq!(get_z_flag!(self), 1);
+        assert_eq!(get_n_flag!(self), 0);
+        assert_eq!(get_h_flag!(self), 1);
+        assert_eq!(get_c_flag!(self), 1);
+
+        set_f!(self, 0);
+        set_c_flag!(self);
+        set_a!(self, 0xFF);
+        set_b!(self, 0x00);
+        adc(get_b!(self), get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0x00);
+        assert_eq!(get_z_flag!(self), 1);
+        assert_eq!(get_n_flag!(self), 0);
+        assert_eq!(get_h_flag!(self), 1);
+        assert_eq!(get_c_flag!(self), 1);
+
+        set_f!(self, 0);
+        set_c_flag!(self);
+        set_a!(self, 0x0F);
+        set_b!(self, 0x00);
+        adc(get_b!(self), get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0x10);
+        assert_eq!(get_z_flag!(self), 0);
+        assert_eq!(get_n_flag!(self), 0);
+        assert_eq!(get_h_flag!(self), 1);
+        assert_eq!(get_c_flag!(self), 0);
+
+        set_f!(self, 0);
+        set_c_flag!(self);
+        set_a!(self, 0x00);
+        set_b!(self, 0x00);
+        adc(get_b!(self), get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0x01);
+        assert_eq!(get_z_flag!(self), 0);
+        assert_eq!(get_n_flag!(self), 0);
+        assert_eq!(get_h_flag!(self), 0);
+        assert_eq!(get_c_flag!(self), 0);
     }
 }

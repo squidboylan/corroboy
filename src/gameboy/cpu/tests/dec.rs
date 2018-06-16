@@ -36,5 +36,24 @@ impl Cpu {
         mem.set_mem_u8(get_hl!(self) as usize, 0x10);
         dec_mem(mem, get_hl!(self), get_mut_f!(self));
         assert_eq!(mem.get_mem_u8(get_hl!(self) as usize), 0x0F);
+
+        // Test flags
+        set_f!(self, 0);
+        set_a!(self, 0xFF);
+        dec(get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0xFE);
+        assert_eq!(get_z_flag!(self), 0);
+        assert_eq!(get_n_flag!(self), 1);
+        assert_eq!(get_h_flag!(self), 1);
+        assert_eq!(get_c_flag!(self), 0);
+
+        set_f!(self, 0);
+        set_a!(self, 0xF0);
+        dec(get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0xEF);
+        assert_eq!(get_z_flag!(self), 0);
+        assert_eq!(get_n_flag!(self), 1);
+        assert_eq!(get_h_flag!(self), 0);
+        assert_eq!(get_c_flag!(self), 0);
     }
 }

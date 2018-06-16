@@ -69,5 +69,13 @@ impl Cpu {
         set_sp!(self, 0xF440);
         add_16bit(get_sp!(self), get_mut_hl!(self), get_mut_f!(self));
         assert_eq!(get_hl!(self), 0xF880);
+
+        // Test flags
+        set_f!(self, 0x00);
+        set_a!(self, 0xFF);
+        set_b!(self, 0x01);
+        add(get_b!(self), get_mut_a!(self), get_mut_f!(self));
+        assert_eq!(get_a!(self), 0x00);
+        assert_eq!(get_f!(self), 0b10110000);
     }
 }

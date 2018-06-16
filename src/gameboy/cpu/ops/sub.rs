@@ -7,7 +7,7 @@ pub fn sub(val: u8, reg: &mut u8, flags: &mut u8) {
     if *reg < old_reg { *flags |= 0b00010000; }
     else { *flags &= 0b11100000; }
 
-    if old_reg & 0b00010000 == 0b00010000 && *reg & 0b00010000 == 0 { *flags &= 0b11011111; }
+    if old_reg & 0b00001111 < val & 0b00001111 { *flags &= 0b11011111; }
     else { *flags |= 0b00100000; }
 
     if *reg == 0 { *flags |= 0b10000000; }
