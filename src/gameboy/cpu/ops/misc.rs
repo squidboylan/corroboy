@@ -6,7 +6,7 @@ pub fn daa(a: &mut u8, flags: &mut u8) {
         *a += 0x06;
     }
     if *a & (0b11110000 >> 4) > 9 || *flags & 0b00010000 != 0 {
-        *a += 0x06;
+        *a += 0x60;
         *flags |= 0b00010000;
     }
     else { *flags &= 0b11101111; }
