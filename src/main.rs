@@ -65,12 +65,9 @@ fn main() {
     rom_path = rom_path_option.unwrap();
 
     // Setup graphics window
-    let mut window: Window =  WindowSettings::new(
-            "gameboy-emu",
-            [432, 480]
-        )
-        .opengl(opengl)
+    let mut window: Window = WindowSettings::new("gameboy-emu", [480, 432])
         .exit_on_esc(true)
+        .opengl(opengl)
         .build()
         .unwrap();
 
@@ -86,10 +83,9 @@ fn main() {
     }
     // If we're not in debug mode run the normal way
     else {
-        let mut events: Events = Events::new(EventSettings::new());
-        events.set_ups(60);
-        events.set_max_fps(60);
-        while let Some(e) = events.next(&mut window) {
+        window.set_ups(60);
+        window.set_max_fps(60);
+        while let Some(e) = window.next() {
             if let Some(_r) = e.render_args() {
                 gb.render(&mut window, &e);
             }
