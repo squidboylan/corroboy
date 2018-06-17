@@ -60,11 +60,16 @@ pub struct Background {
 impl Background {
     pub fn new(window: &mut Window) -> Background {
         let mut factory = window.factory.clone();
+        let mut tiles = Vec::with_capacity(256);
+        for _i in 0..256 {
+            let new = Tile::new();
+            tiles.push(new);
+        }
 
         Background {
             background_data_bot: 0,
             background_data_top: 0,
-            bg_tiles: Vec::new(),
+            bg_tiles: tiles,
             tile_map_bot: 0,
             tile_map_top: 0,
             tile_map: [[0; 32]; 32],
@@ -195,66 +200,53 @@ impl Background {
 
     pub fn build_tile_data(&mut self, mem: &mut Mmu) {
         if self.background_data_bot == 0x8000 {
-            self.bg_tiles = Vec::new();
             for i in 0..256 {
-                let mut new = Tile::new();
                 for j in 0..8 {
                     let left = mem.get_mem_u8(self.background_data_bot + (i*16) + (j * 2));
                     let right = mem.get_mem_u8(self.background_data_bot + (i*16) + 1 + (j * 2));
-                    new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
-                    new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
-                    new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
-                    new.raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
-                    new.raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
-                    new.raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
-                    new.raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
-                    new.raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+                    self.bg_tiles[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                    self.bg_tiles[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                    self.bg_tiles[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                    self.bg_tiles[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                    self.bg_tiles[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                    self.bg_tiles[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                    self.bg_tiles[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                    self.bg_tiles[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
                 }
-                //new.display_ascii();
-                self.bg_tiles.push(new);
             }
         }
         else {
-            self.bg_tiles = Vec::new();
             let curr = 0x9000;
             for i in 0..128 {
-                let mut new = Tile::new();
                 for j in 0..8 {
                     let left = mem.get_mem_u8(curr + (i*16) + (j * 2));
                     let right = mem.get_mem_u8(curr + (i*16) + 1 + (j * 2));
-                    new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
-                    new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
-                    new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
-                    new.raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
-                    new.raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
-                    new.raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
-                    new.raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
-                    new.raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+                    self.bg_tiles[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                    self.bg_tiles[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                    self.bg_tiles[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                    self.bg_tiles[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                    self.bg_tiles[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                    self.bg_tiles[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                    self.bg_tiles[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                    self.bg_tiles[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
                 }
-                //new.display_ascii();
-                self.bg_tiles.push(new);
             }
 
             let curr = 0x8800;
-            for i in 0..128 {
-                let mut new = Tile::new();
+            for i in 128..256 {
                 for j in 0..8 {
-                    let left = mem.get_mem_u8(curr + (i*16) + (j * 2));
-                    let right = mem.get_mem_u8(curr + (i*16) + 1 + (j * 2));
-                    new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
-                    new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
-                    new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
-                    new.raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
-                    new.raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
-                    new.raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
-                    new.raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
-                    new.raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+                    let left = mem.get_mem_u8(curr + ((i - 128) * 16) + (j * 2));
+                    let right = mem.get_mem_u8(curr + ((i - 128) * 16) + 1 + (j * 2));
+                    self.bg_tiles[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                    self.bg_tiles[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                    self.bg_tiles[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                    self.bg_tiles[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                    self.bg_tiles[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                    self.bg_tiles[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                    self.bg_tiles[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                    self.bg_tiles[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
                 }
-                //new.display_ascii();
-                self.bg_tiles.push(new);
             }
         }
     }
-
-
 }

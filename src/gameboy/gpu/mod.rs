@@ -135,7 +135,6 @@ impl Gpu {
             if self.sprite_manager.sprites_enabled == true {
                 self.sprite_manager.build_sprites(mem);
             }
-            //self.build_pattern_data(mem);
             self.sprite_manager.set_sprite_palettes(mem);
         }
 
