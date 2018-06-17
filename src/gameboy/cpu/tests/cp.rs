@@ -63,8 +63,8 @@ impl Cpu {
         cp(get_b!(self), get_a!(self), get_mut_f!(self));
         assert_eq!(get_z_flag!(self), 0);
         assert_eq!(get_n_flag!(self), 1);
-        assert_eq!(get_h_flag!(self), 1);
-        assert_eq!(get_c_flag!(self), 1);
+        assert_eq!(get_h_flag!(self), 0);
+        assert_eq!(get_c_flag!(self), 0);
 
         set_f!(self, 0);
         set_a!(self, 0x00);
@@ -72,8 +72,8 @@ impl Cpu {
         cp(get_b!(self), get_a!(self), get_mut_f!(self));
         assert_eq!(get_z_flag!(self), 0);
         assert_eq!(get_n_flag!(self), 1);
-        assert_eq!(get_h_flag!(self), 0);
-        assert_eq!(get_c_flag!(self), 0);
+        assert_eq!(get_h_flag!(self), 1);
+        assert_eq!(get_c_flag!(self), 1);
 
         set_f!(self, 0);
         set_a!(self, 0x04);
@@ -81,7 +81,7 @@ impl Cpu {
         cp(get_b!(self), get_a!(self), get_mut_f!(self));
         assert_eq!(get_z_flag!(self), 1);
         assert_eq!(get_n_flag!(self), 1);
-        assert_eq!(get_h_flag!(self), 1);
-        assert_eq!(get_c_flag!(self), 1);
+        assert_eq!(get_h_flag!(self), 0);
+        assert_eq!(get_c_flag!(self), 0);
     }
 }
