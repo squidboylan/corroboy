@@ -14,10 +14,6 @@ pub fn sbc(val: u8, a: &mut u8, flags: &mut u8) {
     if old_a < *a { *flags |= 0b00010000; }
     else { *flags &= 0b11101111; }
 
-    /*
-    if (old_a ^ (!val_c + 1) ^ *a) & 0x10 == 0x10 { *flags &= 0b11011111; }
-    else { *flags |= 0b00100000; }
-    */
     if (old_a & 0x0F) - (val & 0x0F) - c <= 0x0F { *flags &= 0b11011111; }
     else { *flags |= 0b00100000; }
 }

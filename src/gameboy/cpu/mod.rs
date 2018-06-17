@@ -395,7 +395,7 @@ impl Cpu {
             0x1F => { rr_reg(get_mut_a!(self), get_mut_f!(self)); return 1; },
 
             // HALT
-            0x76 => { halt(&mut self.halt); return 1; },
+            0x76 => { halt(&mut self.halt, self.ime); return 1; },
 
             0xCB07 => { rlc_reg(get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xCB00 => { rlc_reg(get_mut_b!(self), get_mut_f!(self)); return 2; },
@@ -744,7 +744,7 @@ impl Cpu {
 
             0xFE => { cp(param, get_a!(self), get_mut_f!(self)); return 2; },
 
-            0x10 => { stop(&mut self.halt); return 2; },
+            0x10 => { stop(&mut self.halt, self.ime); return 2; },
             // Jumps
             0x18 => { jr(param, get_mut_pc!(self)); return 2; },
 

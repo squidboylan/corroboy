@@ -61,14 +61,18 @@ pub fn scf(flags: &mut u8) {
 
 // HALT - power down cpu until an interrupt occurs.
 
-pub fn halt(halt: &mut u8) {
-    *halt = 1;
+pub fn halt(halt: &mut u8, ime: u8) {
+    if ime == 1 {
+        *halt = 1;
+    }
 }
 
 // This should halt the GPU and CPU but currently only halts the CPU
 
-pub fn stop(halt: &mut u8) {
-    *halt = 1;
+pub fn stop(halt: &mut u8, ime: u8) {
+    if ime == 1 {
+        *halt = 1;
+    }
 }
 
 // Disable and enable interrupts
