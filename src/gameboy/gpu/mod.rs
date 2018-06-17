@@ -1,11 +1,6 @@
 use piston_window::PistonWindow as Window;
-use piston_window::Texture;
 use piston::input::*;
-use piston_window;
-use piston_window::TextureSettings;
 use graphics::*;
-use image::*;
-use gfx_device_gl;
 
 use super::mmu::Mmu;
 
@@ -59,8 +54,6 @@ pub struct Gpu {
 
 impl Gpu {
     pub fn new(window: &mut Window) -> Gpu {
-        let mut factory = window.factory.clone();
-
         Gpu {
             state: 0,
             count: 0,

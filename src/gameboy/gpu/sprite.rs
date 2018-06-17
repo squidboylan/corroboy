@@ -1,12 +1,9 @@
 use piston_window::PistonWindow as Window;
 use piston_window::*;
-use piston::input::*;
 use piston_window;
 use piston_window::TextureSettings;
-use graphics::*;
 use image::*;
 use gfx_device_gl;
-use std::collections::HashMap;
 
 use gameboy::mmu::Mmu;
 
@@ -52,8 +49,7 @@ pub struct SpritePattern {
 }
 
 impl SpritePattern {
-    pub fn new(window: &mut Window) -> SpritePattern {
-        let mut factory = window.factory.clone();
+    pub fn new() -> SpritePattern {
         SpritePattern {
             raw_val: [[0; 8]; 16],
             dirty: true,
@@ -64,7 +60,7 @@ impl SpritePattern {
         if self.dirty == true {
             let colors = [[255, 255, 255, 0], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
 
-            let mut img: RgbaImage = ImageBuffer::new(8, (*height as u32));
+            let mut img: RgbaImage = ImageBuffer::new(8, *height as u32);
 
             let mut x = 0;
             let mut y = 0;
@@ -109,12 +105,12 @@ pub struct SpriteManager {
 impl SpriteManager {
     pub fn new(window: &mut Window) -> SpriteManager {
         let mut patterns = Vec::with_capacity(256);
-        for i in 0..256 {
-            patterns.push(SpritePattern::new(window));
+        for _i in 0..256 {
+            patterns.push(SpritePattern::new());
         }
 
         let mut sprites = Vec::with_capacity(40);
-        for i in 0..40 {
+        for _i in 0..40 {
             sprites.push(Sprite::new(window));
         }
 

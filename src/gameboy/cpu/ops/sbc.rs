@@ -3,7 +3,7 @@
 // TODO FIX THIS
 pub fn sbc(val: u8, a: &mut u8, flags: &mut u8) {
     let old_a = *a;
-    let c = ((*flags & 0b00010000) >> 4);
+    let c = (*flags & 0b00010000) >> 4;
     *a = *a - val - c;
 
     *flags |= 0b01000000;

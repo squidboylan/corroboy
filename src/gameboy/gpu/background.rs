@@ -1,9 +1,7 @@
 use piston_window::PistonWindow as Window;
 use piston_window::Texture;
-use piston::input::*;
 use piston_window;
 use piston_window::TextureSettings;
-use graphics::*;
 use image::*;
 use gfx_device_gl;
 
@@ -196,7 +194,6 @@ impl Background {
     pub fn build_tile_data(&mut self, mem: &mut Mmu) {
         if self.background_data_bot == 0x8000 {
             self.bg_tiles = Vec::new();
-            let mut curr = self.background_data_bot;
             for i in 0..256 {
                 let mut new = Tile::new();
                 for j in 0..8 {
@@ -217,12 +214,12 @@ impl Background {
         }
         else {
             self.bg_tiles = Vec::new();
-            let mut curr = 0x9000;
+            let curr = 0x9000;
             for i in 0..128 {
                 let mut new = Tile::new();
                 for j in 0..8 {
-                    let left = mem.get_mem_u8(self.background_data_bot + (i*16) + (j * 2));
-                    let right = mem.get_mem_u8(self.background_data_bot + (i*16) + 1 + (j * 2));
+                    let left = mem.get_mem_u8(curr + (i*16) + (j * 2));
+                    let right = mem.get_mem_u8(curr + (i*16) + 1 + (j * 2));
                     new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
                     new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
                     new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
@@ -236,12 +233,12 @@ impl Background {
                 self.bg_tiles.push(new);
             }
 
-            curr = self.background_data_bot;
+            let curr = 0x8800;
             for i in 0..128 {
                 let mut new = Tile::new();
                 for j in 0..8 {
-                    let left = mem.get_mem_u8(self.background_data_bot + (i*16) + (j * 2));
-                    let right = mem.get_mem_u8(self.background_data_bot + (i*16) + 1 + (j * 2));
+                    let left = mem.get_mem_u8(curr + (i*16) + (j * 2));
+                    let right = mem.get_mem_u8(curr + (i*16) + 1 + (j * 2));
                     new.raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
                     new.raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
                     new.raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
