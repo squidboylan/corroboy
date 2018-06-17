@@ -202,6 +202,7 @@ impl Gpu {
         //println!("setting up line {}", self.get_curr_line(mem));
         // get the palette, etc
         if self.count == 0 {
+            self.background.enabled = mem.get_mem_u8(0xFF40) & 0x01;
             self.background.set_bg_palette(mem);
             self.scy = mem.get_mem_u8(0xFF42);
             self.scx = mem.get_mem_u8(0xFF43);
@@ -217,17 +218,25 @@ impl Gpu {
     fn render_line(&mut self, mem: &mut Mmu) {
         let line_lcd = get_curr_line(mem);
         if self.count == 19 {
-            let line = line_lcd + self.scy;
-            let tile_y = ((line / 8) % 32) as usize;
-            let line_in_tile = (line % 8) as usize;
-            for i in 0..160 {
-                let x = i + self.scx;
-                let tile_x = ((x/8) % 32) as usize;
-                let x_in_tile = (x % 8) as usize;
-                let tile_num = self.background.tile_map[tile_y][tile_x] as usize;
-                let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile][x_in_tile] as usize;
-                let pixel_val = self.background.bg_palette[palette_num];
-                self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
+            if self.background.enabled == 1 {
+                let line = line_lcd + self.scy;
+                let tile_y = ((line / 8) % 32) as usize;
+                let line_in_tile = (line % 8) as usize;
+                for i in 0..160 {
+                    let x = i + self.scx;
+                    let tile_x = ((x/8) % 32) as usize;
+                    let x_in_tile = (x % 8) as usize;
+                    let tile_num = self.background.tile_map[tile_y][tile_x] as usize;
+                    let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile][x_in_tile] as usize;
+                    let pixel_val = self.background.bg_palette[palette_num];
+                    self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
+                }
+            }
+            else {
+                for i in 0..160 {
+                    let pixel_val = self.background.bg_palette[0];
+                    self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
+                }
             }
         }
         if self.count < 62 {
@@ -237,7 +246,6 @@ impl Gpu {
             set_mode(mem, 0);
             set_curr_line(mem, line_lcd + 1);
             if mem.get_mem_u8(0xFF45) == get_curr_line(mem) {
-                println!("generating lyc = ly interrupt");
                 let stat = mem.get_mem_u8(0xFF41);
                 mem.set_mem_u8(0xFF41, stat | 0b01000000);
                 let interrupts = mem.get_mem_u8(0xFF0F);

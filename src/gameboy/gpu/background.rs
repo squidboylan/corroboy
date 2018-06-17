@@ -54,6 +54,7 @@ pub struct Background {
     // 3 - black
     pub pixel_map: [[usize; 160]; 144],
     pub last_pixel_map: [[usize; 160]; 144],
+    pub enabled: u8,
 }
 
 impl Background {
@@ -71,6 +72,7 @@ impl Background {
             tex: Texture::empty(&mut factory).unwrap(),
             pixel_map: [[0; 160]; 144],
             last_pixel_map: [[0; 160]; 144],
+            enabled: 0,
         }
     }
 
