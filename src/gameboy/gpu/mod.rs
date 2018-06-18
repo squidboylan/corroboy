@@ -201,10 +201,10 @@ impl Gpu {
         //println!("setting up line {}", self.get_curr_line(mem));
         // get the palette, etc
         if self.count == 0 {
-            self.background.enabled = mem.get_mem_u8(0xFF40) & 0x01;
+            self.background.enabled = mem.get_io_register(0xFF40) & 0x01;
             self.background.set_bg_palette(mem);
-            self.scy = mem.get_mem_u8(0xFF42);
-            self.scx = mem.get_mem_u8(0xFF43);
+            self.scy = mem.get_io_register(0xFF42);
+            self.scx = mem.get_io_register(0xFF43);
         }
         if self.count < 19 {
             self.count += 1;
@@ -244,9 +244,9 @@ impl Gpu {
         else {
             set_mode(mem, 0);
             set_curr_line(mem, line_lcd + 1);
-            if mem.get_mem_u8(0xFF45) == get_curr_line(mem) {
-                let stat = mem.get_mem_u8(0xFF41);
-                mem.set_mem_u8(0xFF41, stat | 0b01000000);
+            if mem.get_io_register(0xFF45) == get_curr_line(mem) {
+                let stat = mem.get_io_register(0xFF41);
+                mem.set_io_register(0xFF41, stat | 0b01000000);
                 let interrupts = mem.get_mem_u8(0xFF0F);
                 mem.set_mem_u8(0xFF0F, interrupts | 0b00000010);
             }
@@ -256,7 +256,7 @@ impl Gpu {
     pub fn initialize(&mut self, mem: &mut Mmu) {
         println!("initializing screen");
         self.background.initialize(mem);
-        let ff40 = mem.get_mem_u8(0xFF40);
+        let ff40 = mem.get_io_register(0xFF40);
         if ff40 & 0b00000100 == 0 {
             self.sprite_manager.sprite_height = 8;
         }
@@ -281,27 +281,27 @@ impl Gpu {
 
 #[inline(always)]
 fn get_mode(mem: &mut Mmu) -> u8 {
-    mem.get_mem_u8(0xFF41) & 0b00000011
+    mem.get_io_register(0xFF41) & 0b00000011
 }
 
 #[inline(always)]
 // Mode must be 0 - 3, other values will break the game
 fn set_mode(mem: &mut Mmu, mode: u8) {
-    let tmp = mem.get_mem_u8(0xFF41) & 0b11111100;
-    mem.set_mem_u8(0xFF41, tmp + mode);
+    let tmp = mem.get_io_register(0xFF41) & 0b11111100;
+    mem.set_io_register(0xFF41, tmp + mode);
 }
 
 #[inline(always)]
 fn get_curr_line(mem: &mut Mmu) -> u8 {
-    mem.get_mem_u8(0xFF44)
+    mem.get_io_register(0xFF44)
 }
 
 #[inline(always)]
 fn set_curr_line(mem: &mut Mmu, line_num: u8) {
-    mem.set_mem_u8(0xFF44, line_num);
+    mem.set_io_register(0xFF44, line_num);
 }
 
 #[inline(always)]
 fn get_current_state(mem: &mut Mmu) -> u8 {
-    (mem.get_mem_u8(0xFF40) & 0b10000000) >> 7
+    (mem.get_io_register(0xFF40) & 0b10000000) >> 7
 }

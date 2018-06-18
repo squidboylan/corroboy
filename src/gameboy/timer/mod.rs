@@ -20,13 +20,13 @@ impl Timer {
     pub fn update(&mut self, mem: &mut Mmu) {
         self.div_clock_count += 1;
 
-        let div = mem.get_mem_u8(0xFF04);
-        let tima = mem.get_mem_u8(0xFF05);
-        let tma = mem.get_mem_u8(0xFF06);
-        let tac = mem.get_mem_u8(0xFF07);
+        let div = mem.get_div();
+        let tima = mem.get_tima();
+        let tma = mem.get_tma();
+        let tac = mem.get_tac();
 
         if self.div_clock_count % DIV_INC_RATE == 0 {
-            mem.set_mem_u8(0xFF04, div + 1);
+            mem.set_div(div + 1);
             self.div_clock_count = 0;
         }
 
@@ -37,13 +37,13 @@ impl Timer {
             self.set_freq(mem, &tac, &tma);
             if self.clock_count % self.machine_clocks_per_inc == 0 {
                 if tima == 0xFF {
-                    mem.set_mem_u8(0xFF05, tma);
-                    let interrupts = mem.get_mem_u8(0xFF0F);
-                    mem.set_mem_u8(0xFF0F, interrupts | 0b00000100);
+                    mem.set_tima(tma);
+                    let interrupts = mem.get_interrupts();
+                    mem.set_interrupts(interrupts | 0b00000100);
                     self.clock_count = 0;
                 }
                 else {
-                    mem.set_mem_u8(0xFF05, tima + 1);
+                    mem.set_tima(tima + 1);
                 }
             }
         }
@@ -52,19 +52,19 @@ impl Timer {
     fn set_freq(&mut self, mem: &mut Mmu, tac: &u8, tma: &u8) {
         if *tac & 0b00000011 == 0 && self.machine_clocks_per_inc != (1024/4) {
             self.machine_clocks_per_inc = 1024/4;
-            mem.set_mem_u8(0xFF05, *tma);
+            mem.set_tima(*tma);
         }
         else if *tac & 0b00000011 == 1 && self.machine_clocks_per_inc != (16/4) {
             self.machine_clocks_per_inc = 16/4;
-            mem.set_mem_u8(0xFF05, *tma);
+            mem.set_tima(*tma);
         }
         else if *tac & 0b00000011 == 2 && self.machine_clocks_per_inc != (64/4) {
             self.machine_clocks_per_inc = 64/4;
-            mem.set_mem_u8(0xFF05, *tma);
+            mem.set_tima(*tma);
         }
         else if *tac & 0b00000011 == 3 && self.machine_clocks_per_inc != (256/4) {
             self.machine_clocks_per_inc = 256/4;
-            mem.set_mem_u8(0xFF05, *tma);
+            mem.set_tima(*tma);
         }
     }
 }

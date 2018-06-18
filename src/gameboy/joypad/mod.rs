@@ -83,7 +83,7 @@ impl Joypad {
     }
 
     pub fn update(&mut self, mem: &mut Mmu) {
-        let ff00 = mem.get_mem_u8(0xFF00);
+        let ff00 = mem.get_io_register(0xFF00);
         let bit_4 = ff00 & 0b00010000;
         let bit_5 = ff00 & 0b00100000;
 
@@ -134,6 +134,6 @@ impl Joypad {
             }
         }
 
-        mem.set_mem_u8(0xFF00, new_ff00);
+        mem.set_io_register(0xFF00, new_ff00);
     }
 }

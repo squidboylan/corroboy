@@ -790,7 +790,7 @@ impl Cpu {
 
     // Handle interrupts
     pub fn handle_int(&mut self, mem: &mut Mmu) -> u8 {
-        let interrupts = mem.get_mem_u8(0xFFFF) & mem.get_mem_u8(0xFF0F);
+        let interrupts = mem.get_interrupts_enabled() & mem.get_interrupts();
         if cfg!(debug_assertions = true) {
             println!("interrupts: {:b}", interrupts);
         }

@@ -82,7 +82,7 @@ impl Background {
     }
 
     pub fn initialize(&mut self, mem: &mut Mmu) {
-        let ff40 = mem.get_mem_u8(0xFF40);
+        let ff40 = mem.get_io_register(0xFF40);
         if (ff40 & 0b00010000) >> 4 == 0 {
             self.background_data_bot = 0x8800;
             self.background_data_top = 0x97FF;
@@ -191,7 +191,7 @@ impl Background {
     }
 
     pub fn set_bg_palette(&mut self, mem: &mut Mmu) {
-        let ff47 = mem.get_mem_u8(0xFF47);
+        let ff47 = mem.get_io_register(0xFF47);
         self.bg_palette[0] = (ff47 & 0b00000011) as usize;
         self.bg_palette[1] = ((ff47 & 0b00001100) >> 2) as usize;
         self.bg_palette[2] = ((ff47 & 0b00110000) >> 4) as usize;
@@ -202,8 +202,8 @@ impl Background {
         if self.background_data_bot == 0x8000 {
             for i in 0..256 {
                 for j in 0..8 {
-                    let left = mem.get_mem_u8(self.background_data_bot + (i*16) + (j * 2));
-                    let right = mem.get_mem_u8(self.background_data_bot + (i*16) + 1 + (j * 2));
+                    let left = mem.get_vram(self.background_data_bot + (i*16) + (j * 2));
+                    let right = mem.get_vram(self.background_data_bot + (i*16) + 1 + (j * 2));
                     self.bg_tiles[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
                     self.bg_tiles[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
                     self.bg_tiles[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
@@ -219,8 +219,8 @@ impl Background {
             let curr = 0x9000;
             for i in 0..128 {
                 for j in 0..8 {
-                    let left = mem.get_mem_u8(curr + (i*16) + (j * 2));
-                    let right = mem.get_mem_u8(curr + (i*16) + 1 + (j * 2));
+                    let left = mem.get_vram(curr + (i*16) + (j * 2));
+                    let right = mem.get_vram(curr + (i*16) + 1 + (j * 2));
                     self.bg_tiles[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
                     self.bg_tiles[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
                     self.bg_tiles[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
@@ -235,8 +235,8 @@ impl Background {
             let curr = 0x8800;
             for i in 128..256 {
                 for j in 0..8 {
-                    let left = mem.get_mem_u8(curr + ((i - 128) * 16) + (j * 2));
-                    let right = mem.get_mem_u8(curr + ((i - 128) * 16) + 1 + (j * 2));
+                    let left = mem.get_vram(curr + ((i - 128) * 16) + (j * 2));
+                    let right = mem.get_vram(curr + ((i - 128) * 16) + 1 + (j * 2));
                     self.bg_tiles[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
                     self.bg_tiles[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
                     self.bg_tiles[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);

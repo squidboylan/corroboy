@@ -11,7 +11,7 @@ pub struct Mmu {
     video_ram: [u8; 8192],
     oam: [u8; 160],
     bios: [u8; 256],
-    io_ports: [u8; 0x4C],
+    io_registers: [u8; 0x4C],
     bios_mapped: u8,
 
     // Interrupts enabled reg
@@ -28,7 +28,7 @@ impl Mmu {
             oam: [0; 160],
             bios: [0; 256],
 
-            io_ports: [0; 0x4C],
+            io_registers: [0; 0x4C],
             bios_mapped: 0,
 
             ie: 0,
@@ -49,7 +49,7 @@ impl Mmu {
             0xC000 ... 0xDFFF => return self.ram[location - 0xC000],
             0xE000 ... 0xFDFF => return self.ram[location - 0xE000],
             0xFE00 ... 0xFE9F => return self.oam[location - 0xFE00],
-            0xFF00 ... 0xFF4B => return self.io_ports[location - 0xFF00],
+            0xFF00 ... 0xFF4B => return self.io_registers[location - 0xFF00],
             0xFF50 => return self.bios_mapped,
             0xFF80 ... 0xFFFE => return self.small_ram[location - 0xFF80],
             0xFFFF => return self.ie,
@@ -65,9 +65,9 @@ impl Mmu {
             0xE000 ... 0xFDFF => self.ram[location - 0xE000] = val,
             0xFE00 ... 0xFE9F => self.oam[location - 0xFE00] = val,
             0xFEA0 ... 0xFEFF => {},
-            0xFF00 ... 0xFF45 => self.io_ports[location - 0xFF00] = val,
+            0xFF00 ... 0xFF45 => self.io_registers[location - 0xFF00] = val,
             0xFF46 => self.dma_transfer(val),
-            0xFF47 ... 0xFF4B => self.io_ports[location - 0xFF00] = val,
+            0xFF47 ... 0xFF4B => self.io_registers[location - 0xFF00] = val,
             0xFF50 => self.bios_mapped = val,
             0xFE51 ... 0xFF7F => {},
             0xFF80 ... 0xFFFE => self.small_ram[location - 0xFF80] = val,
@@ -91,7 +91,7 @@ impl Mmu {
             0xE000 ... 0xFDFF => return (self.ram[location - 0xE000] as u16) + ((self.ram[location + 1 - 0xE000] as u16) << 8),
             0x8000 ... 0x9FFF => return (self.video_ram[location - 0x8000] as u16) + ((self.video_ram[location + 1 - 0x8000] as u16) << 8),
             0xFE00 ... 0xFE9F => return (self.oam[location - 0xFE00] as u16) + ((self.oam[location + 1 - 0xFE00] as u16) << 8),
-            0xFF00 ... 0xFF4B => return (self.io_ports[location - 0xFF00] as u16) + ((self.io_ports[location - 0xFF00] as u16) << 8),
+            0xFF00 ... 0xFF4B => return (self.io_registers[location - 0xFF00] as u16) + ((self.io_registers[location - 0xFF00] as u16) << 8),
             0xFF80 ... 0xFFFE => return (self.small_ram[location - 0xFF80] as u16) + ((self.small_ram[location + 1 - 0xFF80] as u16) << 8),
             _ => 0
         }
@@ -105,7 +105,7 @@ impl Mmu {
             0xE000 ... 0xFDFF => { self.ram[location - 0xE000] = val as u8; self.ram[location + 1 - 0xE000] = (val >> 8) as u8; },
             0x8000 ... 0x9FFF => { self.video_ram[location - 0x8000] = val as u8; self.video_ram[location + 1 - 0x8000] = (val >> 8) as u8; },
             0xFE00 ... 0xFE9F => { self.oam[location - 0xFE00] = val as u8; self.oam[location + 1 - 0xFE00] = (val >> 8) as u8; },
-            0xFF00 ... 0xFF4B => { self.io_ports[location - 0xFF00] = val as u8; self.io_ports[location - 0xFF00] = (val >> 8) as u8; },
+            0xFF00 ... 0xFF4B => { self.io_registers[location - 0xFF00] = val as u8; self.io_registers[location - 0xFF00] = (val >> 8) as u8; },
             0xFF80 ... 0xFFFE => { self.small_ram[location - 0xFF80] = val as u8; self.small_ram[location + 1 - 0xFF80] = (val >> 8) as u8; },
             _ => println!("set mem u16 that mmu cant handle, location: {:x}", location),
         }
@@ -166,4 +166,57 @@ impl Mmu {
             i += 1;
         }
     }
+
+
+    // These are functions to speed up common location accesses so they dont have to go through the
+    // expensive match statement
+
+    pub fn get_vram(&self, location: usize) -> u8 {
+        return self.video_ram[location - 0x8000];
+    }
+
+    pub fn get_io_register(&self, location: usize) -> u8 {
+        return self.io_registers[location - 0xFF00];
+    }
+
+    pub fn set_io_register(&mut self, location: usize, val: u8) {
+        self.io_registers[location - 0xFF00] = val;
+    }
+
+    pub fn get_interrupts(&self) -> u8 {
+        return self.io_registers[0xF];
+    }
+
+    pub fn set_interrupts(&mut self, num: u8) {
+        self.io_registers[0xF] = num;
+    }
+
+    pub fn get_interrupts_enabled(&self) -> u8 {
+        return self.ie;
+    }
+
+    pub fn get_div(&self) -> u8 {
+        return self.io_registers[4];
+    }
+
+    pub fn set_div(&mut self, num: u8) {
+        self.io_registers[4] = num;
+    }
+
+    pub fn get_tima(&self) -> u8 {
+        return self.io_registers[5];
+    }
+
+    pub fn set_tima(&mut self, num: u8) {
+        self.io_registers[5] = num;
+    }
+
+    pub fn get_tma(&self) -> u8 {
+        return self.io_registers[6];
+    }
+
+    pub fn get_tac(&self) -> u8 {
+        return self.io_registers[7];
+    }
+
 }

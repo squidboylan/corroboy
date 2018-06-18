@@ -163,8 +163,8 @@ impl SpriteManager {
     }
 
     pub fn set_sprite_palettes(&mut self, mem: &mut Mmu) {
-        let ff48 = mem.get_mem_u8(0xFF48);
-        let ff49 = mem.get_mem_u8(0xFF49);
+        let ff48 = mem.get_io_register(0xFF48);
+        let ff49 = mem.get_io_register(0xFF49);
 
         self.sprite_palettes[0][0] = (ff48 & 0b00000011) as usize;
         self.sprite_palettes[0][1] = ((ff48 & 0b00001100) >> 2) as usize;
@@ -185,8 +185,8 @@ impl SpriteManager {
             for i in 0..256 {
                 for j in 0..8 {
                     self.sprite_patterns[i].textures.clear();
-                    let left = mem.get_mem_u8(self.sprite_pattern_bot + (i*16) + (j * 2));
-                    let right = mem.get_mem_u8(self.sprite_pattern_bot + (i*16) + 1 + (j * 2));
+                    let left = mem.get_vram(self.sprite_pattern_bot + (i*16) + (j * 2));
+                    let right = mem.get_vram(self.sprite_pattern_bot + (i*16) + 1 + (j * 2));
                     self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
                     self.sprite_patterns[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
                     self.sprite_patterns[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
@@ -203,8 +203,8 @@ impl SpriteManager {
             for i in 0..128 {
                 for j in 0..16 {
                     self.sprite_patterns[i].textures.clear();
-                    let left = mem.get_mem_u8(self.sprite_pattern_bot + (i*32) + (j * 2));
-                    let right = mem.get_mem_u8(self.sprite_pattern_bot + (i*32) + 1 + (j * 2));
+                    let left = mem.get_vram(self.sprite_pattern_bot + (i*32) + (j * 2));
+                    let right = mem.get_vram(self.sprite_pattern_bot + (i*32) + 1 + (j * 2));
                     self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
                     self.sprite_patterns[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
                     self.sprite_patterns[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
