@@ -4,6 +4,7 @@ use piston_window;
 use piston_window::TextureSettings;
 use image::*;
 use gfx_device_gl;
+use std::collections::HashMap;
 
 use gameboy::mmu::Mmu;
 
@@ -20,7 +21,6 @@ pub struct Sprite {
     pub y_flip: u8,
     pub palette_num: u8,
 
-    pub tex: Texture<gfx_device_gl::Resources>,
     pub dirty: bool,
 }
 
@@ -35,7 +35,6 @@ impl Sprite {
             x_flip: 0,
             y_flip: 0,
             palette_num: 0,
-            tex: Texture::empty(&mut factory).unwrap(),
             dirty: true,
         }
     }
@@ -46,6 +45,7 @@ pub struct SpritePattern {
     // drawn
     pub raw_val: [[u8; 8]; 16],
     pub dirty: bool,
+    pub textures: HashMap<[usize; 4], Texture<gfx_device_gl::Resources>>,
 }
 
 impl SpritePattern {
@@ -53,11 +53,16 @@ impl SpritePattern {
         SpritePattern {
             raw_val: [[0; 8]; 16],
             dirty: true,
+            textures: HashMap::with_capacity(256),
         }
     }
 
-    pub fn generate_texture(&mut self, window: &mut Window, palettes: &[[usize; 4]; 2], palette_num: &u8, height: &u8) -> Option<Texture<gfx_device_gl::Resources>> {
-        if self.dirty == true {
+    pub fn get_texture(&self, palettes: &[[usize; 4]; 2], palette_num: &u8) -> &Texture<gfx_device_gl::Resources> {
+        return self.textures.get(&palettes[*palette_num as usize]).unwrap();
+    }
+
+    pub fn generate_texture(&mut self, window: &mut Window, palettes: &[[usize; 4]; 2], palette_num: &u8, height: &u8) {
+        if self.textures.contains_key(&palettes[*palette_num as usize]) == false {
             let colors = [[255, 255, 255, 0], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
 
             let mut img: RgbaImage = ImageBuffer::new(8, *height as u32);
@@ -82,9 +87,8 @@ impl SpritePattern {
             //let factory = window.factory.clone();
             let mut tex_settings = TextureSettings::new();
             tex_settings.set_mag(piston_window::Filter::Nearest);
-            return Some(Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap());
+            self.textures.insert(palettes[*palette_num as usize], Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap());
         }
-        None
     }
 }
 
@@ -128,30 +132,18 @@ impl SpriteManager {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
 
-        for i in self.sprites.iter_mut() {
+        for i in self.sprites.iter() {
             if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 {
-                if let Some(j) = self.sprite_patterns[i.pattern as usize].generate_texture(window, &self.sprite_palettes, &i.palette_num, &self.sprite_height) {
-                    i.tex = j;
-                }
+                self.sprite_patterns[i.pattern as usize].generate_texture(window, &self.sprite_palettes, &i.palette_num, &self.sprite_height);
             }
         }
 
     }
 
-    /*
-    pub fn render<G: Graphics>(&mut self, c: &mut piston_window::Context, g: &mut G) {
-        const SCREEN_SIZE_X: u32 = 160;
-        const SCREEN_SIZE_Y: u32 = 144;
-
-        if self.sprites_enabled == true {
-            for i in self.sprites.iter() {
-                if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 {
-                    image(&self.sprite_patterns[i.pattern as usize].tex, c.transform.trans(((i.x as isize - 8) * 3) as f64, ((i.y as isize - 16) * 3) as f64).zoom(3.0), g);
-                }
-            }
-        }
+    pub fn get_texture(&self, num: usize) -> &Texture<gfx_device_gl::Resources> {
+        let i = &self.sprites[num];
+        return self.sprite_patterns[i.pattern as usize].get_texture(&self.sprite_palettes, &i.palette_num);
     }
-    */
 
     pub fn build_sprites(&mut self, mem: &mut Mmu) {
         let sprite_bot = 0xFE00;
@@ -192,6 +184,7 @@ impl SpriteManager {
         if self.sprite_height == 8 {
             for i in 0..256 {
                 for j in 0..8 {
+                    self.sprite_patterns[i].textures.clear();
                     let left = mem.get_mem_u8(self.sprite_pattern_bot + (i*16) + (j * 2));
                     let right = mem.get_mem_u8(self.sprite_pattern_bot + (i*16) + 1 + (j * 2));
                     self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
@@ -209,6 +202,7 @@ impl SpriteManager {
         else {
             for i in 0..128 {
                 for j in 0..16 {
+                    self.sprite_patterns[i].textures.clear();
                     let left = mem.get_mem_u8(self.sprite_pattern_bot + (i*32) + (j * 2));
                     let right = mem.get_mem_u8(self.sprite_pattern_bot + (i*32) + 1 + (j * 2));
                     self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);

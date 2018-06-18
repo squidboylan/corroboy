@@ -70,10 +70,6 @@ impl Gpu {
 
         self.background.generate_tex(window);
 
-        if self.sprite_manager.sprites_enabled == true {
-            self.sprite_manager.generate_sprite_textures(window);
-        }
-
         if get_current_state(mem) == 0 {
             window.draw_2d(e, |_c, g| {
                 clear([0.0; 4], g);
@@ -81,13 +77,17 @@ impl Gpu {
         }
 
         else {
+            if self.sprite_manager.sprites_enabled == true {
+                self.sprite_manager.generate_sprite_textures(window);
+            }
+
             window.draw_2d(e, |c, g| {
                 clear([1.0; 4], g);
 
                 image(&self.background.tex, c.transform, g);
 
                 if self.sprite_manager.sprites_enabled == true {
-                    for i in self.sprite_manager.sprites.iter() {
+                    for (num, i) in self.sprite_manager.sprites.iter().enumerate() {
                         if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 {
                             let mut context = c.transform;
                             if i.x_flip == 1 && i.y_flip == 1 {
@@ -105,7 +105,7 @@ impl Gpu {
                             else {
                                 context = context.trans(((i.x as isize - 8) * 3) as f64, ((i.y as isize - 16) * 3) as f64).zoom(3.0);
                             }
-                            image(&i.tex, context, g);
+                            image(self.sprite_manager.get_texture(num), context, g);
                         }
                     }
                 }
