@@ -60,7 +60,7 @@ impl Gpu {
             count: 0,
             scx: 0,
             scy: 0,
-            sprite_manager: sprite::SpriteManager::new(window),
+            sprite_manager: sprite::SpriteManager::new(),
             background: background::Background::new(window),
         }
     }

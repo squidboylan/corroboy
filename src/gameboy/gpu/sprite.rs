@@ -26,8 +26,7 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn new(window: &mut Window<Sdl2Window>) -> Sprite {
-        let mut factory = window.factory.clone();
+    pub fn new() -> Sprite {
         Sprite {
             pattern: 0,
             x: 0,
@@ -108,7 +107,7 @@ pub struct SpriteManager {
 }
 
 impl SpriteManager {
-    pub fn new(window: &mut Window<Sdl2Window>) -> SpriteManager {
+    pub fn new() -> SpriteManager {
         let mut patterns = Vec::with_capacity(256);
         for _i in 0..256 {
             patterns.push(SpritePattern::new());
@@ -116,7 +115,7 @@ impl SpriteManager {
 
         let mut sprites = Vec::with_capacity(40);
         for _i in 0..40 {
-            sprites.push(Sprite::new(window));
+            sprites.push(Sprite::new());
         }
 
         SpriteManager {
