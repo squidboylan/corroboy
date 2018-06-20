@@ -1,4 +1,5 @@
 use piston_window::PistonWindow as Window;
+use sdl2_window::Sdl2Window;
 use piston_window::*;
 use piston_window;
 use piston_window::TextureSettings;
@@ -25,7 +26,7 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn new(window: &mut Window) -> Sprite {
+    pub fn new(window: &mut Window<Sdl2Window>) -> Sprite {
         let mut factory = window.factory.clone();
         Sprite {
             pattern: 0,
@@ -61,7 +62,7 @@ impl SpritePattern {
         return self.textures.get(&palettes[*palette_num as usize]).unwrap();
     }
 
-    pub fn generate_texture(&mut self, window: &mut Window, palettes: &[[usize; 4]; 2], palette_num: &u8, height: &u8) {
+    pub fn generate_texture(&mut self, window: &mut Window<Sdl2Window>, palettes: &[[usize; 4]; 2], palette_num: &u8, height: &u8) {
         if self.textures.contains_key(&palettes[*palette_num as usize]) == false {
             let colors = [[255, 255, 255, 0], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
 
@@ -107,7 +108,7 @@ pub struct SpriteManager {
 }
 
 impl SpriteManager {
-    pub fn new(window: &mut Window) -> SpriteManager {
+    pub fn new(window: &mut Window<Sdl2Window>) -> SpriteManager {
         let mut patterns = Vec::with_capacity(256);
         for _i in 0..256 {
             patterns.push(SpritePattern::new());
@@ -128,7 +129,7 @@ impl SpriteManager {
         }
     }
 
-    pub fn generate_sprite_textures(&mut self, window: &mut Window) {
+    pub fn generate_sprite_textures(&mut self, window: &mut Window<Sdl2Window>) {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
 

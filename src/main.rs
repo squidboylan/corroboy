@@ -2,6 +2,7 @@ pub mod gameboy;
 
 extern crate piston;
 extern crate piston_window;
+extern crate sdl2_window;
 extern crate graphics;
 extern crate glutin_window;
 extern crate opengl_graphics;
@@ -17,6 +18,7 @@ use opengl_graphics::{ OpenGL };
 #[allow(unused_imports)]
 use std::time::{Duration, Instant};
 use getopts::Options;
+use sdl2_window::Sdl2Window;
 
 use std::env;
 
@@ -65,7 +67,7 @@ fn main() {
     rom_path = rom_path_option.unwrap();
 
     // Setup graphics window
-    let mut window: Window = WindowSettings::new("gameboy-emu", [480, 432])
+    let mut window: Window<Sdl2Window> = WindowSettings::new("gameboy-emu", [480, 432])
         .exit_on_esc(true)
         .opengl(opengl)
         .build()

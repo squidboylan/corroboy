@@ -1,4 +1,5 @@
 use piston_window::PistonWindow as Window;
+use sdl2_window::Sdl2Window;
 use piston::input::*;
 use graphics::*;
 
@@ -53,7 +54,7 @@ pub struct Gpu {
 }
 
 impl Gpu {
-    pub fn new(window: &mut Window) -> Gpu {
+    pub fn new(window: &mut Window<Sdl2Window>) -> Gpu {
         Gpu {
             state: 0,
             count: 0,
@@ -64,7 +65,7 @@ impl Gpu {
         }
     }
 
-    pub fn render(&mut self, window: &mut Window, e: &Event, mem: &mut Mmu)  {
+    pub fn render(&mut self, window: &mut Window<Sdl2Window>, e: &Event, mem: &mut Mmu)  {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
 

@@ -1,4 +1,5 @@
 use piston_window::PistonWindow as Window;
+use sdl2_window::Sdl2Window;
 use piston_window::Texture;
 use piston_window;
 use piston_window::TextureSettings;
@@ -58,7 +59,7 @@ pub struct Background {
 }
 
 impl Background {
-    pub fn new(window: &mut Window) -> Background {
+    pub fn new(window: &mut Window<Sdl2Window>) -> Background {
         let mut factory = window.factory.clone();
         let mut tiles = Vec::with_capacity(256);
         for _i in 0..256 {
@@ -133,7 +134,7 @@ impl Background {
         }
     }
 
-    pub fn generate_tex(&mut self, window: &mut Window) {
+    pub fn generate_tex(&mut self, window: &mut Window<Sdl2Window>) {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
         let mut new_map = false;

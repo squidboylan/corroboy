@@ -2,6 +2,7 @@ use std::io::{stdin,stdout,Write};
 
 use piston::input::*;
 use piston_window::PistonWindow as Window;
+use sdl2_window::Sdl2Window;
 
 mod cpu;
 
@@ -26,7 +27,7 @@ pub struct Gameboy {
 }
 
 impl Gameboy {
-    pub fn new(window: &mut Window) -> Gameboy {
+    pub fn new(window: &mut Window<Sdl2Window>) -> Gameboy {
         Gameboy {
             mem: mmu::Mmu::new(),
             cpu: cpu::Cpu::new(),
@@ -170,7 +171,7 @@ impl Gameboy {
         }
     }
 
-    pub fn render(&mut self, window: &mut Window, e: &Event) {
+    pub fn render(&mut self, window: &mut Window<Sdl2Window>, e: &Event) {
         self.gpu.render(window, e, &mut self.mem);
     }
 
