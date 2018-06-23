@@ -10,5 +10,6 @@ matrix:
   fast_finish: true
 
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libgoogle-perftools-dev
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libegl1-mesa-dev libgles2-mesa-dev
+  - sudo apt-get install -y libgoogle-perftools-dev libsdl2-dev
