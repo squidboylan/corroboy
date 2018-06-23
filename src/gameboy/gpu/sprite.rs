@@ -66,7 +66,7 @@ impl SpritePattern {
     /// then store the texture in a hashmap for quick access later.
     pub fn generate_texture(&mut self, window: &mut Window<Sdl2Window>, palettes: &[[usize; 4]; 2], palette_num: &u8, height: &u8) {
         if self.textures.contains_key(&palettes[*palette_num as usize]) == false {
-            let colors = [[255, 255, 255, 0], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
+            let colors = [[255, 255, 255, 255], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
 
             let mut img: RgbaImage = ImageBuffer::new(8, *height as u32);
 
