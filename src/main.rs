@@ -22,6 +22,7 @@ use sdl2_window::Sdl2Window;
 
 use std::env;
 
+/// Print help message info
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} -b PATH -R PATH [options]", program);
     print!("{}", opts.usage(&brief));
@@ -52,7 +53,7 @@ fn main() {
     let bios_path_option: Option<String> = matches.opt_str("b");
     let rom_path_option: Option<String> = matches.opt_str("R");
 
-    let bios_path: String;// = String::new();
+    let bios_path: String;
     if bios_path_option == None {
         print_usage(&program, opts);
         return;

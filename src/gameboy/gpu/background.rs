@@ -82,6 +82,7 @@ impl Background {
         }
     }
 
+    /// Initialize background data locations
     pub fn initialize(&mut self, mem: &mut Mmu) {
         let ff40 = mem.get_io_register(0xFF40);
         if (ff40 & 0b00010000) >> 4 == 0 {
@@ -107,6 +108,7 @@ impl Background {
         self.build_tile_data(mem);
     }
 
+    /// Debug function for printing the tile map
     #[allow(dead_code)]
     fn print_tile_map(&self) {
         for i in 0..32 {
@@ -117,6 +119,7 @@ impl Background {
         }
     }
 
+    /// Debug function for printing the ascii version of the background
     #[allow(dead_code)]
     fn display_ascii(&self) {
         if self.bg_tiles.len() == 256{
@@ -134,6 +137,7 @@ impl Background {
         }
     }
 
+    /// Generate a texture for the background
     pub fn generate_tex(&mut self, window: &mut Window<Sdl2Window>) {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
@@ -183,6 +187,7 @@ impl Background {
 
     }
 
+    /// Build the tile map
     pub fn build_tile_map(&mut self, mem: &mut Mmu) {
         for i in 0..32 {
             for j in 0..32 {
@@ -191,6 +196,7 @@ impl Background {
         }
     }
 
+    /// Update background palette
     pub fn set_bg_palette(&mut self, mem: &mut Mmu) {
         let ff47 = mem.get_io_register(0xFF47);
         self.bg_palette[0] = (ff47 & 0b00000011) as usize;
@@ -199,6 +205,7 @@ impl Background {
         self.bg_palette[3] = ((ff47 & 0b11000000) >> 6) as usize;
     }
 
+    /// Build the pixel representation for each tile
     pub fn build_tile_data(&mut self, mem: &mut Mmu) {
         if self.background_data_bot == 0x8000 {
             for i in 0..256 {

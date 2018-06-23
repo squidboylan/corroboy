@@ -1,3 +1,8 @@
+/*
+ * Below are setter and getter macros for the registers so that the registers
+ * can be manipulated easily using macros
+ */
+
 #[allow(unused_macros)]
 macro_rules! set_a {
     ($self_: ident, $x:expr) => {
@@ -452,7 +457,8 @@ macro_rules! unset_c_flag {
     }
 }
 
-// endianness makes my life hard here?
+/// Create little endian struct for register so each pair of 8bit registers
+/// can be treated as a sigle 16bit register
 #[cfg(target_endian = "little")]
 #[derive(Clone, Copy)]
 pub struct Reg8Bit {
@@ -460,6 +466,8 @@ pub struct Reg8Bit {
     pub upper: u8,
 }
 
+/// Create big endian struct for register so each pair of 8bit registers
+/// can be treated as a sigle 16bit register
 #[cfg(target_endian = "big")]
 #[derive(Clone, Copy)]
 pub struct Reg8Bit {
@@ -467,6 +475,8 @@ pub struct Reg8Bit {
     pub lower: u8,
 }
 
+/// Union the two 8bit register struct with a u16 so the registers can be used
+/// together as a single 16bit register
 #[derive(Clone, Copy)]
 pub union Reg16Bit {
     pub split: Reg8Bit,

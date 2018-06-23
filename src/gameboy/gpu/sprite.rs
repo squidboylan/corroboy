@@ -57,10 +57,13 @@ impl SpritePattern {
         }
     }
 
+    /// Return the texture for the sprite pattern and palette
     pub fn get_texture(&self, palettes: &[[usize; 4]; 2], palette_num: &u8) -> &Texture<gfx_device_gl::Resources> {
         return self.textures.get(&palettes[*palette_num as usize]).unwrap();
     }
 
+    /// Generate the texture for this sprite pattern with the palette passed in as an argument
+    /// then store the texture in a hashmap for quick access later.
     pub fn generate_texture(&mut self, window: &mut Window<Sdl2Window>, palettes: &[[usize; 4]; 2], palette_num: &u8, height: &u8) {
         if self.textures.contains_key(&palettes[*palette_num as usize]) == false {
             let colors = [[255, 255, 255, 0], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
@@ -128,6 +131,7 @@ impl SpriteManager {
         }
     }
 
+    /// Loop through each sprite and generate the SpritePattern's texture that corresponds to it
     pub fn generate_sprite_textures(&mut self, window: &mut Window<Sdl2Window>) {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
@@ -140,11 +144,13 @@ impl SpriteManager {
 
     }
 
+    /// Return the texture for the sprite number passed in as an argument
     pub fn get_texture(&self, num: usize) -> &Texture<gfx_device_gl::Resources> {
         let i = &self.sprites[num];
         return self.sprite_patterns[i.pattern as usize].get_texture(&self.sprite_palettes, &i.palette_num);
     }
 
+    /// Update the sprite objects for each sprite
     pub fn build_sprites(&mut self, mem: &mut Mmu) {
         let sprite_bot = 0xFE00;
         for i in 0..40 {
@@ -162,6 +168,7 @@ impl SpriteManager {
         }
     }
 
+    /// Update the sprite palettes
     pub fn set_sprite_palettes(&mut self, mem: &mut Mmu) {
         let ff48 = mem.get_io_register(0xFF48);
         let ff49 = mem.get_io_register(0xFF49);
@@ -180,6 +187,7 @@ impl SpriteManager {
     /*
      * This is incomplete, this does not support 16 pixel high pixels yet.
      */
+    /// Update the SpritePattern objects
     pub fn build_pattern_data(&mut self, mem: &mut Mmu) {
         if self.sprite_height == 8 {
             for i in 0..256 {

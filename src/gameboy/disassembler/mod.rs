@@ -1,5 +1,6 @@
 use gameboy::mmu::Mmu;
 
+/// Disassemble the opcode at the location passed in as an argument
 pub fn display_disassembly(mem: &Mmu, loc: usize) {
     let mut opcode: u16 = mem.get_mem_u8(loc) as u16;
 

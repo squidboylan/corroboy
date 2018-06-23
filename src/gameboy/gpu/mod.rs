@@ -65,6 +65,7 @@ impl Gpu {
         }
     }
 
+    /// Render the current frame, including background and sprites
     pub fn render(&mut self, window: &mut Window<Sdl2Window>, e: &Event, mem: &mut Mmu)  {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
@@ -115,7 +116,10 @@ impl Gpu {
         }
     }
 
+    /// Update the gpu based on the current mode of the gpu
     pub fn update(&mut self, mem: &mut Mmu) {
+        // If the gpu is changing from off to on initialize the screen and
+        // set the gpu to the correct mode
         if self.state == 0 && get_current_state(mem) == 1 {
             self.state = 1;
             self.initialize(mem);
@@ -123,6 +127,7 @@ impl Gpu {
             set_curr_line(mem, 0);
             set_mode(mem, 0);
         }
+        // If the gpu is changing from on to off set the gpu off
         else if self.state == 1 && get_current_state(mem) == 0 {
             self.state = 0;
             set_mode(mem, 0b01);
@@ -139,6 +144,8 @@ impl Gpu {
             self.sprite_manager.set_sprite_palettes(mem);
         }
 
+        // Based on the current gpu mode call the correct function to update
+        // the gpu
         let mode = get_mode(mem);
         if mode == 0 {
             self.h_blank(mem);
@@ -154,7 +161,7 @@ impl Gpu {
         }
     }
 
-    // H-blank we just increase our cycles until we are in the next mode
+    /// H-blank we just increase our cycles until we are in the next mode
     fn h_blank(&mut self, mem: &mut Mmu) {
         //println!("h-blanking");
         if self.count < 113 {
@@ -175,8 +182,8 @@ impl Gpu {
         }
     }
 
-    // V-blank we hblanks for 113 cycles 10 times, increasing the curr_line after each 113
-    // cycles
+    /// V-blank we h-blank for 113 cycles 10 times, increasing the curr_line after each 113
+    /// cycles
     fn v_blank(&mut self, mem: &mut Mmu) {
         //println!("v-blanking");
         if self.count < 113 {
@@ -197,7 +204,7 @@ impl Gpu {
         }
     }
 
-    // Do stuff here that has to happen on every line render
+    /// Do stuff here that has to happen on every line render
     fn setup_line(&mut self, mem: &mut Mmu) {
         //println!("setting up line {}", self.get_curr_line(mem));
         // get the palette, etc
@@ -215,6 +222,7 @@ impl Gpu {
         }
     }
 
+    /// Render the current line of the background
     fn render_line(&mut self, mem: &mut Mmu) {
         let line_lcd = get_curr_line(mem);
         if self.count == 19 {
@@ -254,6 +262,7 @@ impl Gpu {
         }
     }
 
+    /// Initialize the gpu and all its components
     pub fn initialize(&mut self, mem: &mut Mmu) {
         println!("initializing screen");
         self.background.initialize(mem);

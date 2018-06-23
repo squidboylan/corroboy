@@ -38,14 +38,17 @@ impl Gameboy {
         }
     }
 
+    /// Load the bios rom data
     pub fn load_bios(&mut self, file_name: &str) {
         self.mem.load_bios(file_name);
     }
 
+    /// Load the game rom data
     pub fn load_rom(&mut self, file_name: &str) {
         self.mem.load_rom(file_name);
     }
 
+    /// Run one frame of the gameboy
     pub fn run_game(&mut self) {
         // run the machine cycles for this frame
         for _i in 0..(70224/4) {
@@ -67,6 +70,8 @@ impl Gameboy {
         }
     }
 
+    /// Run the gameboy in debug mode, allows stepping through instructions one by one or breaking
+    /// at a certain location
     pub fn run_game_debug(&mut self) {
         let mut break_addr: i32 = -1;
 
@@ -121,6 +126,7 @@ impl Gameboy {
         }
     }
 
+    /// Step X number of instructions
     fn step(&mut self, steps: u64) {
         let mut i: u64 = 0;
         while i < steps {
@@ -136,6 +142,7 @@ impl Gameboy {
         }
     }
 
+    /// Run the gameboy until the PC hits a certain location
     fn run_to_break(&mut self, break_addr: i32) {
         if break_addr < 0 {
             loop {
@@ -171,14 +178,17 @@ impl Gameboy {
         }
     }
 
+    /// Render the current data in the gpu
     pub fn render(&mut self, window: &mut Window<Sdl2Window>, e: &Event) {
         self.gpu.render(window, e, &mut self.mem);
     }
 
+    /// Process an input press
     pub fn press_input(&mut self, but: Button) {
         self.p1.press_input(but);
     }
 
+    /// Process an input release
     pub fn release_input(&mut self, but: Button) {
         self.p1.release_input(but);
     }

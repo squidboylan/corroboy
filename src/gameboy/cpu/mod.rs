@@ -55,11 +55,14 @@ impl Cpu {
         get_pc!(self)
     }
 
+    /// Get opcode for the next instruction fo execute
     fn get_opcode(&mut self, mem: &mut Mmu) -> u16 {
         let mut pc = get_pc!(self);
         let temp = mem.get_mem_u8(pc as usize);
         pc += 1;
         let temp_u16: u16;
+        // If the opcode starts with CB get the next byte as well as CB
+        // indicates a 2 byte opcode
         if temp == 0xCB {
             temp_u16 = 0xCB00 + (mem.get_mem_u8(pc as usize) as u16);
             pc += 1;
@@ -73,6 +76,7 @@ impl Cpu {
         temp_u16
     }
 
+    /// Get an 8 bit parameter for an instruction
     fn get_param_8_bit(&mut self, mem: &mut Mmu) -> u8 {
         let temp = mem.get_mem_u8(get_pc!(self) as usize);
         set_pc!(self, get_pc!(self) + 1);
@@ -82,6 +86,7 @@ impl Cpu {
         temp
     }
 
+    /// Get an 16 bit parameter for an instruction
     fn get_param_16_bit(&mut self, mem: &mut Mmu) -> u16 {
         let mut pc = get_pc!(self);
         let temp = mem.get_mem_u8(pc as usize);
@@ -95,6 +100,7 @@ impl Cpu {
         temp_u16
     }
 
+    /// Execute the opcode passed as an argument
     fn exec_dispatcher(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         match opcode {
             0x00 => return 1,
@@ -680,6 +686,7 @@ impl Cpu {
         }
     }
 
+    /// Execute an opcode that takes a 16 bit argument
     fn op_param_16_bit(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         let param = self.get_param_16_bit(mem);
         match opcode {
@@ -714,6 +721,7 @@ impl Cpu {
         };
     }
 
+    /// Execute an opcode that takes a 8 bit argument
     fn op_param_8_bit(&mut self, mem: &mut Mmu, opcode: u16) -> u8 {
         let param = self.get_param_8_bit(mem);
         match opcode {
@@ -758,7 +766,7 @@ impl Cpu {
         };
     }
 
-    // Exec the next instruction and return how many machine cycles it takes (cycles/4)
+    /// Exec the next instruction and return how many machine cycles it takes (cycles/4)
     pub fn exec_next(&mut self, mem: &mut Mmu) -> u8 {
         if self.ime == 1 {
             let val = self.handle_int(mem);
@@ -788,7 +796,7 @@ impl Cpu {
         return 1;
     }
 
-    // Handle interrupts
+    /// Handle interrupts
     pub fn handle_int(&mut self, mem: &mut Mmu) -> u8 {
         let interrupts = mem.get_interrupts_enabled() & mem.get_interrupts();
         if cfg!(debug_assertions = true) {

@@ -17,6 +17,10 @@ impl Timer {
         Timer { machine_clocks_per_inc: 0, clock_count: 0, div_clock_count: 0, state: 0 }
     }
 
+    /// Process the timer for the current cycle
+    /// Always increment DIV
+    /// Update the timer state based on the values of the TMA and TAC registers
+    /// Increment TIMA if the timer is enabled and the number of cycles has passed to update it
     pub fn update(&mut self, mem: &mut Mmu) {
         self.div_clock_count += 1;
 
@@ -49,6 +53,7 @@ impl Timer {
         }
     }
 
+    /// Update the timer state based on the tac and tma registers
     fn set_freq(&mut self, mem: &mut Mmu, tac: &u8, tma: &u8) {
         if *tac & 0b00000011 == 0 && self.machine_clocks_per_inc != (1024/4) {
             self.machine_clocks_per_inc = 1024/4;

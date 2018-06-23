@@ -22,6 +22,7 @@ impl Joypad {
         Default::default()
     }
 
+    /// Set the flag for whatever button is pressed
     pub fn press_input(&mut self, but: Button) {
         match but {
             Button::Keyboard(Key::Up) => {
@@ -52,6 +53,7 @@ impl Joypad {
         }
     }
 
+    /// Unset the flag for whatever button is pressed
     pub fn release_input(&mut self, but: Button) {
         match but {
             Button::Keyboard(Key::Up) => {
@@ -82,6 +84,8 @@ impl Joypad {
         }
     }
 
+    /// Use the flags of what buttons are pressed and what the FF00 register
+    /// contains and to update the FF00 register
     pub fn update(&mut self, mem: &mut Mmu) {
         let ff00 = mem.get_io_register(0xFF00);
         let bit_4 = ff00 & 0b00010000;
