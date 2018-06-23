@@ -51,10 +51,12 @@ pub struct Gpu {
     sprite_manager: sprite::SpriteManager,
 
     background: background::Background,
+
+    zoom: u32,
 }
 
 impl Gpu {
-    pub fn new(window: &mut Window<Sdl2Window>) -> Gpu {
+    pub fn new(window: &mut Window<Sdl2Window>, zoom: u32) -> Gpu {
         Gpu {
             state: 0,
             count: 0,
@@ -62,6 +64,7 @@ impl Gpu {
             scy: 0,
             sprite_manager: sprite::SpriteManager::new(),
             background: background::Background::new(window),
+            zoom: zoom,
         }
     }
 
@@ -86,26 +89,26 @@ impl Gpu {
             window.draw_2d(e, |c, g| {
                 clear([1.0; 4], g);
 
-                image(&self.background.tex, c.transform, g);
+                image(&self.background.tex, c.transform.zoom(self.zoom as f64), g);
 
                 if self.sprite_manager.sprites_enabled == true {
                     for (num, i) in self.sprite_manager.sprites.iter().enumerate() {
                         if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 {
                             let mut context = c.transform;
                             if i.x_flip == 1 && i.y_flip == 1 {
-                                context = context.trans((i.x as isize * 3) as f64, (i.y as isize * 3) as f64).zoom(3.0);
+                                context = context.trans((i.x as isize * self.zoom as isize) as f64, (i.y as isize * self.zoom as isize) as f64).zoom(self.zoom as f64);
                                 context = context.flip_hv();
                             }
                             else if i.x_flip == 1 {
-                                context = context.trans((i.x as isize * 3) as f64, ((i.y as isize - 16) * 3) as f64).zoom(3.0);
+                                context = context.trans((i.x as isize * self.zoom as isize) as f64, ((i.y as isize - 16) * self.zoom as isize) as f64).zoom(self.zoom as f64);
                                 context = context.flip_h();
                             }
                             else if i.y_flip == 1 {
-                                context = context.trans(((i.x as isize - 8) * 3) as f64, (i.y as isize * 3) as f64).zoom(3.0);
+                                context = context.trans(((i.x as isize - 8) * self.zoom as isize) as f64, (i.y as isize * self.zoom as isize) as f64).zoom(self.zoom as f64);
                                 context = context.flip_v();
                             }
                             else {
-                                context = context.trans(((i.x as isize - 8) * 3) as f64, ((i.y as isize - 16) * 3) as f64).zoom(3.0);
+                                context = context.trans(((i.x as isize - 8) * self.zoom as isize) as f64, ((i.y as isize - 16) * self.zoom as isize) as f64).zoom(self.zoom as f64);
                             }
                             image(self.sprite_manager.get_texture(num), context, g);
                         }

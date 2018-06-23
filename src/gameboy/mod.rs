@@ -27,11 +27,11 @@ pub struct Gameboy {
 }
 
 impl Gameboy {
-    pub fn new(window: &mut Window<Sdl2Window>) -> Gameboy {
+    pub fn new(window: &mut Window<Sdl2Window>, zoom: u32) -> Gameboy {
         Gameboy {
             mem: mmu::Mmu::new(),
             cpu: cpu::Cpu::new(),
-            gpu: gpu::Gpu::new(window),
+            gpu: gpu::Gpu::new(window, zoom),
             timer: timer::Timer::new(),
             p1: joypad::Joypad::new(),
             burn_count: 0,

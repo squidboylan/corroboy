@@ -168,11 +168,7 @@ impl Background {
                 while x < SCREEN_SIZE_X as usize {
                     let color = colors[self.pixel_map[y][x]];
                     self.last_pixel_map[y][x] = self.pixel_map[y][x];
-                    for i in 0..3 as usize {
-                        for j in 0..3 as usize {
-                            img.put_pixel((x * 3 + i) as u32, (y * 3 + j) as u32, Rgba { data: color});
-                        }
-                    }
+                    img.put_pixel(x as u32, y as u32, Rgba { data: color});
                     x += 1;
                 }
                 x = 0;

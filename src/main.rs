@@ -37,6 +37,7 @@ fn main() {
     // Arg parsing
     opts.optopt("b", "bios", "Bios rom file", "PATH");
     opts.optopt("R", "rom", "Game rom file", "PATH");
+    opts.optopt("z", "zoom", "Factor to scale the gameboy graphics by", "INT");
     opts.optflag("d", "debug", "debug mode");
     opts.optflag("h", "help", "print this help menu");
 
@@ -52,6 +53,13 @@ fn main() {
 
     let bios_path_option: Option<String> = matches.opt_str("b");
     let rom_path_option: Option<String> = matches.opt_str("R");
+    let zoom_option: Option<String> = matches.opt_str("z");
+
+    // Default zoom by 3
+    let mut zoom: u32 = 3;
+    if let Some(i) = zoom_option {
+        zoom = i.parse::<u32>().unwrap();
+    }
 
     let bios_path: String;
     if bios_path_option == None {
@@ -68,14 +76,14 @@ fn main() {
     rom_path = rom_path_option.unwrap();
 
     // Setup graphics window
-    let mut window: Window<Sdl2Window> = WindowSettings::new("gameboy-emu", [480, 432])
+    let mut window: Window<Sdl2Window> = WindowSettings::new("gameboy-emu", [160 * zoom, 144 * zoom])
         .exit_on_esc(true)
         .opengl(opengl)
         .build()
         .unwrap();
 
     // Get a gameboy object
-    let mut gb = gameboy::Gameboy::new(&mut window);
+    let mut gb = gameboy::Gameboy::new(&mut window, zoom);
 
     gb.load_bios(&bios_path);
     gb.load_rom(&rom_path);
@@ -90,7 +98,9 @@ fn main() {
         window.set_max_fps(60);
         while let Some(e) = window.next() {
             if let Some(_r) = e.render_args() {
+                let now = Instant::now();
                 gb.render(&mut window, &e);
+                println!("{}", now.elapsed().subsec_micros());
             }
 
             if let Some(_u) = e.update_args() {
