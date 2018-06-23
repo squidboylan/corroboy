@@ -51,7 +51,7 @@ impl Gameboy {
     /// Run one frame of the gameboy
     pub fn run_game(&mut self) {
         // run the machine cycles for this frame
-        for _i in 0..(70224/4) {
+        loop {
             if self.burn_count == 0 {
                 self.p1.update(&mut self.mem);
                 self.burn_count = self.cpu.exec_next(&mut self.mem) - 1;
@@ -65,8 +65,16 @@ impl Gameboy {
                 //println!("elapsed nanos: {}", elapsed.subsec_nanos());
             }
 
+            let pre_gpu_state = self.mem.get_io_register(0xFF41) & 0b00000011;
+
             self.gpu.update(&mut self.mem);
             self.timer.update(&mut self.mem);
+
+            let post_gpu_state = self.mem.get_io_register(0xFF41) & 0b00000011;
+
+            if pre_gpu_state == 0 && post_gpu_state == 1 {
+                return;
+            }
         }
     }
 

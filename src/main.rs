@@ -98,9 +98,7 @@ fn main() {
         window.set_max_fps(60);
         while let Some(e) = window.next() {
             if let Some(_r) = e.render_args() {
-                let now = Instant::now();
                 gb.render(&mut window, &e);
-                println!("{}", now.elapsed().subsec_micros());
             }
 
             if let Some(_u) = e.update_args() {
