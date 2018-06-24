@@ -46,6 +46,8 @@ pub struct Background {
     // colors 0 - 3
     pub bg_palette: [usize; 4],
 
+    pub base_tex: Texture<gfx_device_gl::Resources>,
+
     pub tex: Texture<gfx_device_gl::Resources>,
 
     // Color representation of each pixel
@@ -53,6 +55,7 @@ pub struct Background {
     // 1 - light gray
     // 2 - dark gray
     // 3 - black
+    pub base_pixel_map: [[usize; 160]; 144],
     pub pixel_map: [[usize; 160]; 144],
     pub last_pixel_map: [[usize; 160]; 144],
     pub enabled: u8,
@@ -75,7 +78,9 @@ impl Background {
             tile_map_top: 0,
             tile_map: [[0; 32]; 32],
             bg_palette: [0; 4],
+            base_tex: Texture::empty(&mut factory).unwrap(),
             tex: Texture::empty(&mut factory).unwrap(),
+            base_pixel_map: [[0; 160]; 144],
             pixel_map: [[0; 160]; 144],
             last_pixel_map: [[0; 160]; 144],
             enabled: 0,
@@ -158,9 +163,10 @@ impl Background {
         }
 
         if new_map == true {
-            let mut img: RgbaImage = ImageBuffer::new(SCREEN_SIZE_X * 3, SCREEN_SIZE_Y * 3);
+            let mut img: RgbaImage = ImageBuffer::new(SCREEN_SIZE_X, SCREEN_SIZE_Y);
+            let mut base_img: RgbaImage = ImageBuffer::new(SCREEN_SIZE_X, SCREEN_SIZE_Y);
 
-            let colors = [[255, 255, 255, 255], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
+            let colors = [[255, 255, 255, 255], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255], [0, 0, 0, 0]];
 
             let mut x = 0;
             let mut y = 0;
@@ -169,6 +175,8 @@ impl Background {
                     let color = colors[self.pixel_map[y][x]];
                     self.last_pixel_map[y][x] = self.pixel_map[y][x];
                     img.put_pixel(x as u32, y as u32, Rgba { data: color});
+                    let color = colors[self.base_pixel_map[y][x]];
+                    base_img.put_pixel(x as u32, y as u32, Rgba { data: color});
                     x += 1;
                 }
                 x = 0;
@@ -177,8 +185,10 @@ impl Background {
 
             let mut tex_settings = TextureSettings::new();
             tex_settings.set_mag(piston_window::Filter::Nearest);
+
             self.tex = Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap();
 
+            self.base_tex = Texture::from_image(&mut window.factory, &base_img, &tex_settings).unwrap();
         }
 
     }
