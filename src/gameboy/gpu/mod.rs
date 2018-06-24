@@ -122,7 +122,7 @@ impl Gpu {
                         if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 && i.priority == 0 {
                             let mut context = c.transform;
                             if i.x_flip == 1 && i.y_flip == 1 {
-                                context = context.trans((i.x as isize * self.zoom as isize) as f64, (i.y as isize * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                                context = context.trans((i.x as isize * self.zoom as isize) as f64, ((i.y as isize - (16 - self.sprite_manager.sprite_height) as isize) * self.zoom as isize) as f64).zoom(self.zoom as f64);
                                 context = context.flip_hv();
                             }
                             else if i.x_flip == 1 {
@@ -130,7 +130,7 @@ impl Gpu {
                                 context = context.flip_h();
                             }
                             else if i.y_flip == 1 {
-                                context = context.trans(((i.x as isize - 8) * self.zoom as isize) as f64, (i.y as isize * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                                context = context.trans(((i.x as isize - 8) * self.zoom as isize) as f64, ((i.y as isize - (16 - self.sprite_manager.sprite_height as isize)) * self.zoom as isize) as f64).zoom(self.zoom as f64);
                                 context = context.flip_v();
                             }
                             else {
