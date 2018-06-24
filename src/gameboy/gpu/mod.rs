@@ -267,7 +267,7 @@ impl Gpu {
 
     /// Initialize the gpu and all its components
     pub fn initialize(&mut self, mem: &mut Mmu) {
-        println!("initializing screen");
+        //println!("initializing screen");
         self.background.initialize(mem);
         let ff40 = mem.get_io_register(0xFF40);
         if ff40 & 0b00000100 == 0 {
