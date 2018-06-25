@@ -1,6 +1,14 @@
 use gameboy::mmu::Mmu;
 // RR n rotate n right through carrry flag (C flag)
 
+pub fn rra(reg: &mut u8, flags: &mut u8) {
+    let tmp = (*flags & 0b00010000) >> 4;
+    *flags = 0;
+    if *reg & 0b00000001 == 1 { *flags |= 0b00010000; }
+    else { *flags &= 0b11101111; }
+    *reg = (*reg >> 1) + (tmp << 7);
+}
+
 pub fn rr_reg(reg: &mut u8, flags: &mut u8) {
     let tmp = (*flags & 0b00010000) >> 4;
     *flags &= 0b10010000;
@@ -24,6 +32,14 @@ pub fn rr_mem(mem: &mut Mmu, hl: u16, flags: &mut u8) {
 }
 
 // RRC n
+
+pub fn rrca(reg: &mut u8, flags: &mut u8) {
+    *flags = 0;
+
+    *reg = reg.rotate_right(1);
+
+    if *reg & 0x80 != 0 { *flags |= 0b00010000; }
+}
 
 pub fn rrc_reg(reg: &mut u8, flags: &mut u8) {
     let tmp = *reg & 0b00000001;

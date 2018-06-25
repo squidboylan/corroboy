@@ -149,12 +149,13 @@ impl Cpu {
             0xDE => return self.op_param_8_bit(mem, opcode),
             0xE0 => return self.op_param_8_bit(mem, opcode),
             0xE6 => return self.op_param_8_bit(mem, opcode),
+            0xE8 => return self.op_param_8_bit(mem, opcode),
             0xEE => return self.op_param_8_bit(mem, opcode),
             0xF0 => return self.op_param_8_bit(mem, opcode),
             0xF6 => return self.op_param_8_bit(mem, opcode),
+            0xF8 => return self.op_param_8_bit(mem, opcode),
             0xFE => return self.op_param_8_bit(mem, opcode),
 
-            0xE8 => return self.op_param_8_bit(mem, opcode),
             0x10 => return self.op_param_8_bit(mem, opcode),
 
             0x3C => { inc(get_mut_a!(self), get_mut_f!(self)); return 1; },
@@ -220,8 +221,8 @@ impl Cpu {
             0x27 => { daa(get_mut_a!(self), get_mut_f!(self)); return 1; },
             0x2F => { cpl(get_mut_a!(self), get_mut_f!(self)); return 1; },
 
-            0x37 => { ccf(get_mut_f!(self)); return 1; },
-            0x3F => { scf(get_mut_f!(self)); return 1; },
+            0x37 => { scf(get_mut_f!(self)); return 1; },
+            0x3F => { ccf(get_mut_f!(self)); return 1; },
 
             // JP (HL)
             0xE9 => { jp(get_hl!(self), get_mut_pc!(self)); return 3; },
@@ -394,11 +395,11 @@ impl Cpu {
 
             0xD9 => { ret(mem, get_mut_pc!(self), get_mut_sp!(self)); ei(&mut self.ime); return 2; },
 
-            0x07 => { rlc_reg(get_mut_a!(self), get_mut_f!(self)); return 1; },
-            0x17 => { rl_reg(get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x07 => { rlca(get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x17 => { rla(get_mut_a!(self), get_mut_f!(self)); return 1; },
 
-            0x0F => { rrc_reg(get_mut_a!(self), get_mut_f!(self)); return 1; },
-            0x1F => { rr_reg(get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x0F => { rrca(get_mut_a!(self), get_mut_f!(self)); return 1; },
+            0x1F => { rra(get_mut_a!(self), get_mut_f!(self)); return 1; },
 
             // HALT
             0x76 => { halt(&mut self.halt, self.ime); return 1; },

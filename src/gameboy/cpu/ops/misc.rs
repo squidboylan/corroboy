@@ -2,32 +2,36 @@
 // Decimal adjust register A
 
 pub fn daa(a: &mut u8, flags: &mut u8) {
+    let mut corr = 0;
     if *flags & 0b01000000 == 0 {
         if *flags & 0b00100000 != 0 {
-            *a += 0x06;
+            corr |= 0x06;
         }
-        if *a & 0b00001111 > 9 {
-            *a += 0x06;
+        else if *a & 0b00001111 > 9 {
+            corr |= 0x06;
         }
         if *flags & 0b00010000 != 0 {
-            *a += 0x60;
+            corr |= 0x60;
             *flags |= 0b00010000;
         }
-        if (*a & 0b11110000) >> 4 > 9 {
-            *a += 0x60;
+        else if (*a & 0b11110000) >> 4 > 9 {
+            corr |= 0x60;
             *flags |= 0b00010000;
         }
         else { *flags &= 0b11101111; }
+        *a += corr;
     }
     else {
-        if *flags & 0b00100000 != 0 {
-            *a -= 0x06;
-        }
         if *flags & 0b00010000 != 0 {
-            *a -= 0x60;
+            corr |= 0x60;
             *flags |= 0b00010000;
         }
         else { *flags &= 0b11101111; }
+
+        if *flags & 0b00100000 != 0 {
+            corr |= 0x06;
+        }
+        *a -= corr;
     }
     *flags &= 0b11011111;
     if *a == 0 { *flags |= 0b10000000; }
@@ -48,6 +52,8 @@ pub fn cpl(a: &mut u8, flags: &mut u8) {
 pub fn ccf(flags: &mut u8) {
     if *flags & 0b00010000 != 0 { *flags &= 0b11101111; }
     else { *flags |= 0b00010000; }
+    //if *flags & 0b00100000 != 0 { *flags &= 0b11011111; }
+    //else { *flags |= 0b00100000; }
     *flags &= 0b10010000;
 }
 
@@ -55,8 +61,8 @@ pub fn ccf(flags: &mut u8) {
 // set carry flag
 
 pub fn scf(flags: &mut u8) {
-    *flags |= 0b00010000;
     *flags &= 0b10010000;
+    *flags |= 0b00010000;
 }
 
 // HALT - power down cpu until an interrupt occurs.

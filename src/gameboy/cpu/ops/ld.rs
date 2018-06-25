@@ -52,14 +52,12 @@ pub fn ldd_hl_a(a: &mut u8, hl: &mut u16, mem: &mut Mmu) {
 
 // LDHL SP,n
 
-// TODO make sure this works as intended and write tests
 pub fn ldhl_sp_n(val: u8, sp: u16, hl: &mut u16, flags: &mut u8) {
-    *hl = (sp as i16 + ((val as i8) as i16)) as u16;
-    *flags &= 0b00111111;
-    // This is fine because we care about the last 4 bits and not the sign? Docs are hard to
-    // find on this
-    if sp & 0b0000000000001111 + (val as u16) & 0b0000000000001111 > 0xF { *flags |= 0b00100000; }
-    else { *flags &= 0b11011111; }
-    if *hl < sp { *flags |= 0b00010000; }
-    else { *flags &= 0b11101111; }
+    let val_i16 = val as i8 as i16;
+
+    *flags = 0;
+    *hl = (sp as i16 + val_i16) as u16;
+
+    if (val_i16 as u16 ^ sp ^ *hl) & 0x10 != 0 { *flags |= 0b00100000; }
+    if (val_i16 as u16 ^ sp ^ *hl) & 0x100 != 0 { *flags |= 0b00010000; }
 }
