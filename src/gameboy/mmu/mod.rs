@@ -132,25 +132,21 @@ impl Mmu {
         for (index, i) in contents.iter().enumerate() {
             self.cartridge[index] = *i;
         }
+        println!("cart-type: {:x}", self.cartridge[0x147]);
     }
 
     pub fn push_u16(&mut self, sp: &mut u16, val: u16) {
-        match *sp {
-            0xC000 ... 0xDFFF => { *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.ram[(*sp - 0xC000) as usize] = val as u8; },
-            0x8000 ... 0x9FFF => { *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.video_ram[(*sp - 0x8000) as usize] = val as u8; },
-            0xFF80 ... 0xFFFE => { *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = (val >> 8) as u8; *sp = *sp - 1; self.small_ram[(*sp - 0xFF80) as usize] = val as u8; },
-            _ => println!("push to mem u16 that mmu cant handle, location: {:x}", *sp),
-        }
+        *sp = *sp - 1;
+        self.set_mem_u8(*sp as usize, (val >> 8) as u8);
+        *sp = *sp - 1;
+        self.set_mem_u8(*sp as usize, val as u8);
     }
 
     pub fn pop_u16(&self, sp: &mut u16) -> u16{
-        let mut val: u16 = 0;
-        match *sp {
-            0xC000 ... 0xDFFF => { val = self.ram[(*sp - 0xC000) as usize] as u16; *sp = *sp + 1; val = val + ((self.ram[(*sp - 0xC000) as usize] as u16) << 8); *sp = *sp + 1; },
-            0x8000 ... 0x9FFF => { val = self.video_ram[(*sp - 0x8000) as usize] as u16; *sp = *sp + 1; val = val + ((self.video_ram[(*sp - 0x8000) as usize] as u16) << 8); *sp = *sp + 1; },
-            0xFF80 ... 0xFFFE => { val = self.small_ram[(*sp - 0xFF80) as usize] as u16; *sp = *sp + 1; val = val + ((self.small_ram[(*sp - 0xFF80) as usize] as u16) << 8); *sp = *sp + 1; },
-            _ => println!("pop mem u16 that mmu cant handle, location: {:x}", *sp),
-        }
+        let mut val = self.get_mem_u8(*sp as usize) as u16;
+        *sp = *sp + 1;
+        val += (self.get_mem_u8(*sp as usize) as u16) << 8;
+        *sp = *sp + 1;
         val
     }
 
