@@ -359,7 +359,7 @@ impl Cpu {
             0x32 => { ldd_hl_a(get_mut_a!(self), get_mut_hl!(self), mem); return 2; },
             0x3A => { ldd_a_hl(get_mut_a!(self), get_mut_hl!(self), mem); return 2; },
 
-            0xF1 => { pop(get_mut_af!(self), &mem, get_mut_sp!(self)); return 3; },
+            0xF1 => { pop_af(get_mut_af!(self), &mem, get_mut_sp!(self)); return 3; },
             0xC1 => { pop(get_mut_bc!(self), &mem, get_mut_sp!(self)); return 3; },
             0xD1 => { pop(get_mut_de!(self), &mem, get_mut_sp!(self)); return 3; },
             0xE1 => { pop(get_mut_hl!(self), &mem, get_mut_sp!(self)); return 3; },
