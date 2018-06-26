@@ -402,7 +402,7 @@ impl Cpu {
             0x1F => { rra(get_mut_a!(self), get_mut_f!(self)); return 1; },
 
             // HALT
-            0x76 => { halt(&mut self.halt, self.ime); return 1; },
+            0x76 => { halt(&mut self.halt); return 1; },
 
             0xCB07 => { rlc_reg(get_mut_a!(self), get_mut_f!(self)); return 2; },
             0xCB00 => { rlc_reg(get_mut_b!(self), get_mut_f!(self)); return 2; },
@@ -753,7 +753,7 @@ impl Cpu {
 
             0xFE => { cp(param, get_a!(self), get_mut_f!(self)); return 2; },
 
-            0x10 => { stop(&mut self.halt, self.ime); return 2; },
+            0x10 => { stop(&mut self.halt); return 2; },
             // Jumps
             0x18 => { jr(param, get_mut_pc!(self)); return 2; },
 
@@ -769,11 +769,9 @@ impl Cpu {
 
     /// Exec the next instruction and return how many machine cycles it takes (cycles/4)
     pub fn exec_next(&mut self, mem: &mut Mmu) -> u8 {
-        if self.ime == 1 {
-            let val = self.handle_int(mem);
-            if val != 0 {
-                return val;
-            }
+        let val = self.handle_int(mem);
+        if val != 0 {
+            return val;
         }
 
         if cfg!(debug_assertions = true) {
@@ -799,44 +797,47 @@ impl Cpu {
 
     /// Handle interrupts
     pub fn handle_int(&mut self, mem: &mut Mmu) -> u8 {
-        let interrupts = mem.get_interrupts_enabled() & mem.get_interrupts();
+        let ir = mem.get_interrupts();
+        let interrupts = mem.get_interrupts_enabled() & ir;
         if cfg!(debug_assertions = true) {
             println!("interrupts: {:b}", interrupts);
         }
 
         if interrupts != 0 {
             self.halt = 0;
-            let mut addr_to_call: u16 = 0;
-            if interrupts & 0b00000001 == 0b00000001 {
-                addr_to_call = 0x40;
-                mem.set_mem_u8(0xFF0F, interrupts - 0b00000001);
-            }
-            else if interrupts & 0b00000010 == 0b00000010 {
-                addr_to_call = 0x48;
-                mem.set_mem_u8(0xFF0F, interrupts - 0b00000010);
-            }
-            else if interrupts & 0b00000100 == 0b00000100 {
-                addr_to_call = 0x50;
-                mem.set_mem_u8(0xFF0F, interrupts - 0b00000100);
-            }
-            else if interrupts & 0b00001000 == 0b00001000 {
-                addr_to_call = 0x58;
-                mem.set_mem_u8(0xFF0F, interrupts - 0b00001000);
-            }
-            else if interrupts & 0b00010000 == 0b00010000 {
-                addr_to_call = 0x60;
-                mem.set_mem_u8(0xFF0F, interrupts - 0b00010000);
-            }
+            if self.ime == 1 {
+                let mut addr_to_call: u16 = 0;
+                if interrupts & 0b00000001 == 0b00000001 {
+                    addr_to_call = 0x40;
+                    mem.set_mem_u8(0xFF0F, ir - 0b00000001);
+                }
+                else if interrupts & 0b00000010 == 0b00000010 {
+                    addr_to_call = 0x48;
+                    mem.set_mem_u8(0xFF0F, ir - 0b00000010);
+                }
+                else if interrupts & 0b00000100 == 0b00000100 {
+                    addr_to_call = 0x50;
+                    mem.set_mem_u8(0xFF0F, ir - 0b00000100);
+                }
+                else if interrupts & 0b00001000 == 0b00001000 {
+                    addr_to_call = 0x58;
+                    mem.set_mem_u8(0xFF0F, ir - 0b00001000);
+                }
+                else if interrupts & 0b00010000 == 0b00010000 {
+                    addr_to_call = 0x60;
+                    mem.set_mem_u8(0xFF0F, ir - 0b00010000);
+                }
 
-            // Disable interrupts
-            self.ime = 0;
+                // Disable interrupts
+                self.ime = 0;
 
-            // Push current PC
-            mem.push_u16(get_sp_mut!(self), get_pc!(self));
+                // Push current PC
+                mem.push_u16(get_sp_mut!(self), get_pc!(self));
 
-            // Jump
-            set_pc!(self, addr_to_call);
-            return 4;
+                // Jump
+                set_pc!(self, addr_to_call);
+                return 4;
+            }
         }
         return 0;
     }
