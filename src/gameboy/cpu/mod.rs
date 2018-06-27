@@ -841,4 +841,13 @@ impl Cpu {
         }
         return 0;
     }
+
+    pub fn skip_bios(&mut self) {
+        set_af!(self, 0x01B0);
+        set_bc!(self, 0x0013);
+        set_de!(self, 0x00DB);
+        set_hl!(self, 0x014D);
+        set_pc!(self, 0x0100);
+        set_sp!(self, 0xFFFE);
+    }
 }

@@ -24,7 +24,7 @@ use std::env;
 
 /// Print help message info
 fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} -b PATH -R PATH [options]", program);
+    let brief = format!("Usage: {} -R PATH [options]", program);
     print!("{}", opts.usage(&brief));
 }
 
@@ -61,20 +61,6 @@ fn main() {
         zoom = i.parse::<u32>().unwrap();
     }
 
-    let bios_path: String;
-    if bios_path_option == None {
-        print_usage(&program, opts);
-        return;
-    }
-    bios_path = bios_path_option.unwrap();
-
-    let rom_path: String;// = String::new();
-    if rom_path_option == None {
-        print_usage(&program, opts);
-        return;
-    }
-    rom_path = rom_path_option.unwrap();
-
     // Setup graphics window
     let mut window: Window<Sdl2Window> = WindowSettings::new("gameboy-emu", [160 * zoom, 144 * zoom])
         .exit_on_esc(true)
@@ -85,7 +71,23 @@ fn main() {
     // Get a gameboy object
     let mut gb = gameboy::Gameboy::new(&mut window, zoom);
 
-    gb.load_bios(&bios_path);
+    let bios_path: String;
+    if bios_path_option == None {
+        gb.skip_bios();
+    }
+    else {
+        bios_path = bios_path_option.unwrap();
+        gb.load_bios(&bios_path);
+    }
+
+    let rom_path: String;// = String::new();
+    if rom_path_option == None {
+        print_usage(&program, opts);
+        return;
+    }
+    rom_path = rom_path_option.unwrap();
+
+
     gb.load_rom(&rom_path);
 
     // If -d was passed run in debug mode

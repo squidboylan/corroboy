@@ -201,4 +201,8 @@ impl Gameboy {
         self.p1.release_input(but);
     }
 
+    pub fn skip_bios(&mut self) {
+        self.cpu.skip_bios();
+        self.mem.skip_bios();
+    }
 }

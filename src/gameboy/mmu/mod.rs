@@ -11,7 +11,7 @@ pub struct Mmu {
     video_ram: [u8; 8192],
     oam: [u8; 160],
     bios: [u8; 256],
-    io_registers: [u8; 0x4C],
+    io_registers: [u8; 0x4D],
     bios_mapped: u8,
 
     // Interrupts enabled reg
@@ -28,11 +28,54 @@ impl Mmu {
             oam: [0; 160],
             bios: [0; 256],
 
-            io_registers: [0; 0x4C],
+            io_registers: [0; 0x4D],
             bios_mapped: 0,
 
             ie: 0,
         }
+    }
+
+    pub fn skip_bios(&mut self) {
+        self.bios_mapped = 1;
+        // Zero out vram
+        for i in 0x8000..0xA000 {
+            self.set_mem_u8(i, 0);
+        }
+
+        // Set io register values
+        self.io_registers[0x05] = 0;
+        self.io_registers[0x06] = 0;
+        self.io_registers[0x07] = 0;
+        self.io_registers[0x10] = 0x80;
+        self.io_registers[0x11] = 0xBF;
+        self.io_registers[0x12] = 0xF3;
+        self.io_registers[0x14] = 0xBF;
+        self.io_registers[0x16] = 0x3F;
+        self.io_registers[0x17] = 0;
+        self.io_registers[0x19] = 0xBF;
+        self.io_registers[0x1A] = 0x7F;
+        self.io_registers[0x1B] = 0xFF;
+        self.io_registers[0x1C] = 0x9F;
+        self.io_registers[0x1E] = 0xBF;
+        self.io_registers[0x20] = 0xFF;
+        self.io_registers[0x21] = 0;
+        self.io_registers[0x22] = 0;
+        self.io_registers[0x23] = 0xBF;
+        self.io_registers[0x24] = 0x77;
+        self.io_registers[0x25] = 0xF3;
+        self.io_registers[0x26] = 0xF1;
+        self.io_registers[0x40] = 0x91;
+        self.io_registers[0x42] = 0;
+        self.io_registers[0x43] = 0;
+        self.io_registers[0x45] = 0;
+        self.io_registers[0x47] = 0xFC;
+        self.io_registers[0x48] = 0xFF;
+        self.io_registers[0x49] = 0xFF;
+        self.io_registers[0x4A] = 0;
+        self.io_registers[0x4B] = 0;
+        self.io_registers[0x4C] = 0;
+
+        self.set_mem_u8(0xFFFF, 0);
     }
 
     pub fn get_mem_u8(&self, location: usize) -> u8 {
@@ -49,7 +92,7 @@ impl Mmu {
             0xC000 ... 0xDFFF => return self.ram[location - 0xC000],
             0xE000 ... 0xFDFF => return self.ram[location - 0xE000],
             0xFE00 ... 0xFE9F => return self.oam[location - 0xFE00],
-            0xFF00 ... 0xFF4B => return self.io_registers[location - 0xFF00],
+            0xFF00 ... 0xFF4C => return self.io_registers[location - 0xFF00],
             0xFF50 => return self.bios_mapped,
             0xFF80 ... 0xFFFE => return self.small_ram[location - 0xFF80],
             0xFFFF => return self.ie,
@@ -67,7 +110,7 @@ impl Mmu {
             0xFEA0 ... 0xFEFF => {},
             0xFF00 ... 0xFF45 => self.io_registers[location - 0xFF00] = val,
             0xFF46 => self.dma_transfer(val),
-            0xFF47 ... 0xFF4B => self.io_registers[location - 0xFF00] = val,
+            0xFF47 ... 0xFF4C => self.io_registers[location - 0xFF00] = val,
             0xFF50 => self.bios_mapped = val,
             0xFE51 ... 0xFF7F => {},
             0xFF80 ... 0xFFFE => self.small_ram[location - 0xFF80] = val,
