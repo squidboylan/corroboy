@@ -27,9 +27,9 @@ pub struct Emulator {
 }
 
 impl Emulator {
-    pub fn new(window: &mut Window<Sdl2Window>, zoom: u32) -> Emulator {
+    pub fn new(window: &mut Window<Sdl2Window>, zoom: u32, save_file: Option<String>) -> Emulator {
         Emulator {
-            mem: mmu::Mmu::new(),
+            mem: mmu::Mmu::new(save_file),
             cpu: cpu::Cpu::new(),
             gpu: gpu::Gpu::new(window, zoom),
             timer: timer::Timer::new(),
@@ -189,6 +189,7 @@ impl Emulator {
     /// Render the current data in the gpu
     pub fn render(&mut self, window: &mut Window<Sdl2Window>, e: &Event) {
         self.gpu.render(window, e, &mut self.mem);
+        self.save_cart_ram();
     }
 
     /// Process an input press
@@ -204,5 +205,9 @@ impl Emulator {
     pub fn skip_bios(&mut self) {
         self.cpu.skip_bios();
         self.mem.skip_bios();
+    }
+
+    fn save_cart_ram(&mut self) {
+        self.mem.save_cart_ram();
     }
 }

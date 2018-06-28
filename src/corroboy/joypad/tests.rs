@@ -7,7 +7,7 @@ use corroboy::joypad::Joypad;
 #[test]
 pub fn test_joypad() {
     let mut joypad = Joypad::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
 
     joypad.press_input(Button::Keyboard(Key::Up));
     joypad.press_input(Button::Keyboard(Key::Down));

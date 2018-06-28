@@ -1,13 +1,15 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+mod cartridge;
+
 #[cfg(test)]
 mod tests;
 
 pub struct Mmu {
     small_ram: [u8; 128],
     ram: [u8; 8192],
-    cartridge: [u8; 32768],
+    cart: Option<Box<cartridge::Cartridge>>,
     video_ram: [u8; 8192],
     oam: [u8; 160],
     bios: [u8; 256],
@@ -15,14 +17,16 @@ pub struct Mmu {
     bios_mapped: u8,
 
     // Interrupts enabled reg
-    ie: u8
+    ie: u8,
+
+    save_file: Option<String>,
 }
 
 impl Mmu {
-    pub fn new() -> Mmu {
+    pub fn new(save_file: Option<String>) -> Mmu {
         Mmu{
             ram: [0; 8192],
-            cartridge: [0xFF; 32768],
+            cart: None,
             small_ram: [0; 128],
             video_ram: [0; 8192],
             oam: [0; 160],
@@ -32,6 +36,7 @@ impl Mmu {
             bios_mapped: 0,
 
             ie: 0,
+            save_file,
         }
     }
 
@@ -84,11 +89,12 @@ impl Mmu {
                     return self.bios[location];
                 }
                 else {
-                    return self.cartridge[location];
+                    return self.read_cart(location).unwrap();
                 }
             },
-            0x100 ... 0x7FFF => return self.cartridge[location],
+            0x100 ... 0x7FFF => return self.read_cart(location).unwrap(),
             0x8000 ... 0x9FFF => return self.video_ram[location - 0x8000],
+            0xA000 ... 0xBFFF => return self.read_cart(location).unwrap(),
             0xC000 ... 0xDFFF => return self.ram[location - 0xC000],
             0xE000 ... 0xFDFF => return self.ram[location - 0xE000],
             0xFE00 ... 0xFE9F => return self.oam[location - 0xFE00],
@@ -102,8 +108,9 @@ impl Mmu {
 
     pub fn set_mem_u8(&mut self, location: usize, val: u8) {
         match location {
-            0x0000 ... 0x7FFF => {},
+            0x0000 ... 0x7FFF => self.write_cart(location, val),
             0x8000 ... 0x9FFF => self.video_ram[location - 0x8000] = val,
+            0xA000 ... 0xBFFF => self.write_cart(location, val),
             0xC000 ... 0xDFFF => self.ram[location - 0xC000] = val,
             0xE000 ... 0xFDFF => self.ram[location - 0xE000] = val,
             0xFE00 ... 0xFE9F => self.oam[location - 0xFE00] = val,
@@ -126,10 +133,10 @@ impl Mmu {
                     return (self.bios[location] as u16) + ((self.bios[location + 1] as u16) << 8);
                 }
                 else {
-                    return (self.cartridge[location] as u16) + ((self.cartridge[location + 1] as u16) << 8);
+                    return (self.read_cart(location).unwrap() as u16) + ((self.read_cart(location + 1).unwrap() as u16) << 8);
                 }
             },
-            0x100 ... 0x7FFF => return (self.cartridge[location] as u16) + ((self.cartridge[location + 1] as u16) << 8),
+            0x100 ... 0x7FFF => return (self.read_cart(location).unwrap() as u16) + ((self.read_cart(location + 1).unwrap() as u16) << 8),
             0xC000 ... 0xDFFF => return (self.ram[location - 0xC000] as u16) + ((self.ram[location + 1 - 0xC000] as u16) << 8),
             0xE000 ... 0xFDFF => return (self.ram[location - 0xE000] as u16) + ((self.ram[location + 1 - 0xE000] as u16) << 8),
             0x8000 ... 0x9FFF => return (self.video_ram[location - 0x8000] as u16) + ((self.video_ram[location + 1 - 0x8000] as u16) << 8),
@@ -143,7 +150,7 @@ impl Mmu {
     // z80 is little endian in ram
     pub fn set_mem_u16(&mut self, location: usize, val: u16) {
         match location {
-            0 ... 0x7FFF => { self.cartridge[location] = val as u8; self.cartridge[location + 1] = (val >> 8) as u8; },
+            0 ... 0x7FFF => { self.write_cart(location, val as u8); self.write_cart(location + 1, (val >> 8) as u8); },
             0xC000 ... 0xDFFF => { self.ram[location - 0xC000] = val as u8; self.ram[location + 1 - 0xC000] = (val >> 8) as u8; },
             0xE000 ... 0xFDFF => { self.ram[location - 0xE000] = val as u8; self.ram[location + 1 - 0xE000] = (val >> 8) as u8; },
             0x8000 ... 0x9FFF => { self.video_ram[location - 0x8000] = val as u8; self.video_ram[location + 1 - 0x8000] = (val >> 8) as u8; },
@@ -172,10 +179,29 @@ impl Mmu {
 
         let mut contents: Vec<u8> = vec![];
         f.read_to_end(&mut contents).unwrap();
-        for (index, i) in contents.iter().enumerate() {
-            self.cartridge[index] = *i;
+        let cart_type = contents[0x147];
+        println!("cart-type: {:x}", cart_type);
+
+        if cart_type == 0 {
+            self.cart = Some(Box::new(cartridge::no_mbc::NoMbc::new(contents, 0, false, &self.save_file)));
         }
-        println!("cart-type: {:x}", self.cartridge[0x147]);
+        else if cart_type == 8 || cart_type == 9 {
+            let mut ram_size = 0;
+            if contents[0x149] == 1 {
+                ram_size = 2048;
+            }
+            else if contents[0x149] == 2 {
+                ram_size = 8192;
+            }
+
+            if cart_type == 8 {
+                self.cart = Some(Box::new(cartridge::no_mbc::NoMbc::new(contents, ram_size, false, &self.save_file)));
+            }
+            else {
+                self.cart = Some(Box::new(cartridge::no_mbc::NoMbc::new(contents, ram_size, true, &self.save_file)));
+            }
+        }
+
     }
 
     pub fn push_u16(&mut self, sp: &mut u16, val: u16) {
@@ -258,4 +284,22 @@ impl Mmu {
         return self.io_registers[7];
     }
 
+    pub fn read_cart(&self, location: usize) -> Option<u8> {
+        if let Some(v) = self.cart.as_ref() {
+            return Some(v.read(location));
+        }
+        None
+    }
+
+    pub fn write_cart(&mut self, location: usize, val: u8) {
+        if let Some(v) = self.cart.as_mut() {
+            v.write(location, val);
+        }
+    }
+
+    pub fn save_cart_ram(&mut self) {
+        if let Some(v) = self.cart.as_mut() {
+            v.save_ram();
+        }
+    }
 }

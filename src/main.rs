@@ -38,6 +38,7 @@ fn main() {
     opts.optopt("b", "bios", "Bios rom file", "PATH");
     opts.optopt("R", "rom", "Game rom file", "PATH");
     opts.optopt("z", "zoom", "Factor to scale the graphics by", "INT");
+    opts.optopt("s", "savefile", "File to save battery backed ram to", "PATH");
     opts.optflag("d", "debug", "debug mode");
     opts.optflag("h", "help", "print this help menu");
 
@@ -54,6 +55,7 @@ fn main() {
     let bios_path_option: Option<String> = matches.opt_str("b");
     let rom_path_option: Option<String> = matches.opt_str("R");
     let zoom_option: Option<String> = matches.opt_str("z");
+    let save_file_name: Option<String> = matches.opt_str("s");
 
     // Default zoom by 3
     let mut zoom: u32 = 3;
@@ -69,7 +71,7 @@ fn main() {
         .unwrap();
 
     // Get an emulator object
-    let mut gb = corroboy::Emulator::new(&mut window, zoom);
+    let mut gb = corroboy::Emulator::new(&mut window, zoom, save_file_name);
 
     let bios_path: String;
     if bios_path_option == None {

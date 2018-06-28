@@ -2,7 +2,7 @@ use super::Mmu;
 
 #[test]
 fn mmu_ram() {
-    let mut derp = Mmu::new();
+    let mut derp = Mmu::new(None);
     derp.set_mem_u8(0xC000, 255);
     assert_eq!(derp.get_mem_u8(0xC000), 255);
 
@@ -20,7 +20,7 @@ fn mmu_ram() {
 
 #[test]
 fn stack_functions() {
-    let mut derp = Mmu::new();
+    let mut derp = Mmu::new(None);
     let mut sp: u16 = 0xDFFF;
 
     derp.push_u16(&mut sp, 0x3210);

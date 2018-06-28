@@ -122,7 +122,7 @@ fn registers() {
 fn opcodes() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_opcodes(&mut mem);
 }
 
@@ -137,7 +137,7 @@ fn flag_bits() {
 fn get_opcode() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_get_opcode(&mut mem);
 }
 
@@ -145,7 +145,7 @@ fn get_opcode() {
 fn get_param() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_get_param(&mut mem);
 }
 
@@ -153,7 +153,7 @@ fn get_param() {
 fn stack() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_stack(&mut mem);
 }
 
@@ -161,7 +161,7 @@ fn stack() {
 fn and() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_and(&mut mem);
 }
 
@@ -169,7 +169,7 @@ fn and() {
 fn add() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_add(&mut mem);
 }
 
@@ -177,7 +177,7 @@ fn add() {
 fn adc() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_adc(&mut mem);
 }
 
@@ -185,7 +185,7 @@ fn adc() {
 fn xor() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_xor(&mut mem);
 }
 
@@ -193,7 +193,7 @@ fn xor() {
 fn or() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_or(&mut mem);
 }
 
@@ -201,7 +201,7 @@ fn or() {
 fn inc() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_inc(&mut mem);
 }
 
@@ -209,7 +209,7 @@ fn inc() {
 fn dec() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_dec(&mut mem);
 }
 
@@ -224,7 +224,7 @@ fn bit() {
 fn cp() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_cp(&mut mem);
 }
 
@@ -232,7 +232,7 @@ fn cp() {
 fn swap() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_swap(&mut mem);
 }
 
@@ -240,7 +240,7 @@ fn swap() {
 fn sub() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_sub(&mut mem);
 }
 
@@ -248,7 +248,7 @@ fn sub() {
 fn sbc() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_sbc(&mut mem);
 }
 
@@ -256,7 +256,7 @@ fn sbc() {
 fn rst() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
     derp.test_rst(&mut mem);
 }
 

@@ -51,6 +51,7 @@ impl Cpu {
         assert_eq!(get_n_flag!(self), 1);
 
         set_a!(self, 0xFF);
+        set_hl!(self, 0xC000);
         mem.set_mem_u8(get_hl!(self) as usize, 0xFF);
         cp(mem.get_mem_u8(get_hl!(self) as usize), get_a!(self), get_mut_f!(self));
         assert_eq!(get_z_flag!(self), 1);

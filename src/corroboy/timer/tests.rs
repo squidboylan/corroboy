@@ -5,7 +5,7 @@ use super::super::mmu::Mmu;
 #[test]
 pub fn timer_div(){
     let mut timer = Timer::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
 
     for i in 0..10000 {
         assert_eq!((i/64) as u8, mem.get_mem_u8(0xFF04) );
@@ -17,7 +17,7 @@ pub fn timer_div(){
 #[test]
 pub fn timer_00(){
     let mut timer = Timer::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
 
     mem.set_mem_u8(0xFF07, 0b00000100);
 
@@ -32,7 +32,7 @@ pub fn timer_00(){
 #[test]
 pub fn timer_01(){
     let mut timer = Timer::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
 
     mem.set_mem_u8(0xFF07, 0b00000101);
 
@@ -47,7 +47,7 @@ pub fn timer_01(){
 #[test]
 pub fn timer_10(){
     let mut timer = Timer::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
 
     mem.set_mem_u8(0xFF07, 0b00000110);
 
@@ -62,7 +62,7 @@ pub fn timer_10(){
 #[test]
 pub fn timer_11(){
     let mut timer = Timer::new();
-    let mut mem = Mmu::new();
+    let mut mem = Mmu::new(None);
 
     mem.set_mem_u8(0xFF07, 0b00000111);
 
