@@ -181,9 +181,56 @@ impl Mmu {
         f.read_to_end(&mut contents).unwrap();
         let cart_type = contents[0x147];
         println!("cart-type: {:x}", cart_type);
+        println!("cart-size: {}B", contents.len());
 
         if cart_type == 0 {
             self.cart = Some(Box::new(cartridge::no_mbc::NoMbc::new(contents, 0, false, &self.save_file)));
+        }
+        else if cart_type == 1 {
+            let mut ram_size = 0;
+            if contents[0x149] == 1 {
+                ram_size = 2048;
+            }
+            else if contents[0x149] == 2 {
+                ram_size = 8192;
+            }
+
+            else if contents[0x149] == 3 {
+                ram_size = 8192 * 4;
+            }
+
+            else if contents[0x149] == 4 {
+                ram_size = 8192 * 8;
+            }
+
+            else if contents[0x149] == 5 {
+                ram_size = 8192 * 16;
+            }
+
+            self.cart = Some(Box::new(cartridge::mbc1::Mbc1::new(contents, ram_size, false, &self.save_file)));
+        }
+        else if cart_type == 3 {
+            let mut ram_size = 0;
+            if contents[0x149] == 1 {
+                ram_size = 2048;
+            }
+            else if contents[0x149] == 2 {
+                ram_size = 8192;
+            }
+
+            else if contents[0x149] == 3 {
+                ram_size = 8192 * 4;
+            }
+
+            else if contents[0x149] == 4 {
+                ram_size = 8192 * 8;
+            }
+
+            else if contents[0x149] == 5 {
+                ram_size = 8192 * 16;
+            }
+
+            self.cart = Some(Box::new(cartridge::mbc1::Mbc1::new(contents, ram_size, true, &self.save_file)));
         }
         else if cart_type == 8 || cart_type == 9 {
             let mut ram_size = 0;
@@ -200,6 +247,9 @@ impl Mmu {
             else {
                 self.cart = Some(Box::new(cartridge::no_mbc::NoMbc::new(contents, ram_size, true, &self.save_file)));
             }
+        }
+        else {
+            panic!("Cartridge uses unsupported MBC, code: {}", cart_type);
         }
 
     }
