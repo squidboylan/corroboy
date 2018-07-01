@@ -1,4 +1,4 @@
-pub mod gameboy;
+pub mod corroboy;
 
 extern crate piston;
 extern crate piston_window;
@@ -37,7 +37,7 @@ fn main() {
     // Arg parsing
     opts.optopt("b", "bios", "Bios rom file", "PATH");
     opts.optopt("R", "rom", "Game rom file", "PATH");
-    opts.optopt("z", "zoom", "Factor to scale the gameboy graphics by", "INT");
+    opts.optopt("z", "zoom", "Factor to scale the graphics by", "INT");
     opts.optflag("d", "debug", "debug mode");
     opts.optflag("h", "help", "print this help menu");
 
@@ -62,14 +62,14 @@ fn main() {
     }
 
     // Setup graphics window
-    let mut window: Window<Sdl2Window> = WindowSettings::new("gameboy-emu", [160 * zoom, 144 * zoom])
+    let mut window: Window<Sdl2Window> = WindowSettings::new("corroboy", [160 * zoom, 144 * zoom])
         .exit_on_esc(true)
         .opengl(opengl)
         .build()
         .unwrap();
 
-    // Get a gameboy object
-    let mut gb = gameboy::Gameboy::new(&mut window, zoom);
+    // Get an emulator object
+    let mut gb = corroboy::Emulator::new(&mut window, zoom);
 
     let bios_path: String;
     if bios_path_option == None {

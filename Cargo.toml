@@ -1,5 +1,5 @@
 [package]
-name = "gameboy-emu"
+name = "corroboy"
 version = "0.1.0"
 authors = ["Caleb Boylan <calebboylan@gmail.com>"]
 
