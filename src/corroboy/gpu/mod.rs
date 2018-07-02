@@ -166,12 +166,8 @@ impl Gpu {
 
         // Do stuff here that happens once per frame
         if self.count == 0 && get_curr_line(mem) == 0 {
+            self.initialize(mem);
             self.background.build_tile_map(mem);
-            self.background.build_tile_data(mem);
-            if self.sprite_manager.sprites_enabled == true {
-                self.sprite_manager.build_sprites(mem);
-            }
-            self.sprite_manager.set_sprite_palettes(mem);
         }
 
         // Based on the current gpu mode call the correct function to update
@@ -320,9 +316,10 @@ impl Gpu {
         }
 
         if self.sprite_manager.sprites_enabled == true {
+            self.sprite_manager.set_sprite_palettes(mem);
             self.sprite_manager.build_sprites(mem);
+            self.sprite_manager.build_pattern_data(mem);
         }
-        self.sprite_manager.build_pattern_data(mem);
     }
 
 }

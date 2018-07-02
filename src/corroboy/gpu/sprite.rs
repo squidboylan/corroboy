@@ -138,6 +138,9 @@ impl SpriteManager {
 
         for i in self.sprites.iter() {
             if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 {
+                if self.sprite_height == 16 {
+                    self.sprite_patterns[(i.pattern >> 1) as usize].generate_texture(window, &self.sprite_palettes, &i.palette_num, &self.sprite_height);
+                }
                 self.sprite_patterns[i.pattern as usize].generate_texture(window, &self.sprite_palettes, &i.palette_num, &self.sprite_height);
             }
         }
@@ -147,6 +150,9 @@ impl SpriteManager {
     /// Return the texture for the sprite number passed in as an argument
     pub fn get_texture(&self, num: usize) -> &Texture<gfx_device_gl::Resources> {
         let i = &self.sprites[num];
+        if self.sprite_height == 16 {
+            return self.sprite_patterns[(i.pattern >> 1) as usize].get_texture(&self.sprite_palettes, &i.palette_num);
+        }
         return self.sprite_patterns[i.pattern as usize].get_texture(&self.sprite_palettes, &i.palette_num);
     }
 
