@@ -190,44 +190,47 @@ impl SpriteManager {
         self.sprite_palettes[1][3] = ((ff49 & 0b11000000) >> 6) as usize;
     }
 
-    /*
-     * This is incomplete, this does not support 16 pixel high pixels yet.
-     */
     /// Update the SpritePattern objects
     pub fn build_pattern_data(&mut self, mem: &mut Mmu) {
         if self.sprite_height == 8 {
             for i in 0..256 {
                 for j in 0..8 {
-                    self.sprite_patterns[i].textures.clear();
-                    let left = mem.get_vram(self.sprite_pattern_bot + (i*16) + (j * 2));
-                    let right = mem.get_vram(self.sprite_pattern_bot + (i*16) + 1 + (j * 2));
-                    self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
-                    self.sprite_patterns[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
-                    self.sprite_patterns[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
-                    self.sprite_patterns[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
-                    self.sprite_patterns[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
-                    self.sprite_patterns[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
-                    self.sprite_patterns[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
-                    self.sprite_patterns[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
-                    self.sprite_patterns[i].dirty = true;
+                    if mem.get_vram_dirty(self.sprite_pattern_bot + (i*16) + (j * 2)) == true || mem.get_vram_dirty(self.sprite_pattern_bot + (i*16) + 1 + (j * 2)) == true {
+                        self.sprite_patterns[i].textures.clear();
+                        let left = mem.get_vram(self.sprite_pattern_bot + (i*16) + (j * 2));
+                        let right = mem.get_vram(self.sprite_pattern_bot + (i*16) + 1 + (j * 2));
+                        self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                        self.sprite_patterns[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                        self.sprite_patterns[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                        self.sprite_patterns[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                        self.sprite_patterns[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                        self.sprite_patterns[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                        self.sprite_patterns[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                        self.sprite_patterns[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+                        mem.set_vram_dirty(self.sprite_pattern_bot + (i*16) + (j * 2), false);
+                        mem.set_vram_dirty(self.sprite_pattern_bot + (i*16) + 1 + (j * 2), false);
+                    }
                 }
             }
         }
         else {
             for i in 0..128 {
                 for j in 0..16 {
-                    self.sprite_patterns[i].textures.clear();
-                    let left = mem.get_vram(self.sprite_pattern_bot + (i*32) + (j * 2));
-                    let right = mem.get_vram(self.sprite_pattern_bot + (i*32) + 1 + (j * 2));
-                    self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
-                    self.sprite_patterns[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
-                    self.sprite_patterns[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
-                    self.sprite_patterns[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
-                    self.sprite_patterns[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
-                    self.sprite_patterns[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
-                    self.sprite_patterns[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
-                    self.sprite_patterns[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
-                    self.sprite_patterns[i].dirty = true;
+                    if mem.get_vram_dirty(self.sprite_pattern_bot + (i*32) + (j * 2)) == true || mem.get_vram_dirty(self.sprite_pattern_bot + (i*32) + 1 + (j * 2)) == true {
+                        self.sprite_patterns[i].textures.clear();
+                        let left = mem.get_vram(self.sprite_pattern_bot + (i*32) + (j * 2));
+                        let right = mem.get_vram(self.sprite_pattern_bot + (i*32) + 1 + (j * 2));
+                        self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                        self.sprite_patterns[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                        self.sprite_patterns[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                        self.sprite_patterns[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                        self.sprite_patterns[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                        self.sprite_patterns[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                        self.sprite_patterns[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                        self.sprite_patterns[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
+                        mem.set_vram_dirty(self.sprite_pattern_bot + (i*32) + (j * 2), false);
+                        mem.set_vram_dirty(self.sprite_pattern_bot + (i*32) + 1 + (j * 2), false);
+                    }
                 }
             }
         }

@@ -11,6 +11,7 @@ pub struct Mmu {
     ram: [u8; 8192],
     cart: Option<Box<cartridge::Cartridge>>,
     video_ram: [u8; 8192],
+    video_ram_dirty: [bool; 8192],
     oam: [u8; 160],
     bios: [u8; 256],
     io_registers: [u8; 0x4D],
@@ -29,6 +30,7 @@ impl Mmu {
             cart: None,
             small_ram: [0; 128],
             video_ram: [0; 8192],
+            video_ram_dirty: [true; 8192],
             oam: [0; 160],
             bios: [0; 256],
 
@@ -109,7 +111,7 @@ impl Mmu {
     pub fn set_mem_u8(&mut self, location: usize, val: u8) {
         match location {
             0x0000 ... 0x7FFF => self.write_cart(location, val),
-            0x8000 ... 0x9FFF => self.video_ram[location - 0x8000] = val,
+            0x8000 ... 0x9FFF => { self.video_ram[location - 0x8000] = val; self.video_ram_dirty[location - 0x8000] = true; },
             0xA000 ... 0xBFFF => self.write_cart(location, val),
             0xC000 ... 0xDFFF => self.ram[location - 0xC000] = val,
             0xE000 ... 0xFDFF => self.ram[location - 0xE000] = val,
@@ -288,6 +290,14 @@ impl Mmu {
 
     pub fn get_vram(&self, location: usize) -> u8 {
         return self.video_ram[location - 0x8000];
+    }
+
+    pub fn get_vram_dirty(&self, location: usize) -> bool {
+        return self.video_ram_dirty[location - 0x8000];
+    }
+
+    pub fn set_vram_dirty(&mut self, location: usize, val: bool) {
+        self.video_ram_dirty[location - 0x8000] = val;
     }
 
     pub fn get_io_register(&self, location: usize) -> u8 {
