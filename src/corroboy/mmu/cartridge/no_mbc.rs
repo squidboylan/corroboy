@@ -1,8 +1,8 @@
-use std::fs::File;
-use std::io::prelude::*;
-use std::fs::OpenOptions;
-use std::io::SeekFrom;
 use super::Cartridge;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::prelude::*;
+use std::io::SeekFrom;
 
 pub struct NoMbc {
     data: Vec<u8>,
@@ -12,7 +12,12 @@ pub struct NoMbc {
 }
 
 impl NoMbc {
-    pub fn new(data: Vec<u8>, ram_size: usize, batt: bool, save_file_name: &Option<String>) -> NoMbc {
+    pub fn new(
+        data: Vec<u8>,
+        ram_size: usize,
+        batt: bool,
+        save_file_name: &Option<String>,
+    ) -> NoMbc {
         let mut ram = Vec::with_capacity(ram_size);
 
         let mut save_file = None;
@@ -21,19 +26,23 @@ impl NoMbc {
         if batt == true {
             if *save_file_name == None {
                 eprintln!("No save file provided and cartridge is battery backed, save games will not work");
-            }
-            else {
+            } else {
                 let file_name = save_file_name.as_ref().unwrap();
-                save_file = Some(OpenOptions::new()
-                                    .create(true)
-                                    .read(true)
-                                    .write(true)
-                                    .truncate(false)
-                                    .append(false)
-                                    .open(file_name).expect("failed to open save file"));
+                save_file = Some(
+                    OpenOptions::new()
+                        .create(true)
+                        .read(true)
+                        .write(true)
+                        .truncate(false)
+                        .append(false)
+                        .open(file_name)
+                        .expect("failed to open save file"),
+                );
                 if let Some(f) = save_file.as_mut() {
-                    f.read_to_end(&mut ram).expect("Failed to read to end of save file");
-                    f.seek(SeekFrom::Start(0)).expect("Failed to seek to start of save file");
+                    f.read_to_end(&mut ram)
+                        .expect("Failed to read to end of save file");
+                    f.seek(SeekFrom::Start(0))
+                        .expect("Failed to seek to start of save file");
                 }
             }
         }
@@ -58,8 +67,7 @@ impl Cartridge for NoMbc {
     fn read(&self, location: usize) -> u8 {
         if location <= 0x7FFF {
             return self.data[location];
-        }
-        else if location >= 0xA000 && location <= 0xBFFF {
+        } else if location >= 0xA000 && location <= 0xBFFF {
             return self.ram[location - 0xA000];
         }
         // This should never be reached
@@ -70,8 +78,7 @@ impl Cartridge for NoMbc {
         if location <= 0xBFFF && location >= 0xA000 {
             if self.ram.len() - (location - 0xA000) > 0 {
                 self.ram[location - 0xA000] = val;
-            }
-            else {
+            } else {
                 println!("Attempt to write to cart ram failed, not enough ram");
             }
         }
@@ -80,14 +87,15 @@ impl Cartridge for NoMbc {
     fn save_ram(&mut self) {
         if self.batt == true {
             if let Some(f) = self.save_file.as_mut() {
-                f.seek(SeekFrom::Start(0)).expect("Failed to seek to start of save file");
-                f.write(&self.ram).expect("Failed to write save data to file");
+                f.seek(SeekFrom::Start(0))
+                    .expect("Failed to seek to start of save file");
+                f.write(&self.ram)
+                    .expect("Failed to write save data to file");
                 f.flush().expect("Failed to flush save data to file");
             }
         }
     }
 }
-
 
 #[test]
 fn test_no_mbc() {

@@ -58,6 +58,10 @@ pub fn ldhl_sp_n(val: u8, sp: u16, hl: &mut u16, flags: &mut u8) {
     *flags = 0;
     *hl = (sp as i16 + val_i16) as u16;
 
-    if (val_i16 as u16 ^ sp ^ *hl) & 0x10 != 0 { *flags |= 0b00100000; }
-    if (val_i16 as u16 ^ sp ^ *hl) & 0x100 != 0 { *flags |= 0b00010000; }
+    if (val_i16 as u16 ^ sp ^ *hl) & 0x10 != 0 {
+        *flags |= 0b00100000;
+    }
+    if (val_i16 as u16 ^ sp ^ *hl) & 0x100 != 0 {
+        *flags |= 0b00010000;
+    }
 }

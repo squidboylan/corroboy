@@ -1,10 +1,10 @@
-use piston_window::PistonWindow as Window;
-use sdl2_window::Sdl2Window;
-use piston_window::*;
-use piston_window;
-use piston_window::TextureSettings;
-use image::*;
 use gfx_device_gl;
+use image::*;
+use piston_window;
+use piston_window::PistonWindow as Window;
+use piston_window::TextureSettings;
+use piston_window::*;
+use sdl2_window::Sdl2Window;
 use std::collections::HashMap;
 
 use corroboy::mmu::Mmu;
@@ -58,15 +58,30 @@ impl SpritePattern {
     }
 
     /// Return the texture for the sprite pattern and palette
-    pub fn get_texture(&self, palettes: &[[usize; 4]; 2], palette_num: &u8) -> &Texture<gfx_device_gl::Resources> {
+    pub fn get_texture(
+        &self,
+        palettes: &[[usize; 4]; 2],
+        palette_num: &u8,
+    ) -> &Texture<gfx_device_gl::Resources> {
         return self.textures.get(&palettes[*palette_num as usize]).unwrap();
     }
 
     /// Generate the texture for this sprite pattern with the palette passed in as an argument
     /// then store the texture in a hashmap for quick access later.
-    pub fn generate_texture(&mut self, window: &mut Window<Sdl2Window>, palettes: &[[usize; 4]; 2], palette_num: &u8, height: &u8) {
+    pub fn generate_texture(
+        &mut self,
+        window: &mut Window<Sdl2Window>,
+        palettes: &[[usize; 4]; 2],
+        palette_num: &u8,
+        height: &u8,
+    ) {
         if self.textures.contains_key(&palettes[*palette_num as usize]) == false {
-            let colors = [[255, 255, 255, 255], [169, 169, 169, 255], [128, 128, 128, 255], [0, 0, 0, 255]];
+            let colors = [
+                [255, 255, 255, 255],
+                [169, 169, 169, 255],
+                [128, 128, 128, 255],
+                [0, 0, 0, 255],
+            ];
 
             let mut img: RgbaImage = ImageBuffer::new(8, *height as u32);
 
@@ -75,11 +90,11 @@ impl SpritePattern {
             while y < *height as usize {
                 while x < 8 as usize {
                     if self.raw_val[y][x] == 0 {
-                        img.put_pixel(x as u32, y as u32, Rgba { data: [0, 0, 0, 0]});
-                    }
-                    else {
-                        let color = colors[palettes[*palette_num as usize][self.raw_val[y][x] as usize] as usize];
-                        img.put_pixel(x as u32, y as u32, Rgba { data: color});
+                        img.put_pixel(x as u32, y as u32, Rgba { data: [0, 0, 0, 0] });
+                    } else {
+                        let color = colors
+                            [palettes[*palette_num as usize][self.raw_val[y][x] as usize] as usize];
+                        img.put_pixel(x as u32, y as u32, Rgba { data: color });
                     }
                     x += 1;
                 }
@@ -90,7 +105,10 @@ impl SpritePattern {
             //let factory = window.factory.clone();
             let mut tex_settings = TextureSettings::new();
             tex_settings.set_mag(piston_window::Filter::Nearest);
-            self.textures.insert(palettes[*palette_num as usize], Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap());
+            self.textures.insert(
+                palettes[*palette_num as usize],
+                Texture::from_image(&mut window.factory, &img, &tex_settings).unwrap(),
+            );
         }
     }
 }
@@ -137,23 +155,38 @@ impl SpriteManager {
         const SCREEN_SIZE_Y: u32 = 144;
 
         for i in self.sprites.iter() {
-            if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 {
+            if i.x > 0
+                && i.y > 0
+                && (i.x as u32) < SCREEN_SIZE_X + 8
+                && (i.y as u32) < SCREEN_SIZE_Y + 16
+            {
                 if self.sprite_height == 16 {
-                    self.sprite_patterns[(i.pattern >> 1) as usize].generate_texture(window, &self.sprite_palettes, &i.palette_num, &self.sprite_height);
+                    self.sprite_patterns[(i.pattern >> 1) as usize].generate_texture(
+                        window,
+                        &self.sprite_palettes,
+                        &i.palette_num,
+                        &self.sprite_height,
+                    );
                 }
-                self.sprite_patterns[i.pattern as usize].generate_texture(window, &self.sprite_palettes, &i.palette_num, &self.sprite_height);
+                self.sprite_patterns[i.pattern as usize].generate_texture(
+                    window,
+                    &self.sprite_palettes,
+                    &i.palette_num,
+                    &self.sprite_height,
+                );
             }
         }
-
     }
 
     /// Return the texture for the sprite number passed in as an argument
     pub fn get_texture(&self, num: usize) -> &Texture<gfx_device_gl::Resources> {
         let i = &self.sprites[num];
         if self.sprite_height == 16 {
-            return self.sprite_patterns[(i.pattern >> 1) as usize].get_texture(&self.sprite_palettes, &i.palette_num);
+            return self.sprite_patterns[(i.pattern >> 1) as usize]
+                .get_texture(&self.sprite_palettes, &i.palette_num);
         }
-        return self.sprite_patterns[i.pattern as usize].get_texture(&self.sprite_palettes, &i.palette_num);
+        return self.sprite_patterns[i.pattern as usize]
+            .get_texture(&self.sprite_palettes, &i.palette_num);
     }
 
     /// Update the sprite objects for each sprite
@@ -195,41 +228,62 @@ impl SpriteManager {
         if self.sprite_height == 8 {
             for i in 0..256 {
                 for j in 0..8 {
-                    if mem.get_vram_dirty(self.sprite_pattern_bot + (i*16) + (j * 2)) == true || mem.get_vram_dirty(self.sprite_pattern_bot + (i*16) + 1 + (j * 2)) == true {
+                    if mem.get_vram_dirty(self.sprite_pattern_bot + (i * 16) + (j * 2)) == true
+                        || mem.get_vram_dirty(self.sprite_pattern_bot + (i * 16) + 1 + (j * 2))
+                            == true
+                    {
                         self.sprite_patterns[i].textures.clear();
-                        let left = mem.get_vram(self.sprite_pattern_bot + (i*16) + (j * 2));
-                        let right = mem.get_vram(self.sprite_pattern_bot + (i*16) + 1 + (j * 2));
-                        self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
-                        self.sprite_patterns[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
-                        self.sprite_patterns[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
-                        self.sprite_patterns[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
-                        self.sprite_patterns[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
-                        self.sprite_patterns[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
-                        self.sprite_patterns[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
-                        self.sprite_patterns[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
-                        mem.set_vram_dirty(self.sprite_pattern_bot + (i*16) + (j * 2), false);
-                        mem.set_vram_dirty(self.sprite_pattern_bot + (i*16) + 1 + (j * 2), false);
+                        let left = mem.get_vram(self.sprite_pattern_bot + (i * 16) + (j * 2));
+                        let right = mem.get_vram(self.sprite_pattern_bot + (i * 16) + 1 + (j * 2));
+                        self.sprite_patterns[i].raw_val[j as usize][0] =
+                            ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                        self.sprite_patterns[i].raw_val[j as usize][1] =
+                            ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                        self.sprite_patterns[i].raw_val[j as usize][2] =
+                            ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                        self.sprite_patterns[i].raw_val[j as usize][3] =
+                            ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                        self.sprite_patterns[i].raw_val[j as usize][4] =
+                            ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                        self.sprite_patterns[i].raw_val[j as usize][5] =
+                            ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                        self.sprite_patterns[i].raw_val[j as usize][6] =
+                            (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                        self.sprite_patterns[i].raw_val[j as usize][7] =
+                            ((right & 0b00000001) << 1) + (left & 0b00000001);
+                        mem.set_vram_dirty(self.sprite_pattern_bot + (i * 16) + (j * 2), false);
+                        mem.set_vram_dirty(self.sprite_pattern_bot + (i * 16) + 1 + (j * 2), false);
                     }
                 }
             }
-        }
-        else {
+        } else {
             for i in 0..128 {
                 for j in 0..16 {
-                    if mem.get_vram_dirty(self.sprite_pattern_bot + (i*32) + (j * 2)) == true || mem.get_vram_dirty(self.sprite_pattern_bot + (i*32) + 1 + (j * 2)) == true {
+                    if mem.get_vram_dirty(self.sprite_pattern_bot + (i * 32) + (j * 2)) == true
+                        || mem.get_vram_dirty(self.sprite_pattern_bot + (i * 32) + 1 + (j * 2))
+                            == true
+                    {
                         self.sprite_patterns[i].textures.clear();
-                        let left = mem.get_vram(self.sprite_pattern_bot + (i*32) + (j * 2));
-                        let right = mem.get_vram(self.sprite_pattern_bot + (i*32) + 1 + (j * 2));
-                        self.sprite_patterns[i].raw_val[j as usize][0] = ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
-                        self.sprite_patterns[i].raw_val[j as usize][1] = ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
-                        self.sprite_patterns[i].raw_val[j as usize][2] = ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
-                        self.sprite_patterns[i].raw_val[j as usize][3] = ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
-                        self.sprite_patterns[i].raw_val[j as usize][4] = ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
-                        self.sprite_patterns[i].raw_val[j as usize][5] = ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
-                        self.sprite_patterns[i].raw_val[j as usize][6] = (right & 0b00000010) + ((left & 0b00000010) >> 1);
-                        self.sprite_patterns[i].raw_val[j as usize][7] = ((right & 0b00000001) << 1) + (left & 0b00000001);
-                        mem.set_vram_dirty(self.sprite_pattern_bot + (i*32) + (j * 2), false);
-                        mem.set_vram_dirty(self.sprite_pattern_bot + (i*32) + 1 + (j * 2), false);
+                        let left = mem.get_vram(self.sprite_pattern_bot + (i * 32) + (j * 2));
+                        let right = mem.get_vram(self.sprite_pattern_bot + (i * 32) + 1 + (j * 2));
+                        self.sprite_patterns[i].raw_val[j as usize][0] =
+                            ((right & 0b10000000) >> 6) + ((left & 0b10000000) >> 7);
+                        self.sprite_patterns[i].raw_val[j as usize][1] =
+                            ((right & 0b01000000) >> 5) + ((left & 0b01000000) >> 6);
+                        self.sprite_patterns[i].raw_val[j as usize][2] =
+                            ((right & 0b00100000) >> 4) + ((left & 0b00100000) >> 5);
+                        self.sprite_patterns[i].raw_val[j as usize][3] =
+                            ((right & 0b00010000) >> 3) + ((left & 0b00010000) >> 4);
+                        self.sprite_patterns[i].raw_val[j as usize][4] =
+                            ((right & 0b00001000) >> 2) + ((left & 0b00001000) >> 3);
+                        self.sprite_patterns[i].raw_val[j as usize][5] =
+                            ((right & 0b00000100) >> 1) + ((left & 0b00000100) >> 2);
+                        self.sprite_patterns[i].raw_val[j as usize][6] =
+                            (right & 0b00000010) + ((left & 0b00000010) >> 1);
+                        self.sprite_patterns[i].raw_val[j as usize][7] =
+                            ((right & 0b00000001) << 1) + (left & 0b00000001);
+                        mem.set_vram_dirty(self.sprite_pattern_bot + (i * 32) + (j * 2), false);
+                        mem.set_vram_dirty(self.sprite_pattern_bot + (i * 32) + 1 + (j * 2), false);
                     }
                 }
             }

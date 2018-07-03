@@ -1,6 +1,6 @@
 use super::super::super::mmu::Mmu;
-use corroboy::cpu::Cpu;
 use corroboy::cpu::ops::inc::*;
+use corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_inc(&mut self, mem: &mut Mmu) {

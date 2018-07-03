@@ -1,6 +1,6 @@
 use super::super::super::mmu::Mmu;
-use corroboy::cpu::Cpu;
 use corroboy::cpu::ops::rst;
+use corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_rst(&mut self, mem: &mut Mmu) {
@@ -24,5 +24,4 @@ impl Cpu {
         rst(0x40, mem, get_mut_sp!(self), get_mut_pc!(self));
         assert_eq!(get_pc!(self), 0x40);
     }
-
 }

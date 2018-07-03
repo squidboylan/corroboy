@@ -1,24 +1,24 @@
 pub mod corroboy;
 
+extern crate getopts;
+extern crate gfx_device_gl;
+extern crate glutin_window;
+extern crate graphics;
+extern crate image;
+extern crate opengl_graphics;
 extern crate piston;
 extern crate piston_window;
 extern crate sdl2_window;
-extern crate graphics;
-extern crate glutin_window;
-extern crate opengl_graphics;
-extern crate image;
-extern crate getopts;
-extern crate gfx_device_gl;
 
-use piston::window::WindowSettings;
+use getopts::Options;
+use opengl_graphics::OpenGL;
 use piston::event_loop::*;
 use piston::input::*;
+use piston::window::WindowSettings;
 use piston_window::PistonWindow as Window;
-use opengl_graphics::{ OpenGL };
+use sdl2_window::Sdl2Window;
 #[allow(unused_imports)]
 use std::time::{Duration, Instant};
-use getopts::Options;
-use sdl2_window::Sdl2Window;
 
 use std::env;
 
@@ -38,13 +38,18 @@ fn main() {
     opts.optopt("b", "bios", "Bios rom file", "PATH");
     opts.optopt("R", "rom", "Game rom file", "PATH");
     opts.optopt("z", "zoom", "Factor to scale the graphics by", "INT");
-    opts.optopt("s", "savefile", "File to save battery backed ram to", "PATH");
+    opts.optopt(
+        "s",
+        "savefile",
+        "File to save battery backed ram to",
+        "PATH",
+    );
     opts.optflag("d", "debug", "debug mode");
     opts.optflag("h", "help", "print this help menu");
 
     let matches = match opts.parse(&args[1..]) {
-        Ok(m) => { m }
-        Err(f) => { panic!(f.to_string()) }
+        Ok(m) => m,
+        Err(f) => panic!(f.to_string()),
     };
 
     if matches.opt_present("h") {
@@ -76,19 +81,17 @@ fn main() {
     let bios_path: String;
     if bios_path_option == None {
         gb.skip_bios();
-    }
-    else {
+    } else {
         bios_path = bios_path_option.unwrap();
         gb.load_bios(&bios_path);
     }
 
-    let rom_path: String;// = String::new();
+    let rom_path: String;
     if rom_path_option == None {
         print_usage(&program, opts);
         return;
     }
     rom_path = rom_path_option.unwrap();
-
 
     gb.load_rom(&rom_path);
 

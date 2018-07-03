@@ -1,8 +1,8 @@
-use std::fs::File;
-use std::io::prelude::*;
-use std::fs::OpenOptions;
-use std::io::SeekFrom;
 use super::Cartridge;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::prelude::*;
+use std::io::SeekFrom;
 
 // This code was made using the docs that describe the different MBCs at http://gbdev.gg8.se/wiki/articles/Memory_Bank_Controllers#MBC1_.28max_2MByte_ROM_and.2For_32KByte_RAM.29
 pub struct Mbc1 {
@@ -20,7 +20,12 @@ pub struct Mbc1 {
 }
 
 impl Mbc1 {
-    pub fn new(data: Vec<u8>, ram_size: usize, batt: bool, save_file_name: &Option<String>) -> Mbc1 {
+    pub fn new(
+        data: Vec<u8>,
+        ram_size: usize,
+        batt: bool,
+        save_file_name: &Option<String>,
+    ) -> Mbc1 {
         let mut ram = Vec::with_capacity(ram_size);
 
         let mut save_file = None;
@@ -29,19 +34,23 @@ impl Mbc1 {
         if batt == true {
             if *save_file_name == None {
                 eprintln!("No save file provided and cartridge is battery backed, save games will not work");
-            }
-            else {
+            } else {
                 let file_name = save_file_name.as_ref().unwrap();
-                save_file = Some(OpenOptions::new()
-                                    .create(true)
-                                    .read(true)
-                                    .write(true)
-                                    .truncate(false)
-                                    .append(false)
-                                    .open(file_name).expect("failed to open save file"));
+                save_file = Some(
+                    OpenOptions::new()
+                        .create(true)
+                        .read(true)
+                        .write(true)
+                        .truncate(false)
+                        .append(false)
+                        .open(file_name)
+                        .expect("failed to open save file"),
+                );
                 if let Some(f) = save_file.as_mut() {
-                    f.read_to_end(&mut ram).expect("Failed to read to end of save file");
-                    f.seek(SeekFrom::Start(0)).expect("Failed to seek to start of save file");
+                    f.read_to_end(&mut ram)
+                        .expect("Failed to read to end of save file");
+                    f.seek(SeekFrom::Start(0))
+                        .expect("Failed to seek to start of save file");
                 }
             }
         }
@@ -70,11 +79,9 @@ impl Cartridge for Mbc1 {
     fn read(&self, location: usize) -> u8 {
         if location <= 0x3FFF {
             return self.data[location];
-        }
-        else if location >= 0x4000 && location <= 0x7FFF {
+        } else if location >= 0x4000 && location <= 0x7FFF {
             return self.data[(location - 0x4000) + (0x4000 * self.data_bank)];
-        }
-        else if location >= 0xA000 && location <= 0xBFFF {
+        } else if location >= 0xA000 && location <= 0xBFFF {
             return self.ram[(location - 0xA000) + (0x2000 * self.ram_bank)];
         }
         return 0xFF;
@@ -84,38 +91,30 @@ impl Cartridge for Mbc1 {
         if location <= 0x1FFF {
             if val & 0b00001111 == 0x0A {
                 self.ram_enabled = true;
-            }
-            else {
+            } else {
                 self.ram_enabled = false;
             }
-        }
-        else if location >= 0x2000 && location <= 0x3FFF {
+        } else if location >= 0x2000 && location <= 0x3FFF {
             if val & 0b00011111 == 0 {
                 self.data_bank = (self.data_bank & 0b11100000) | 0x01;
-            }
-            else {
+            } else {
                 self.data_bank = (self.data_bank & 0b11100000) | (val as usize & 0b00011111);
             }
-        }
-        else if location >= 0x4000 && location <= 0x5FFF {
+        } else if location >= 0x4000 && location <= 0x5FFF {
             if self.banking_mode == 1 {
                 self.ram_bank = val as usize & 0x03;
-            }
-            else if self.banking_mode == 0 {
+            } else if self.banking_mode == 0 {
                 self.data_bank = (self.data_bank & 0b00011111) | ((val as usize & 0x03) << 5);
             }
-        }
-        else if location >= 0x6000 && location <= 0x7FFF {
+        } else if location >= 0x6000 && location <= 0x7FFF {
             if val == 0 {
                 self.banking_mode = 0;
                 self.ram_bank &= 0;
-            }
-            else if val == 1 {
+            } else if val == 1 {
                 self.banking_mode = 1;
                 self.data_bank &= 0b00011111;
             }
-        }
-        else if location <= 0xBFFF && location >= 0xA000 {
+        } else if location <= 0xBFFF && location >= 0xA000 {
             if self.ram.len() - (location - 0xA000) > 0 && self.ram_enabled == true {
                 self.ram[(location - 0xA000) + 0x2000 * self.ram_bank] = val;
             }
@@ -125,8 +124,10 @@ impl Cartridge for Mbc1 {
     fn save_ram(&mut self) {
         if self.batt == true {
             if let Some(f) = self.save_file.as_mut() {
-                f.seek(SeekFrom::Start(0)).expect("Failed to seek to start of save file");
-                f.write(&self.ram).expect("Failed to write save data to file");
+                f.seek(SeekFrom::Start(0))
+                    .expect("Failed to seek to start of save file");
+                f.write(&self.ram)
+                    .expect("Failed to write save data to file");
                 f.flush().expect("Failed to flush save data to file");
             }
         }

@@ -1,6 +1,6 @@
 use super::super::super::mmu::Mmu;
-use corroboy::cpu::Cpu;
 use corroboy::cpu::ops::dec::*;
+use corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_dec(&mut self, mem: &mut Mmu) {

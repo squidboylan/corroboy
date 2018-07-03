@@ -1,5 +1,5 @@
-use corroboy::cpu::Cpu;
 use corroboy::cpu::ops::bit::*;
+use corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_bit(&mut self) {

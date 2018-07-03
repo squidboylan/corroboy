@@ -1,6 +1,6 @@
 use super::super::super::mmu::Mmu;
-use corroboy::cpu::Cpu;
 use corroboy::cpu::ops::cp::*;
+use corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_cp(&mut self, mem: &mut Mmu) {
@@ -53,7 +53,11 @@ impl Cpu {
         set_a!(self, 0xFF);
         set_hl!(self, 0xC000);
         mem.set_mem_u8(get_hl!(self) as usize, 0xFF);
-        cp(mem.get_mem_u8(get_hl!(self) as usize), get_a!(self), get_mut_f!(self));
+        cp(
+            mem.get_mem_u8(get_hl!(self) as usize),
+            get_a!(self),
+            get_mut_f!(self),
+        );
         assert_eq!(get_z_flag!(self), 1);
         assert_eq!(get_n_flag!(self), 1);
 

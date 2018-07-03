@@ -1,6 +1,6 @@
 use super::super::super::mmu::Mmu;
-use corroboy::cpu::Cpu;
 use corroboy::cpu::ops::swap::*;
+use corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_swap(&mut self, mem: &mut Mmu) {
@@ -56,5 +56,4 @@ impl Cpu {
         assert_eq!(get_h_flag!(self), 0);
         assert_eq!(get_c_flag!(self), 0);
     }
-
 }

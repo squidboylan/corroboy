@@ -1,6 +1,6 @@
+use corroboy::mmu::Mmu;
 use piston::input::Button;
 use piston::input::Key;
-use corroboy::mmu::Mmu;
 
 #[cfg(test)]
 mod tests;
@@ -106,9 +106,7 @@ impl Joypad {
             if self.right == true || self.a == true {
                 new_ff00 -= 0b00000001;
             }
-        }
-
-        else if bit_5 == 0 {
+        } else if bit_5 == 0 {
             if self.start == true {
                 new_ff00 -= 0b00001000;
             }
@@ -121,9 +119,7 @@ impl Joypad {
             if self.a == true {
                 new_ff00 -= 0b00000001;
             }
-        }
-
-        else if bit_4 == 0 {
+        } else if bit_4 == 0 {
             if self.down == true {
                 new_ff00 -= 0b00001000;
             }

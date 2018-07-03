@@ -3,12 +3,21 @@
 #[inline(always)]
 pub fn cp(val: u8, a: u8, flags: &mut u8) {
     let tmp = a - val;
-    if tmp == 0 { *flags = *flags | 0b10000000; }
-    else { *flags = *flags & 0b01111111; }
+    if tmp == 0 {
+        *flags |= 0b10000000;
+    } else {
+        *flags &= 0b01111111;
+    }
     // Set n flag
     *flags = *flags | 0b01000000;
-    if a < val { *flags |= 0b00010000; }
-    else { *flags &= 0b11101111; }
-    if (a & 0b00001111) >= (val & 0b00001111) { *flags &= 0b11011111; }
-    else { *flags |= 0b00100000; }
+    if a < val {
+        *flags |= 0b00010000;
+    } else {
+        *flags &= 0b11101111;
+    }
+    if (a & 0b00001111) >= (val & 0b00001111) {
+        *flags &= 0b11011111;
+    } else {
+        *flags |= 0b00100000;
+    }
 }

@@ -1,7 +1,7 @@
+use graphics::*;
+use piston::input::*;
 use piston_window::PistonWindow as Window;
 use sdl2_window::Sdl2Window;
-use piston::input::*;
-use graphics::*;
 
 use super::mmu::Mmu;
 
@@ -41,7 +41,6 @@ mod background;
 pub struct Gpu {
     state: u8,
 
-
     // This represents the number of (machine) cycles we are into rendering the current line
     count: u16,
 
@@ -69,7 +68,7 @@ impl Gpu {
     }
 
     /// Render the current frame, including background and sprites
-    pub fn render(&mut self, window: &mut Window<Sdl2Window>, e: &Event, mem: &mut Mmu)  {
+    pub fn render(&mut self, window: &mut Window<Sdl2Window>, e: &Event, mem: &mut Mmu) {
         const SCREEN_SIZE_X: u32 = 160;
         const SCREEN_SIZE_Y: u32 = 144;
 
@@ -79,9 +78,7 @@ impl Gpu {
             window.draw_2d(e, |_c, g| {
                 clear([0.0; 4], g);
             });
-        }
-
-        else {
+        } else {
             if self.sprite_manager.sprites_enabled == true {
                 self.sprite_manager.generate_sprite_textures(window);
             }
@@ -89,26 +86,52 @@ impl Gpu {
             window.draw_2d(e, |c, g| {
                 clear([1.0; 4], g);
 
-                image(&self.background.base_tex, c.transform.zoom(self.zoom as f64), g);
+                image(
+                    &self.background.base_tex,
+                    c.transform.zoom(self.zoom as f64),
+                    g,
+                );
 
                 if self.sprite_manager.sprites_enabled == true {
                     for (num, i) in self.sprite_manager.sprites.iter().enumerate() {
-                        if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 && i.priority == 1 {
+                        if i.x > 0
+                            && i.y > 0
+                            && (i.x as u32) < SCREEN_SIZE_X + 8
+                            && (i.y as u32) < SCREEN_SIZE_Y + 16
+                            && i.priority == 1
+                        {
                             let mut context = c.transform;
                             if i.x_flip == 1 && i.y_flip == 1 {
-                                context = context.trans((i.x as isize * self.zoom as isize) as f64, (i.y as isize * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                                context = context
+                                    .trans(
+                                        (i.x as isize * self.zoom as isize) as f64,
+                                        (i.y as isize * self.zoom as isize) as f64,
+                                    )
+                                    .zoom(self.zoom as f64);
                                 context = context.flip_hv();
-                            }
-                            else if i.x_flip == 1 {
-                                context = context.trans((i.x as isize * self.zoom as isize) as f64, ((i.y as isize - 16) * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                            } else if i.x_flip == 1 {
+                                context = context
+                                    .trans(
+                                        (i.x as isize * self.zoom as isize) as f64,
+                                        ((i.y as isize - 16) * self.zoom as isize) as f64,
+                                    )
+                                    .zoom(self.zoom as f64);
                                 context = context.flip_h();
-                            }
-                            else if i.y_flip == 1 {
-                                context = context.trans(((i.x as isize - 8) * self.zoom as isize) as f64, (i.y as isize * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                            } else if i.y_flip == 1 {
+                                context = context
+                                    .trans(
+                                        ((i.x as isize - 8) * self.zoom as isize) as f64,
+                                        (i.y as isize * self.zoom as isize) as f64,
+                                    )
+                                    .zoom(self.zoom as f64);
                                 context = context.flip_v();
-                            }
-                            else {
-                                context = context.trans(((i.x as isize - 8) * self.zoom as isize) as f64, ((i.y as isize - 16) * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                            } else {
+                                context = context
+                                    .trans(
+                                        ((i.x as isize - 8) * self.zoom as isize) as f64,
+                                        ((i.y as isize - 16) * self.zoom as isize) as f64,
+                                    )
+                                    .zoom(self.zoom as f64);
                             }
                             image(self.sprite_manager.get_texture(num), context, g);
                         }
@@ -119,29 +142,55 @@ impl Gpu {
 
                 if self.sprite_manager.sprites_enabled == true {
                     for (num, i) in self.sprite_manager.sprites.iter().enumerate() {
-                        if i.x > 0 && i.y > 0 && (i.x as u32) < SCREEN_SIZE_X + 8 && (i.y as u32) < SCREEN_SIZE_Y + 16 && i.priority == 0 {
+                        if i.x > 0
+                            && i.y > 0
+                            && (i.x as u32) < SCREEN_SIZE_X + 8
+                            && (i.y as u32) < SCREEN_SIZE_Y + 16
+                            && i.priority == 0
+                        {
                             let mut context = c.transform;
                             if i.x_flip == 1 && i.y_flip == 1 {
-                                context = context.trans((i.x as isize * self.zoom as isize) as f64, ((i.y as isize - (16 - self.sprite_manager.sprite_height) as isize) * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                                context = context
+                                    .trans(
+                                        (i.x as isize * self.zoom as isize) as f64,
+                                        ((i.y as isize
+                                            - (16 - self.sprite_manager.sprite_height) as isize)
+                                            * self.zoom as isize)
+                                            as f64,
+                                    )
+                                    .zoom(self.zoom as f64);
                                 context = context.flip_hv();
-                            }
-                            else if i.x_flip == 1 {
-                                context = context.trans((i.x as isize * self.zoom as isize) as f64, ((i.y as isize - 16) * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                            } else if i.x_flip == 1 {
+                                context = context
+                                    .trans(
+                                        (i.x as isize * self.zoom as isize) as f64,
+                                        ((i.y as isize - 16) * self.zoom as isize) as f64,
+                                    )
+                                    .zoom(self.zoom as f64);
                                 context = context.flip_h();
-                            }
-                            else if i.y_flip == 1 {
-                                context = context.trans(((i.x as isize - 8) * self.zoom as isize) as f64, ((i.y as isize - (16 - self.sprite_manager.sprite_height as isize)) * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                            } else if i.y_flip == 1 {
+                                context = context
+                                    .trans(
+                                        ((i.x as isize - 8) * self.zoom as isize) as f64,
+                                        ((i.y as isize
+                                            - (16 - self.sprite_manager.sprite_height as isize))
+                                            * self.zoom as isize)
+                                            as f64,
+                                    )
+                                    .zoom(self.zoom as f64);
                                 context = context.flip_v();
-                            }
-                            else {
-                                context = context.trans(((i.x as isize - 8) * self.zoom as isize) as f64, ((i.y as isize - 16) * self.zoom as isize) as f64).zoom(self.zoom as f64);
+                            } else {
+                                context = context
+                                    .trans(
+                                        ((i.x as isize - 8) * self.zoom as isize) as f64,
+                                        ((i.y as isize - 16) * self.zoom as isize) as f64,
+                                    )
+                                    .zoom(self.zoom as f64);
                             }
                             image(self.sprite_manager.get_texture(num), context, g);
                         }
                     }
                 }
-
-
             });
         }
     }
@@ -175,14 +224,11 @@ impl Gpu {
         let mode = get_mode(mem);
         if mode == 0 {
             self.h_blank(mem);
-        }
-        else if mode == 1 {
+        } else if mode == 1 {
             self.v_blank(mem);
-        }
-        else if mode == 2 {
+        } else if mode == 2 {
             self.setup_line(mem);
-        }
-        else if mode == 3 {
+        } else if mode == 3 {
             self.render_line(mem);
         }
     }
@@ -192,8 +238,7 @@ impl Gpu {
         //println!("h-blanking");
         if self.count < 113 {
             self.count += 1;
-        }
-        else {
+        } else {
             if get_curr_line(mem) <= 143 {
                 self.count = 0;
                 set_mode(mem, 2);
@@ -214,8 +259,7 @@ impl Gpu {
         //println!("v-blanking");
         if self.count < 113 {
             self.count += 1;
-        }
-        else {
+        } else {
             let line = get_curr_line(mem);
             if line < 153 {
                 self.count = 0;
@@ -242,8 +286,7 @@ impl Gpu {
         }
         if self.count < 19 {
             self.count += 1;
-        }
-        else {
+        } else {
             set_mode(mem, 3);
         }
     }
@@ -258,22 +301,21 @@ impl Gpu {
                 let line_in_tile = (line % 8) as usize;
                 for i in 0..160 {
                     let x = i + self.scx;
-                    let tile_x = ((x/8) % 32) as usize;
+                    let tile_x = ((x / 8) % 32) as usize;
                     let x_in_tile = (x % 8) as usize;
                     let tile_num = self.background.tile_map[tile_y][tile_x] as usize;
-                    let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile][x_in_tile] as usize;
+                    let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile]
+                        [x_in_tile] as usize;
                     if palette_num != 0 {
                         let pixel_val = self.background.bg_palette[palette_num];
                         self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
-                    }
-                    else {
+                    } else {
                         self.background.pixel_map[line_lcd as usize][i as usize] = 4;
                     }
                     let base_pixel_val = self.background.bg_palette[0];
                     self.background.base_pixel_map[line_lcd as usize][i as usize] = base_pixel_val;
                 }
-            }
-            else {
+            } else {
                 for i in 0..160 {
                     let pixel_val = self.background.bg_palette[0];
                     self.background.pixel_map[line_lcd as usize][i as usize] = 4;
@@ -283,8 +325,7 @@ impl Gpu {
         }
         if self.count < 62 {
             self.count += 1;
-        }
-        else {
+        } else {
             set_mode(mem, 0);
             set_curr_line(mem, line_lcd + 1);
             if mem.get_io_register(0xFF45) == get_curr_line(mem) {
@@ -303,15 +344,13 @@ impl Gpu {
         let ff40 = mem.get_io_register(0xFF40);
         if ff40 & 0b00000100 == 0 {
             self.sprite_manager.sprite_height = 8;
-        }
-        else {
+        } else {
             self.sprite_manager.sprite_height = 16;
         }
 
         if ff40 & 0b00000010 == 0 {
             self.sprite_manager.sprites_enabled = false;
-        }
-        else {
+        } else {
             self.sprite_manager.sprites_enabled = true;
         }
 
@@ -321,7 +360,6 @@ impl Gpu {
             self.sprite_manager.build_pattern_data(mem);
         }
     }
-
 }
 
 #[inline(always)]

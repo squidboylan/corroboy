@@ -1,20 +1,20 @@
+mod adc;
 mod add;
 mod and;
-mod adc;
-mod sub;
-mod sbc;
-mod xor;
-mod or;
-mod inc;
-mod dec;
 mod bit;
 mod cp;
-mod swap;
-mod rst;
+mod dec;
+mod inc;
+mod or;
 mod rl;
 mod rr;
+mod rst;
+mod sbc;
 mod sl;
 mod sr;
+mod sub;
+mod swap;
+mod xor;
 
 use super::super::mmu::Mmu;
 use corroboy::cpu::Cpu;
@@ -260,14 +260,12 @@ fn rst() {
     derp.test_rst(&mut mem);
 }
 
-
 #[test]
 fn rl() {
     // Get a new CPU in to start at a known state
     let mut derp = Cpu::new();
     derp.test_rl();
 }
-
 
 #[test]
 fn rr() {
@@ -282,7 +280,6 @@ fn sl() {
     let mut derp = Cpu::new();
     derp.test_sl();
 }
-
 
 #[test]
 fn sr() {

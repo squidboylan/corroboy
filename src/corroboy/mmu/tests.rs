@@ -25,5 +25,4 @@ fn stack_functions() {
 
     derp.push_u16(&mut sp, 0x3210);
     assert_eq!(derp.pop_u16(&mut sp), 0x3210);
-
 }

@@ -1,6 +1,6 @@
 use super::super::super::mmu::Mmu;
-use corroboy::cpu::Cpu;
 use corroboy::cpu::ops::xor::*;
+use corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_xor(&mut self, mem: &mut Mmu) {
@@ -41,7 +41,11 @@ impl Cpu {
         set_a!(self, 0xFF);
         set_hl!(self, 0xC000);
         mem.set_mem_u8(get_hl!(self) as usize, 0x01);
-        xor(mem.get_mem_u8(get_hl!(self) as usize), get_mut_a!(self), get_mut_f!(self));
+        xor(
+            mem.get_mem_u8(get_hl!(self) as usize),
+            get_mut_a!(self),
+            get_mut_f!(self),
+        );
         assert_eq!(get_a!(self), 0xFE);
 
         set_a!(self, 0xFF);
@@ -69,5 +73,4 @@ impl Cpu {
         assert_eq!(get_h_flag!(self), 0);
         assert_eq!(get_c_flag!(self), 0);
     }
-
 }

@@ -1,5 +1,5 @@
-use corroboy::cpu::Cpu;
 use corroboy::cpu::ops::sl::*;
+use corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_sl(&mut self) {

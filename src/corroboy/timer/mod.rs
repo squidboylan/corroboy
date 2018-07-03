@@ -14,7 +14,12 @@ pub struct Timer {
 
 impl Timer {
     pub fn new() -> Timer {
-        Timer { machine_clocks_per_inc: 0, clock_count: 0, div_clock_count: 0, state: 0 }
+        Timer {
+            machine_clocks_per_inc: 0,
+            clock_count: 0,
+            div_clock_count: 0,
+            state: 0,
+        }
     }
 
     /// Process the timer for the current cycle
@@ -45,8 +50,7 @@ impl Timer {
                     let interrupts = mem.get_interrupts();
                     mem.set_interrupts(interrupts | 0b00000100);
                     self.clock_count = 0;
-                }
-                else {
+                } else {
                     mem.set_tima(tima + 1);
                 }
             }
@@ -55,20 +59,17 @@ impl Timer {
 
     /// Update the timer state based on the tac and tma registers
     fn set_freq(&mut self, mem: &mut Mmu, tac: &u8, tma: &u8) {
-        if *tac & 0b00000011 == 0 && self.machine_clocks_per_inc != (1024/4) {
-            self.machine_clocks_per_inc = 1024/4;
+        if *tac & 0b00000011 == 0 && self.machine_clocks_per_inc != (1024 / 4) {
+            self.machine_clocks_per_inc = 1024 / 4;
             mem.set_tima(*tma);
-        }
-        else if *tac & 0b00000011 == 1 && self.machine_clocks_per_inc != (16/4) {
-            self.machine_clocks_per_inc = 16/4;
+        } else if *tac & 0b00000011 == 1 && self.machine_clocks_per_inc != (16 / 4) {
+            self.machine_clocks_per_inc = 16 / 4;
             mem.set_tima(*tma);
-        }
-        else if *tac & 0b00000011 == 2 && self.machine_clocks_per_inc != (64/4) {
-            self.machine_clocks_per_inc = 64/4;
+        } else if *tac & 0b00000011 == 2 && self.machine_clocks_per_inc != (64 / 4) {
+            self.machine_clocks_per_inc = 64 / 4;
             mem.set_tima(*tma);
-        }
-        else if *tac & 0b00000011 == 3 && self.machine_clocks_per_inc != (256/4) {
-            self.machine_clocks_per_inc = 256/4;
+        } else if *tac & 0b00000011 == 3 && self.machine_clocks_per_inc != (256 / 4) {
+            self.machine_clocks_per_inc = 256 / 4;
             mem.set_tima(*tma);
         }
     }

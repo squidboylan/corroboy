@@ -6,7 +6,7 @@ pub fn display_disassembly(mem: &Mmu, loc: usize) {
 
     // Get 2 byte opcode if it starts with 0xCB
     if opcode == 0xCB {
-        opcode = ((opcode) << 8) + mem.get_mem_u8(loc+1) as u16;
+        opcode = ((opcode) << 8) + mem.get_mem_u8(loc + 1) as u16;
     }
     print!("0x{:04x}: ", loc);
     match opcode {
@@ -16,10 +16,11 @@ pub fn display_disassembly(mem: &Mmu, loc: usize) {
         0x11 => println!("ld    DE,0x{:04x}", mem.get_mem_u16(loc + 1)),
         0x21 => println!("ld    HL,0x{:04x}", mem.get_mem_u16(loc + 1)),
         0x31 => println!("ld    SP,0x{:04x}", mem.get_mem_u16(loc + 1)),
-        0xFA => { println!("ld    A,(0x{:04x})    ; val = 0x{:04x}",
-                    mem.get_mem_u16(loc + 1),
-                    mem.get_mem_u8(mem.get_mem_u16(loc + 1) as usize))
-                },
+        0xFA => println!(
+            "ld    A,(0x{:04x})    ; val = 0x{:04x}",
+            mem.get_mem_u16(loc + 1),
+            mem.get_mem_u8(mem.get_mem_u16(loc + 1) as usize)
+        ),
         0xCD => println!("call    0x{:04x}", mem.get_mem_u16(loc + 1)),
         0xC4 => println!("call    NZ,0x{:04x}", mem.get_mem_u16(loc + 1)),
         0xCC => println!("call    Z,0x{:04x}", mem.get_mem_u16(loc + 1)),
@@ -324,6 +325,6 @@ pub fn display_disassembly(mem: &Mmu, loc: usize) {
 
         0xCB87 => println!("res     0,A"),
 
-        _ => { println!("opcode: {:x} ; disassembler broke", opcode) },
+        _ => println!("opcode: {:x} ; disassembler broke", opcode),
     };
 }

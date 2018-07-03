@@ -3,7 +3,6 @@
 // operation requires a minimum of 4 lines of code to create a macro. If an operation does not have
 // a file.rs named after it, check the misc file as that is likely where it is
 
-
 #[macro_use]
 pub mod and;
 pub use self::and::*;

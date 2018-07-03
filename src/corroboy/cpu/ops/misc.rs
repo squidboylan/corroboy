@@ -6,27 +6,26 @@ pub fn daa(a: &mut u8, flags: &mut u8) {
     if *flags & 0b01000000 == 0 {
         if *flags & 0b00100000 != 0 {
             corr |= 0x06;
-        }
-        else if *a & 0b00001111 > 9 {
+        } else if *a & 0b00001111 > 9 {
             corr |= 0x06;
         }
         if *flags & 0b00010000 != 0 {
             corr |= 0x60;
             *flags |= 0b00010000;
-        }
-        else if (*a & 0b11110000) >> 4 > 9 {
+        } else if (*a & 0b11110000) >> 4 > 9 {
             corr |= 0x60;
             *flags |= 0b00010000;
+        } else {
+            *flags &= 0b11101111;
         }
-        else { *flags &= 0b11101111; }
         *a += corr;
-    }
-    else {
+    } else {
         if *flags & 0b00010000 != 0 {
             corr |= 0x60;
             *flags |= 0b00010000;
+        } else {
+            *flags &= 0b11101111;
         }
-        else { *flags &= 0b11101111; }
 
         if *flags & 0b00100000 != 0 {
             corr |= 0x06;
@@ -34,8 +33,11 @@ pub fn daa(a: &mut u8, flags: &mut u8) {
         *a -= corr;
     }
     *flags &= 0b11011111;
-    if *a == 0 { *flags |= 0b10000000; }
-    else { *flags &= 0b01111111; }
+    if *a == 0 {
+        *flags |= 0b10000000;
+    } else {
+        *flags &= 0b01111111;
+    }
 }
 
 // CPL
@@ -50,8 +52,11 @@ pub fn cpl(a: &mut u8, flags: &mut u8) {
 // compliment carry flag
 
 pub fn ccf(flags: &mut u8) {
-    if *flags & 0b00010000 != 0 { *flags &= 0b11101111; }
-    else { *flags |= 0b00010000; }
+    if *flags & 0b00010000 != 0 {
+        *flags &= 0b11101111;
+    } else {
+        *flags |= 0b00010000;
+    }
     //if *flags & 0b00100000 != 0 { *flags &= 0b11011111; }
     //else { *flags |= 0b00100000; }
     *flags &= 0b10010000;
