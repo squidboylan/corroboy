@@ -277,6 +277,16 @@ impl Mmu {
                 true,
                 &self.save_file,
             )));
+        } else if cart_type == 5 || cart_type == 6 {
+            let mut save = false;
+            if cart_type == 6 {
+                save = true;
+            }
+            self.cart = Some(Box::new(cartridge::mbc2::Mbc2::new(
+                contents,
+                save,
+                &self.save_file,
+            )));
         } else if cart_type == 8 || cart_type == 9 {
             let mut ram_size = 0;
             if contents[0x149] == 1 {
