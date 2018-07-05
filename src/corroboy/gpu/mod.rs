@@ -256,7 +256,15 @@ impl Gpu {
     /// V-blank we h-blank for 113 cycles 10 times, increasing the curr_line after each 113
     /// cycles
     fn v_blank(&mut self, mem: &mut Mmu) {
-        //println!("v-blanking");
+        // Check for lyc = ly even during v_blank
+        if self.count == 0 {
+            if mem.get_io_register(0xFF45) == get_curr_line(mem) {
+                let stat = mem.get_io_register(0xFF41);
+                mem.set_io_register(0xFF41, stat | 0b01000000);
+                let interrupts = mem.get_mem_u8(0xFF0F);
+                mem.set_mem_u8(0xFF0F, interrupts | 0b00000010);
+            }
+        }
         if self.count < 113 {
             self.count += 1;
         } else {
@@ -280,8 +288,7 @@ impl Gpu {
         // get the palette, etc
         if self.count == 0 {
             self.background.set_bg_palette(mem);
-            self.scy = mem.get_io_register(0xFF42);
-            self.scx = mem.get_io_register(0xFF43);
+            // Check for lyc = ly interrupt
             if mem.get_io_register(0xFF45) == get_curr_line(mem) {
                 let stat = mem.get_io_register(0xFF41);
                 mem.set_io_register(0xFF41, stat | 0b01000000);
@@ -301,6 +308,8 @@ impl Gpu {
         let line_lcd = get_curr_line(mem);
         if self.count == 19 {
             self.background.enabled = mem.get_io_register(0xFF40) & 0x01;
+            self.scy = mem.get_io_register(0xFF42);
+            self.scx = mem.get_io_register(0xFF43);
             if self.background.enabled == 1 {
                 let line = line_lcd + self.scy;
                 let tile_y = ((line / 8) % 32) as usize;
