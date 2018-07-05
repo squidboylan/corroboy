@@ -283,6 +283,12 @@ impl Gpu {
             self.background.set_bg_palette(mem);
             self.scy = mem.get_io_register(0xFF42);
             self.scx = mem.get_io_register(0xFF43);
+            if mem.get_io_register(0xFF45) == get_curr_line(mem) {
+                let stat = mem.get_io_register(0xFF41);
+                mem.set_io_register(0xFF41, stat | 0b01000000);
+                let interrupts = mem.get_mem_u8(0xFF0F);
+                mem.set_mem_u8(0xFF0F, interrupts | 0b00000010);
+            }
         }
         if self.count < 19 {
             self.count += 1;
@@ -328,12 +334,6 @@ impl Gpu {
         } else {
             set_mode(mem, 0);
             set_curr_line(mem, line_lcd + 1);
-            if mem.get_io_register(0xFF45) == get_curr_line(mem) {
-                let stat = mem.get_io_register(0xFF41);
-                mem.set_io_register(0xFF41, stat | 0b01000000);
-                let interrupts = mem.get_mem_u8(0xFF0F);
-                mem.set_mem_u8(0xFF0F, interrupts | 0b00000010);
-            }
         }
     }
 
