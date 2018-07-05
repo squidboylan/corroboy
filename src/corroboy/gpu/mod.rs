@@ -279,7 +279,6 @@ impl Gpu {
         //println!("setting up line {}", self.get_curr_line(mem));
         // get the palette, etc
         if self.count == 0 {
-            self.background.enabled = mem.get_io_register(0xFF40) & 0x01;
             self.background.set_bg_palette(mem);
             self.scy = mem.get_io_register(0xFF42);
             self.scx = mem.get_io_register(0xFF43);
@@ -301,6 +300,7 @@ impl Gpu {
     fn render_line(&mut self, mem: &mut Mmu) {
         let line_lcd = get_curr_line(mem);
         if self.count == 19 {
+            self.background.enabled = mem.get_io_register(0xFF40) & 0x01;
             if self.background.enabled == 1 {
                 let line = line_lcd + self.scy;
                 let tile_y = ((line / 8) % 32) as usize;
