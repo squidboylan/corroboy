@@ -944,23 +944,35 @@ impl Cpu {
             // RET
             0xC9 => {
                 ret(mem, get_mut_pc!(self), get_mut_sp!(self));
-                return 2;
+                return 4;
             }
             0xC0 => {
-                ret_nz(mem, get_f!(self), get_mut_pc!(self), get_mut_sp!(self));
-                return 2;
+                if ret_nz(mem, get_f!(self), get_mut_pc!(self), get_mut_sp!(self)) == true {
+                    return 5;
+                } else {
+                    return 2;
+                }
             }
             0xC8 => {
-                ret_z(mem, get_f!(self), get_mut_pc!(self), get_mut_sp!(self));
-                return 2;
+                if ret_z(mem, get_f!(self), get_mut_pc!(self), get_mut_sp!(self)) == true {
+                    return 5;
+                } else {
+                    return 2;
+                }
             }
             0xD0 => {
-                ret_nc(mem, get_f!(self), get_mut_pc!(self), get_mut_sp!(self));
-                return 2;
+                if ret_nc(mem, get_f!(self), get_mut_pc!(self), get_mut_sp!(self)) == true {
+                    return 5;
+                } else {
+                    return 2;
+                }
             }
             0xD8 => {
-                ret_c(mem, get_f!(self), get_mut_pc!(self), get_mut_sp!(self));
-                return 2;
+                if ret_c(mem, get_f!(self), get_mut_pc!(self), get_mut_sp!(self)) == true {
+                    return 5;
+                } else {
+                    return 2;
+                }
             }
 
             0x8F => {
@@ -1050,7 +1062,7 @@ impl Cpu {
             0xD9 => {
                 ret(mem, get_mut_pc!(self), get_mut_sp!(self));
                 ei(&mut self.ime);
-                return 2;
+                return 4;
             }
 
             0x07 => {
@@ -2141,48 +2153,64 @@ impl Cpu {
             // CALL
             0xCD => {
                 call(param, get_mut_pc!(self), get_mut_sp!(self), mem);
-                return 3;
+                return 6;
             }
 
             0xC4 => {
-                call_nz(
+                if call_nz(
                     param,
                     get_f!(self),
                     get_mut_pc!(self),
                     get_mut_sp!(self),
                     mem,
-                );
-                return 3;
+                ) == true
+                {
+                    return 6;
+                } else {
+                    return 3;
+                }
             }
             0xCC => {
-                call_z(
+                if call_z(
                     param,
                     get_f!(self),
                     get_mut_pc!(self),
                     get_mut_sp!(self),
                     mem,
-                );
-                return 3;
+                ) == true
+                {
+                    return 6;
+                } else {
+                    return 3;
+                }
             }
             0xD4 => {
-                call_nc(
+                if call_nc(
                     param,
                     get_f!(self),
                     get_mut_pc!(self),
                     get_mut_sp!(self),
                     mem,
-                );
-                return 3;
+                ) == true
+                {
+                    return 6;
+                } else {
+                    return 3;
+                }
             }
             0xDC => {
-                call_c(
+                if call_c(
                     param,
                     get_f!(self),
                     get_mut_pc!(self),
                     get_mut_sp!(self),
                     mem,
-                );
-                return 3;
+                ) == true
+                {
+                    return 6;
+                } else {
+                    return 3;
+                }
             }
 
             // JUMP
@@ -2192,20 +2220,32 @@ impl Cpu {
             }
 
             0xC2 => {
-                jp_nz(param, get_f!(self), get_mut_pc!(self));
-                return 3;
+                if jp_nz(param, get_f!(self), get_mut_pc!(self)) == true {
+                    return 4;
+                } else {
+                    return 3;
+                }
             }
             0xCA => {
-                jp_z(param, get_f!(self), get_mut_pc!(self));
-                return 3;
+                if jp_z(param, get_f!(self), get_mut_pc!(self)) == true {
+                    return 4;
+                } else {
+                    return 3;
+                }
             }
             0xD2 => {
-                jp_nc(param, get_f!(self), get_mut_pc!(self));
-                return 3;
+                if jp_nc(param, get_f!(self), get_mut_pc!(self)) == true {
+                    return 4;
+                } else {
+                    return 3;
+                }
             }
             0xDA => {
-                jp_c(param, get_f!(self), get_mut_pc!(self));
-                return 3;
+                if jp_c(param, get_f!(self), get_mut_pc!(self)) == true {
+                    return 4;
+                } else {
+                    return 3;
+                }
             }
 
             0xFA => {
@@ -2315,24 +2355,36 @@ impl Cpu {
             // Jumps
             0x18 => {
                 jr(param, get_mut_pc!(self));
-                return 2;
+                return 3;
             }
 
             0x20 => {
-                jr_nz(param, get_f!(self), get_mut_pc!(self));
-                return 2;
+                if jr_nz(param, get_f!(self), get_mut_pc!(self)) == true {
+                    return 3;
+                } else {
+                    return 2;
+                }
             }
             0x28 => {
-                jr_z(param, get_f!(self), get_mut_pc!(self));
-                return 2;
+                if jr_z(param, get_f!(self), get_mut_pc!(self)) == true {
+                    return 3;
+                } else {
+                    return 2;
+                }
             }
             0x30 => {
-                jr_nc(param, get_f!(self), get_mut_pc!(self));
-                return 2;
+                if jr_nc(param, get_f!(self), get_mut_pc!(self)) == true {
+                    return 3;
+                } else {
+                    return 2;
+                }
             }
             0x38 => {
-                jr_c(param, get_f!(self), get_mut_pc!(self));
-                return 2;
+                if jr_c(param, get_f!(self), get_mut_pc!(self)) == true {
+                    return 3;
+                } else {
+                    return 2;
+                }
             }
 
             0xF8 => {
