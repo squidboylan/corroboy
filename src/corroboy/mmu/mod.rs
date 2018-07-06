@@ -120,7 +120,9 @@ impl Mmu {
             0xE000...0xFDFF => self.ram[location - 0xE000] = val,
             0xFE00...0xFE9F => self.oam[location - 0xFE00] = val,
             0xFEA0...0xFEFF => {}
-            0xFF00...0xFF45 => self.io_registers[location - 0xFF00] = val,
+            0xFF00...0xFF03 => self.io_registers[location - 0xFF00] = val,
+            0xFF04 => self.io_registers[4] = 0,
+            0xFF05...0xFF45 => self.io_registers[location - 0xFF00] = val,
             0xFF46 => self.dma_transfer(val),
             0xFF47...0xFF4C => self.io_registers[location - 0xFF00] = val,
             0xFF50 => self.bios_mapped = val,
