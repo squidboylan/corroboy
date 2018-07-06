@@ -310,6 +310,36 @@ impl Mmu {
                     &self.save_file,
                 )));
             }
+        } else if cart_type == 0x19 || cart_type == 0x1C {
+            self.cart = Some(Box::new(cartridge::mbc5::Mbc5::new(
+                contents,
+                0,
+                false,
+                &self.save_file,
+            )));
+        } else if cart_type == 0x1A || cart_type == 0x1B || cart_type == 0x1D || cart_type == 0x1E {
+            let mut save = false;
+            let mut ram_size = 0;
+            if contents[0x149] == 1 {
+                ram_size = 2048;
+            } else if contents[0x149] == 2 {
+                ram_size = 8192;
+            } else if contents[0x149] == 3 {
+                ram_size = 8192 * 4;
+            } else if contents[0x149] == 4 {
+                ram_size = 8192 * 8;
+            } else if contents[0x149] == 5 {
+                ram_size = 8192 * 16;
+            }
+            if cart_type == 0x1B || cart_type == 0x1E {
+                save = true;
+            }
+            self.cart = Some(Box::new(cartridge::mbc5::Mbc5::new(
+                contents,
+                ram_size,
+                save,
+                &self.save_file,
+            )));
         } else {
             panic!("Cartridge uses unsupported MBC, code: {}", cart_type);
         }
