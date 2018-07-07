@@ -312,6 +312,29 @@ impl Mmu {
                     &self.save_file,
                 )));
             }
+        } else if cart_type <= 0x13 && cart_type >= 0x0F {
+            let mut save = false;
+            let mut ram_size = 0;
+            if contents[0x149] == 1 {
+                ram_size = 2048;
+            } else if contents[0x149] == 2 {
+                ram_size = 8192;
+            } else if contents[0x149] == 3 {
+                ram_size = 8192 * 4;
+            } else if contents[0x149] == 4 {
+                ram_size = 8192 * 8;
+            } else if contents[0x149] == 5 {
+                ram_size = 8192 * 16;
+            }
+            if cart_type == 0x13 || cart_type == 0x10 {
+                save = true;
+            }
+            self.cart = Some(Box::new(cartridge::mbc3::Mbc3::new(
+                contents,
+                ram_size,
+                save,
+                &self.save_file,
+            )));
         } else if cart_type == 0x19 || cart_type == 0x1C {
             self.cart = Some(Box::new(cartridge::mbc5::Mbc5::new(
                 contents,
