@@ -216,7 +216,8 @@ impl Gpu {
         // Do stuff here that happens once per frame
         if self.count == 0 && get_curr_line(mem) == 0 {
             self.initialize(mem);
-            self.background.build_tile_map(mem);
+            self.background.build_bg_tile_map(mem);
+            self.background.build_window_tile_map(mem);
         }
 
         // Based on the current gpu mode call the correct function to update
@@ -306,6 +307,7 @@ impl Gpu {
     /// Render the current line of the background
     fn render_line(&mut self, mem: &mut Mmu) {
         let line_lcd = get_curr_line(mem);
+        // Render this line of the background
         if self.count == 19 {
             self.background.enabled = mem.get_io_register(0xFF40) & 0x01;
             self.scy = mem.get_io_register(0xFF42);
@@ -318,7 +320,7 @@ impl Gpu {
                     let x = i + self.scx;
                     let tile_x = ((x / 8) % 32) as usize;
                     let x_in_tile = (x % 8) as usize;
-                    let tile_num = self.background.tile_map[tile_y][tile_x] as usize;
+                    let tile_num = self.background.bg_tile_map[tile_y][tile_x] as usize;
                     let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile]
                         [x_in_tile] as usize;
                     if palette_num != 0 {
@@ -335,6 +337,27 @@ impl Gpu {
                     let pixel_val = self.background.bg_palette[0];
                     self.background.pixel_map[line_lcd as usize][i as usize] = 4;
                     self.background.base_pixel_map[line_lcd as usize][i as usize] = pixel_val;
+                }
+            }
+        }
+        // Render this line of the window
+        if self.count == 20 {
+            if self.background.window_enabled == true {
+                let line_lcd = get_curr_line(mem);
+                if self.background.window_y <= line_lcd {
+                    let y = line_lcd - self.background.window_y;
+                    let line_in_tile = (y % 8) as usize;
+                    let tile_y = ((y / 8) % 32) as usize;
+                    for i in 0..160 {
+                        let x = i - self.background.window_x + 7;
+                        let tile_x = ((x / 8) % 32) as usize;
+                        let x_in_tile = (x % 8) as usize;
+                        let tile_num = self.background.window_tile_map[tile_y][tile_x] as usize;
+                        let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile]
+                            [x_in_tile] as usize;
+                        let pixel_val = self.background.bg_palette[palette_num];
+                        self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
+                    }
                 }
             }
         }

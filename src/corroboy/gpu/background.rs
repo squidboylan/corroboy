@@ -39,9 +39,14 @@ pub struct Background {
 
     pub bg_tiles: Vec<Tile>,
 
-    pub tile_map_bot: usize,
-    pub tile_map_top: usize,
-    pub tile_map: [[u8; 32]; 32],
+    pub bg_tile_map_bot: usize,
+    pub bg_tile_map: [[u8; 32]; 32],
+
+    pub window_tile_map_bot: usize,
+    pub window_tile_map: [[u8; 32]; 32],
+    pub window_enabled: bool,
+    pub window_x: u8,
+    pub window_y: u8,
 
     // colors 0 - 3
     pub bg_palette: [usize; 4],
@@ -74,10 +79,16 @@ impl Background {
             background_data_bot: 0,
             background_data_top: 0,
             bg_tiles: tiles,
-            tile_map_bot: 0,
-            tile_map_top: 0,
-            tile_map: [[0; 32]; 32],
+            bg_tile_map_bot: 0,
+            bg_tile_map: [[0; 32]; 32],
             bg_palette: [0; 4],
+
+            window_tile_map_bot: 0,
+            window_tile_map: [[0; 32]; 32],
+            window_enabled: false,
+            window_x: 0,
+            window_y: 0,
+
             base_tex: Texture::empty(&mut factory).unwrap(),
             tex: Texture::empty(&mut factory).unwrap(),
             base_pixel_map: [[0; 160]; 144],
@@ -101,22 +112,33 @@ impl Background {
         }
 
         if ff40 & 0b00001000 == 0 {
-            self.tile_map_bot = 0x9800;
-            self.tile_map_top = 0x9BFF;
+            self.bg_tile_map_bot = 0x9800;
         } else {
-            self.tile_map_bot = 0x9C00;
-            self.tile_map_top = 0x9FFF;
+            self.bg_tile_map_bot = 0x9C00;
         }
+        if ff40 & 0b00100000 == 0 {
+            self.window_enabled = false;
+        } else {
+            self.window_enabled = true;
+        }
+        if ff40 & 0b01000000 == 0 {
+            self.window_tile_map_bot = 0x9800;
+        } else {
+            self.window_tile_map_bot = 0x9C00;
+        }
+
+        self.window_y = mem.get_mem_u8(0xFF4A);
+        self.window_x = mem.get_mem_u8(0xFF4B);
 
         self.build_tile_data(mem);
     }
 
     /// Debug function for printing the tile map
     #[allow(dead_code)]
-    fn print_tile_map(&self) {
+    fn print_bg_tile_map(&self) {
         for i in 0..32 {
             for j in 0..32 {
-                print!("{} ", self.tile_map[i][j]);
+                print!("{} ", self.bg_tile_map[i][j]);
             }
             println!("");
         }
@@ -132,7 +154,7 @@ impl Background {
                         for l in 0..8 {
                             print!(
                                 "{} ",
-                                self.bg_tiles[self.tile_map[i][j] as usize].raw_val[k][l]
+                                self.bg_tiles[self.bg_tile_map[i][j] as usize].raw_val[k][l]
                             );
                         }
                     }
@@ -200,11 +222,21 @@ impl Background {
         }
     }
 
-    /// Build the tile map
-    pub fn build_tile_map(&mut self, mem: &mut Mmu) {
+    /// Build the bg tile map
+    pub fn build_bg_tile_map(&mut self, mem: &mut Mmu) {
         for i in 0..32 {
             for j in 0..32 {
-                self.tile_map[i][j] = mem.get_mem_u8(self.tile_map_bot + (i * 32) + j);
+                self.bg_tile_map[i][j] = mem.get_mem_u8(self.bg_tile_map_bot + (i * 32) + j);
+            }
+        }
+    }
+
+    /// Build the window tile map
+    pub fn build_window_tile_map(&mut self, mem: &mut Mmu) {
+        for i in 0..32 {
+            for j in 0..32 {
+                self.window_tile_map[i][j] =
+                    mem.get_mem_u8(self.window_tile_map_bot + (i * 32) + j);
             }
         }
     }
