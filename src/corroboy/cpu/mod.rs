@@ -416,41 +416,41 @@ impl Cpu {
             // JP (HL)
             0xE9 => {
                 jp(get_hl!(self), get_mut_pc!(self));
-                return 3;
+                return 1;
             }
 
             // RST nn
             0xC7 => {
                 rst(0x00, mem, get_mut_sp!(self), get_mut_pc!(self));
-                return 8;
+                return 4;
             }
             0xCF => {
                 rst(0x08, mem, get_mut_sp!(self), get_mut_pc!(self));
-                return 8;
+                return 4;
             }
             0xD7 => {
                 rst(0x10, mem, get_mut_sp!(self), get_mut_pc!(self));
-                return 8;
+                return 4;
             }
             0xDF => {
                 rst(0x18, mem, get_mut_sp!(self), get_mut_pc!(self));
-                return 8;
+                return 4;
             }
             0xE7 => {
                 rst(0x20, mem, get_mut_sp!(self), get_mut_pc!(self));
-                return 8;
+                return 4;
             }
             0xEF => {
                 rst(0x28, mem, get_mut_sp!(self), get_mut_pc!(self));
-                return 8;
+                return 4;
             }
             0xF7 => {
                 rst(0x30, mem, get_mut_sp!(self), get_mut_pc!(self));
-                return 8;
+                return 4;
             }
             0xFF => {
                 rst(0x38, mem, get_mut_sp!(self), get_mut_pc!(self));
-                return 8;
+                return 4;
             }
 
             0x7F => {
@@ -886,7 +886,7 @@ impl Cpu {
                     get_mut_a!(self),
                     get_mut_f!(self),
                 );
-                return 1;
+                return 2;
             }
 
             0xF9 => {
@@ -1553,35 +1553,35 @@ impl Cpu {
 
             0xCB46 => {
                 bit(mem.get_mem_u8(get_hl!(self) as usize), 0, get_mut_f!(self));
-                return 4;
+                return 3;
             }
             0xCB4E => {
                 bit(mem.get_mem_u8(get_hl!(self) as usize), 1, get_mut_f!(self));
-                return 4;
+                return 3;
             }
             0xCB56 => {
                 bit(mem.get_mem_u8(get_hl!(self) as usize), 2, get_mut_f!(self));
-                return 4;
+                return 3;
             }
             0xCB5E => {
                 bit(mem.get_mem_u8(get_hl!(self) as usize), 3, get_mut_f!(self));
-                return 4;
+                return 3;
             }
             0xCB66 => {
                 bit(mem.get_mem_u8(get_hl!(self) as usize), 4, get_mut_f!(self));
-                return 4;
+                return 3;
             }
             0xCB6E => {
                 bit(mem.get_mem_u8(get_hl!(self) as usize), 5, get_mut_f!(self));
-                return 4;
+                return 3;
             }
             0xCB76 => {
                 bit(mem.get_mem_u8(get_hl!(self) as usize), 6, get_mut_f!(self));
-                return 4;
+                return 3;
             }
             0xCB7E => {
                 bit(mem.get_mem_u8(get_hl!(self) as usize), 7, get_mut_f!(self));
-                return 4;
+                return 3;
             }
 
             0xCB87 => {
@@ -2216,7 +2216,7 @@ impl Cpu {
             // JUMP
             0xC3 => {
                 jp(param, get_mut_pc!(self));
-                return 3;
+                return 4;
             }
 
             0xC2 => {
@@ -2350,7 +2350,7 @@ impl Cpu {
 
             0x10 => {
                 stop(&mut self.halt);
-                return 2;
+                return 1;
             }
             // Jumps
             0x18 => {
