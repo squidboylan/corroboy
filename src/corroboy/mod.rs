@@ -59,11 +59,6 @@ impl Emulator {
                 self.burn_count -= 1;
             }
 
-            //let elapsed = start.elapsed();
-            if cfg!(debug_assertions = true) {
-                //println!("elapsed nanos: {}", elapsed.subsec_nanos());
-            }
-
             let pre_gpu_state = self.mem.get_io_register(0xFF41) & 0b00000011;
 
             self.gpu.update(&mut self.mem);
