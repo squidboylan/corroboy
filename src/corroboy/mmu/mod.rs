@@ -17,9 +17,6 @@ pub struct Mmu {
     io_registers: [u8; 0x4D],
     bios_mapped: u8,
 
-    // 8 MSB of this are the DIV register
-    system_counter: u16,
-
     // Interrupts enabled reg
     ie: u8,
 
@@ -39,7 +36,6 @@ impl Mmu {
 
             io_registers: [0; 0x4D],
             bios_mapped: 0,
-            system_counter: 0,
 
             ie: 0,
             save_file,
@@ -104,9 +100,7 @@ impl Mmu {
             0xC000...0xDFFF => return self.ram[location - 0xC000],
             0xE000...0xFDFF => return self.ram[location - 0xE000],
             0xFE00...0xFE9F => return self.oam[location - 0xFE00],
-            0xFF00...0xFF03 => return self.io_registers[location - 0xFF00],
-            0xFF04 => return (self.system_counter >> 8) as u8,
-            0xFF05...0xFF45 => return self.io_registers[location - 0xFF00],
+            0xFF00...0xFF4C => return self.io_registers[location - 0xFF00],
             0xFF50 => return self.bios_mapped,
             0xFF80...0xFFFE => return self.small_ram[location - 0xFF80],
             0xFFFF => return self.ie,
@@ -127,7 +121,7 @@ impl Mmu {
             0xFE00...0xFE9F => self.oam[location - 0xFE00] = val,
             0xFEA0...0xFEFF => {}
             0xFF00...0xFF03 => self.io_registers[location - 0xFF00] = val,
-            0xFF04 => self.system_counter = 0,
+            0xFF04 => self.io_registers[4] = 0,
             0xFF05...0xFF45 => self.io_registers[location - 0xFF00] = val,
             0xFF46 => self.dma_transfer(val),
             0xFF47...0xFF4C => self.io_registers[location - 0xFF00] = val,
@@ -416,6 +410,14 @@ impl Mmu {
         return self.ie;
     }
 
+    pub fn get_div(&self) -> u8 {
+        return self.io_registers[4];
+    }
+
+    pub fn set_div(&mut self, num: u8) {
+        self.io_registers[4] = num;
+    }
+
     pub fn get_tima(&self) -> u8 {
         return self.io_registers[5];
     }
@@ -449,13 +451,5 @@ impl Mmu {
         if let Some(v) = self.cart.as_mut() {
             v.save_ram();
         }
-    }
-
-    pub fn get_system_counter(&self) -> u16 {
-        self.system_counter
-    }
-
-    pub fn set_system_counter(&mut self, val: u16) {
-        self.system_counter = val;
     }
 }
