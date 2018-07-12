@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use std::io::{stdin, stdout, Write};
 
 use piston::input::*;

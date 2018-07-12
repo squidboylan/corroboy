@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 // ADD HL,n
 
 pub fn add_16bit(val: u16, reg: &mut u16, flags: &mut u8) {

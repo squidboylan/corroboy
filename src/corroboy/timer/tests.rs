@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use super::Timer;
 
 use super::super::mmu::Mmu;

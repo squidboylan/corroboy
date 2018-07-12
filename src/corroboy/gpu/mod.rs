@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use graphics::*;
 use piston::input::*;
 use piston_window::PistonWindow as Window;

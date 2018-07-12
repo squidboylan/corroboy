@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 pub mod no_mbc;
 
 pub mod mbc1;

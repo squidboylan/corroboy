@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 #[macro_use]
 mod ops;
 use self::ops::*;

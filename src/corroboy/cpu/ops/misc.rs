@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 // DAA
 // Decimal adjust register A
 

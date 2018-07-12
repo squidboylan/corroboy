@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 // Each type of operation has macros in its own file.
 // This is to prevent a single file from getting too big, as there are many operations and each
 // operation requires a minimum of 4 lines of code to create a macro. If an operation does not have

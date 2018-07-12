@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 pub mod corroboy;
 
 extern crate getopts;

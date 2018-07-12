@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 /*
  * Below are setter and getter macros for the registers so that the registers
  * can be manipulated easily using macros

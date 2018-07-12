@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use corroboy::mmu::Mmu;
 // RL n rotate n left through carrry flag (C flag)
 

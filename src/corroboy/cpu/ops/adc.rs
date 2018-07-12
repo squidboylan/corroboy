@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 // ADC A,n
 
 pub fn adc(val: u8, a: &mut u8, flags: &mut u8) {

@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use piston::input::Button;
 use piston::input::Key;
 

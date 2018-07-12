@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 // SBC A,n
 
 pub fn sbc(val: u8, a: &mut u8, flags: &mut u8) {

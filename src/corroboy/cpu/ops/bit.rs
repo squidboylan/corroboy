@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 // BIT x,n
 // Opposite of xth bit of the n register is written to the z flag, n is unset, h is set
 

@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 // SUB n
 
 pub fn sub(val: u8, reg: &mut u8, flags: &mut u8) {

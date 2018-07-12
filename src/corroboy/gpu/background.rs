@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use gfx_device_gl;
 use image::*;
 use piston_window;

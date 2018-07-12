@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use std::fs::File;
 use std::io::prelude::*;
 

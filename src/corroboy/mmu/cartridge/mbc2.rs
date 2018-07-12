@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use super::Cartridge;
 use std::fs::File;
 use std::fs::OpenOptions;
