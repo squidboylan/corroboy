@@ -26,10 +26,11 @@ The following is a checklist of corroboy features:
  - [x] MMU
  - [ ] Cartridge support
    - [x] No MBC
-   - [ ] MBC1
-   - [ ] MBC2
-   - [ ] MBC3
-   - [ ] MBC5
+   - [x] MBC1
+   - [x] MBC2
+   - [x] MBC3
+     - [ ] Timer
+   - [x] MBC5
  - [ ] Audio
 
 ## Build Instructions
