@@ -106,7 +106,7 @@ impl Background {
         if (ff40 & 0b00010000) >> 4 == 0 {
             self.background_data_bot = 0x8800;
             self.background_data_top = 0x97FF;
-        //println!("background_data_bot: {:x}", self.background_data_bot);
+            //println!("background_data_bot: {:x}", self.background_data_bot);
         } else {
             self.background_data_bot = 0x8000;
             self.background_data_top = 0x8FFF;

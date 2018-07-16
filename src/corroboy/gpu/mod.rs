@@ -204,7 +204,6 @@ impl Gpu {
         // set the gpu to the correct mode
         if self.state == 0 && get_current_state(mem) == 1 {
             self.state = 1;
-            self.initialize(mem);
             self.count = 0;
             set_curr_line(mem, 0);
             set_mode(mem, 0);
@@ -218,9 +217,7 @@ impl Gpu {
 
         // Do stuff here that happens once per frame
         if self.count == 0 && get_curr_line(mem) == 0 {
-            self.initialize(mem);
-            self.background.build_bg_tile_map(mem);
-            self.background.build_window_tile_map(mem);
+            self.initialize_sprites(mem);
         }
 
         // Based on the current gpu mode call the correct function to update
@@ -291,6 +288,9 @@ impl Gpu {
         //println!("setting up line {}", self.get_curr_line(mem));
         // get the palette, etc
         if self.count == 0 {
+            self.background.initialize(mem);
+            self.background.build_bg_tile_map(mem);
+            self.background.build_window_tile_map(mem);
             self.background.set_bg_palette(mem);
             // Check for lyc = ly interrupt
             if mem.get_io_register(0xFF45) == get_curr_line(mem) {
@@ -373,9 +373,7 @@ impl Gpu {
     }
 
     /// Initialize the gpu and all its components
-    pub fn initialize(&mut self, mem: &mut Mmu) {
-        //println!("initializing screen");
-        self.background.initialize(mem);
+    pub fn initialize_sprites(&mut self, mem: &mut Mmu) {
         let ff40 = mem.get_io_register(0xFF40);
         if ff40 & 0b00000100 == 0 {
             self.sprite_manager.sprite_height = 8;
