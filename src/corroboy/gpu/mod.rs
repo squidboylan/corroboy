@@ -288,6 +288,11 @@ impl Gpu {
         //println!("setting up line {}", self.get_curr_line(mem));
         // get the palette, etc
         if self.count == 0 {
+            if get_curr_line(mem) == 0 {
+                self.sprite_manager.set_sprite_palettes(mem);
+                self.sprite_manager.build_sprites(mem);
+                self.sprite_manager.build_pattern_data(mem);
+            }
             self.background.initialize(mem);
             self.background.build_bg_tile_map(mem);
             self.background.build_window_tile_map(mem);
@@ -352,14 +357,16 @@ impl Gpu {
                     let line_in_tile = (y % 8) as usize;
                     let tile_y = ((y / 8) % 32) as usize;
                     for i in 0..160 {
-                        let x = i - self.background.window_x + 7;
-                        let tile_x = ((x / 8) % 32) as usize;
-                        let x_in_tile = (x % 8) as usize;
-                        let tile_num = self.background.window_tile_map[tile_y][tile_x] as usize;
-                        let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile]
-                            [x_in_tile] as usize;
-                        let pixel_val = self.background.bg_palette[palette_num];
-                        self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
+                        if i > self.background.window_x - 7 {
+                            let x = i - self.background.window_x + 7;
+                            let tile_x = ((x / 8) % 32) as usize;
+                            let x_in_tile = (x % 8) as usize;
+                            let tile_num = self.background.window_tile_map[tile_y][tile_x] as usize;
+                            let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile]
+                                [x_in_tile] as usize;
+                            let pixel_val = self.background.bg_palette[palette_num];
+                            self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
+                        }
                     }
                 }
             }
@@ -387,11 +394,6 @@ impl Gpu {
             self.sprite_manager.sprites_enabled = true;
         }
 
-        if self.sprite_manager.sprites_enabled == true {
-            self.sprite_manager.set_sprite_palettes(mem);
-            self.sprite_manager.build_sprites(mem);
-            self.sprite_manager.build_pattern_data(mem);
-        }
     }
 }
 

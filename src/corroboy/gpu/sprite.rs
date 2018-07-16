@@ -230,10 +230,6 @@ impl SpriteManager {
         if self.sprite_height == 8 {
             for i in 0..256 {
                 for j in 0..8 {
-                    if mem.get_vram_dirty(self.sprite_pattern_bot + (i * 16) + (j * 2)) == true
-                        || mem.get_vram_dirty(self.sprite_pattern_bot + (i * 16) + 1 + (j * 2))
-                            == true
-                    {
                         self.sprite_patterns[i].textures.clear();
                         let left = mem.get_vram(self.sprite_pattern_bot + (i * 16) + (j * 2));
                         let right = mem.get_vram(self.sprite_pattern_bot + (i * 16) + 1 + (j * 2));
@@ -253,18 +249,11 @@ impl SpriteManager {
                             (right & 0b00000010) + ((left & 0b00000010) >> 1);
                         self.sprite_patterns[i].raw_val[j as usize][7] =
                             ((right & 0b00000001) << 1) + (left & 0b00000001);
-                        mem.set_vram_dirty(self.sprite_pattern_bot + (i * 16) + (j * 2), false);
-                        mem.set_vram_dirty(self.sprite_pattern_bot + (i * 16) + 1 + (j * 2), false);
-                    }
                 }
             }
         } else {
             for i in 0..128 {
                 for j in 0..16 {
-                    if mem.get_vram_dirty(self.sprite_pattern_bot + (i * 32) + (j * 2)) == true
-                        || mem.get_vram_dirty(self.sprite_pattern_bot + (i * 32) + 1 + (j * 2))
-                            == true
-                    {
                         self.sprite_patterns[i].textures.clear();
                         let left = mem.get_vram(self.sprite_pattern_bot + (i * 32) + (j * 2));
                         let right = mem.get_vram(self.sprite_pattern_bot + (i * 32) + 1 + (j * 2));
@@ -284,9 +273,6 @@ impl SpriteManager {
                             (right & 0b00000010) + ((left & 0b00000010) >> 1);
                         self.sprite_patterns[i].raw_val[j as usize][7] =
                             ((right & 0b00000001) << 1) + (left & 0b00000001);
-                        mem.set_vram_dirty(self.sprite_pattern_bot + (i * 32) + (j * 2), false);
-                        mem.set_vram_dirty(self.sprite_pattern_bot + (i * 32) + 1 + (j * 2), false);
-                    }
                 }
             }
         }

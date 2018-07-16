@@ -395,7 +395,6 @@ impl Mmu {
     // DMA transfers data from XX00 - XX9F to FE00 - FE9F, should take 160us, but will try make it
     // immediate and see what breaks.
     pub fn dma_transfer(&mut self, ff46: u8) {
-        //println!("dma_transfer");
         let start = ((ff46 & 0xF1) as usize) << 8;
         let mut i: usize = 0;
         while i < 0xA0 {
