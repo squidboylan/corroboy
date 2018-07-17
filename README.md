@@ -20,7 +20,7 @@ The following is a checklist of corroboy features:
  - [x] GPU
    - [x] Background
    - [x] Sprites - implemented but buggy
-   - [ ] Window
+   - [x] Window
  - [x] Joypad
  - [x] Timer
  - [x] MMU
@@ -65,3 +65,9 @@ Issues: For reporting bugs or missing features, please use the github issue
 tracker on this project
 
 Email: calebboylan AT gmail DOT com
+
+# Sources
+
+Below are sources I have found useful for understanding the GameBoy™ hardare
+ - http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
+ - http://bgb.bircd.org/pandocs.htm
