@@ -106,7 +106,7 @@ impl Background {
         if (ff40 & 0b00010000) >> 4 == 0 {
             self.background_data_bot = 0x8800;
             self.background_data_top = 0x97FF;
-            //println!("background_data_bot: {:x}", self.background_data_bot);
+        //println!("background_data_bot: {:x}", self.background_data_bot);
         } else {
             self.background_data_bot = 0x8000;
             self.background_data_top = 0x8FFF;
@@ -323,6 +323,59 @@ impl Background {
                         (right & 0b00000010) + ((left & 0b00000010) >> 1);
                     self.bg_tiles[i].raw_val[j as usize][7] =
                         ((right & 0b00000001) << 1) + (left & 0b00000001);
+                }
+            }
+        }
+    }
+    pub fn update_background_line(&mut self, line_lcd: u8, mem: &mut Mmu) {
+        self.enabled = mem.get_io_register(0xFF40) & 0x01;
+        let scy = mem.get_io_register(0xFF42);
+        let scx = mem.get_io_register(0xFF43);
+        if self.enabled == 1 {
+            let line = line_lcd + scy;
+            let tile_y = ((line / 8) % 32) as usize;
+            let line_in_tile = (line % 8) as usize;
+            for i in 0..160 {
+                let x = i + scx;
+                let tile_x = ((x / 8) % 32) as usize;
+                let x_in_tile = (x % 8) as usize;
+                let tile_num = self.bg_tile_map[tile_y][tile_x] as usize;
+                let palette_num = self.bg_tiles[tile_num].raw_val[line_in_tile][x_in_tile] as usize;
+                if palette_num != 0 {
+                    let pixel_val = self.bg_palette[palette_num];
+                    self.pixel_map[line_lcd as usize][i as usize] = pixel_val;
+                } else {
+                    self.pixel_map[line_lcd as usize][i as usize] = 4;
+                }
+                let base_pixel_val = self.bg_palette[0];
+                self.base_pixel_map[line_lcd as usize][i as usize] = base_pixel_val;
+            }
+        } else {
+            for i in 0..160 {
+                let pixel_val = self.bg_palette[0];
+                self.pixel_map[line_lcd as usize][i as usize] = 4;
+                self.base_pixel_map[line_lcd as usize][i as usize] = pixel_val;
+            }
+        }
+    }
+
+    pub fn update_window_line(&mut self, line_lcd: u8) {
+        if self.window_enabled == true {
+            if self.window_y <= line_lcd {
+                let y = line_lcd - self.window_y;
+                let line_in_tile = (y % 8) as usize;
+                let tile_y = ((y / 8) % 32) as usize;
+                for i in 0..160 {
+                    if i >= self.window_x - 7 {
+                        let x = i - self.window_x + 7;
+                        let tile_x = ((x / 8) % 32) as usize;
+                        let x_in_tile = (x % 8) as usize;
+                        let tile_num = self.window_tile_map[tile_y][tile_x] as usize;
+                        let palette_num =
+                            self.bg_tiles[tile_num].raw_val[line_in_tile][x_in_tile] as usize;
+                        let pixel_val = self.bg_palette[palette_num];
+                        self.pixel_map[line_lcd as usize][i as usize] = pixel_val;
+                    }
                 }
             }
         }

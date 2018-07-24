@@ -47,9 +47,6 @@ pub struct Gpu {
     // This represents the number of (machine) cycles we are into rendering the current line
     count: u16,
 
-    scx: u8,
-    scy: u8,
-
     sprite_manager: sprite::SpriteManager,
 
     background: background::Background,
@@ -62,8 +59,6 @@ impl Gpu {
         Gpu {
             state: 0,
             count: 0,
-            scx: 0,
-            scy: 0,
             sprite_manager: sprite::SpriteManager::new(),
             background: background::Background::new(window),
             zoom: zoom,
@@ -317,59 +312,11 @@ impl Gpu {
         let line_lcd = get_curr_line(mem);
         // Render this line of the background
         if self.count == 19 {
-            self.background.enabled = mem.get_io_register(0xFF40) & 0x01;
-            self.scy = mem.get_io_register(0xFF42);
-            self.scx = mem.get_io_register(0xFF43);
-            if self.background.enabled == 1 {
-                let line = line_lcd + self.scy;
-                let tile_y = ((line / 8) % 32) as usize;
-                let line_in_tile = (line % 8) as usize;
-                for i in 0..160 {
-                    let x = i + self.scx;
-                    let tile_x = ((x / 8) % 32) as usize;
-                    let x_in_tile = (x % 8) as usize;
-                    let tile_num = self.background.bg_tile_map[tile_y][tile_x] as usize;
-                    let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile]
-                        [x_in_tile] as usize;
-                    if palette_num != 0 {
-                        let pixel_val = self.background.bg_palette[palette_num];
-                        self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
-                    } else {
-                        self.background.pixel_map[line_lcd as usize][i as usize] = 4;
-                    }
-                    let base_pixel_val = self.background.bg_palette[0];
-                    self.background.base_pixel_map[line_lcd as usize][i as usize] = base_pixel_val;
-                }
-            } else {
-                for i in 0..160 {
-                    let pixel_val = self.background.bg_palette[0];
-                    self.background.pixel_map[line_lcd as usize][i as usize] = 4;
-                    self.background.base_pixel_map[line_lcd as usize][i as usize] = pixel_val;
-                }
-            }
+            self.background.update_background_line(line_lcd, mem);
         }
         // Render this line of the window
         if self.count == 20 {
-            if self.background.window_enabled == true {
-                let line_lcd = get_curr_line(mem);
-                if self.background.window_y <= line_lcd {
-                    let y = line_lcd - self.background.window_y;
-                    let line_in_tile = (y % 8) as usize;
-                    let tile_y = ((y / 8) % 32) as usize;
-                    for i in 0..160 {
-                        if i > self.background.window_x - 7 {
-                            let x = i - self.background.window_x + 7;
-                            let tile_x = ((x / 8) % 32) as usize;
-                            let x_in_tile = (x % 8) as usize;
-                            let tile_num = self.background.window_tile_map[tile_y][tile_x] as usize;
-                            let palette_num = self.background.bg_tiles[tile_num].raw_val[line_in_tile]
-                                [x_in_tile] as usize;
-                            let pixel_val = self.background.bg_palette[palette_num];
-                            self.background.pixel_map[line_lcd as usize][i as usize] = pixel_val;
-                        }
-                    }
-                }
-            }
+            self.background.update_window_line(line_lcd);
         }
         if self.count < 62 {
             self.count += 1;
@@ -393,7 +340,6 @@ impl Gpu {
         } else {
             self.sprite_manager.sprites_enabled = true;
         }
-
     }
 }
 
