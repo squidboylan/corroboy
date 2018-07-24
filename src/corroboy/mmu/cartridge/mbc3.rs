@@ -14,6 +14,7 @@ pub struct Mbc3 {
     ram_enabled: bool,
     ram: Vec<u8>,
     ram_bank: usize,
+    ram_dirty: bool,
     batt: bool,
     save_file: Option<File>,
 }
@@ -69,6 +70,7 @@ impl Mbc3 {
             batt,
             save_file,
             ram_enabled: false,
+            ram_dirty: false,
         }
     }
 }
@@ -107,12 +109,14 @@ impl Cartridge for Mbc3 {
         } else if location <= 0xBFFF && location >= 0xA000 {
             if self.ram.len() - (location - 0xA000) > 0 && self.ram_enabled == true && self.ram_bank <= 3 {
                 self.ram[(location - 0xA000) + 0x2000 * self.ram_bank] = val;
+                self.ram_dirty = true;
             }
         }
     }
 
     fn save_ram(&mut self) {
-        if self.batt == true {
+        if self.batt == true && self.ram_dirty == true {
+            self.ram_dirty = false;
             if let Some(f) = self.save_file.as_mut() {
                 f.seek(SeekFrom::Start(0))
                     .expect("Failed to seek to start of save file");

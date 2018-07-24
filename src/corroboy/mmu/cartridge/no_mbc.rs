@@ -9,6 +9,7 @@ use std::io::SeekFrom;
 pub struct NoMbc {
     data: Vec<u8>,
     ram: Vec<u8>,
+    ram_dirty: bool,
     batt: bool,
     save_file: Option<File>,
 }
@@ -59,6 +60,7 @@ impl NoMbc {
         NoMbc {
             data,
             ram,
+            ram_dirty: false,
             batt,
             save_file,
         }
@@ -80,6 +82,7 @@ impl Cartridge for NoMbc {
         if location <= 0xBFFF && location >= 0xA000 {
             if self.ram.len() - (location - 0xA000) > 0 {
                 self.ram[location - 0xA000] = val;
+                self.ram_dirty = true;
             } else {
                 println!("Attempt to write to cart ram failed, not enough ram");
             }
@@ -87,7 +90,7 @@ impl Cartridge for NoMbc {
     }
 
     fn save_ram(&mut self) {
-        if self.batt == true {
+        if self.batt == true && self.ram_dirty == true {
             if let Some(f) = self.save_file.as_mut() {
                 f.seek(SeekFrom::Start(0))
                     .expect("Failed to seek to start of save file");
