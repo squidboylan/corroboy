@@ -14,6 +14,7 @@ mod background;
 // TERMS:
 // OAM: Object Attribute Memory or sprite attribute table
 
+// From: http://gbdev.gg8.se/wiki/articles/Video_Display#FF41_-_STAT_-_LCDC_Status_.28R.2FW.29
 // Mode 0: The LCD controller is in the H-Blank period and
 //         the CPU can access both the display RAM (8000h-9FFFh)
 //         and OAM (FE00h-FE9Fh)
