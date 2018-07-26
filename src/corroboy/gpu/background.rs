@@ -10,10 +10,10 @@ use sdl2_window::Sdl2Window;
 
 use corroboy::mmu::Mmu;
 
-pub struct Tile {
+struct Tile {
     // color nums that represent the tile, this + palette data each line represent how the tile is
     // drawn
-    pub raw_val: [[u8; 8]; 8],
+    raw_val: [[u8; 8]; 8],
 }
 
 impl Tile {
@@ -36,22 +36,22 @@ impl Tile {
 }
 
 pub struct Background {
-    pub background_data_bot: usize,
-    pub background_data_top: usize,
+    background_data_bot: usize,
+    background_data_top: usize,
 
-    pub bg_tiles: Vec<Tile>,
+    bg_tiles: Vec<Tile>,
 
-    pub bg_tile_map_bot: usize,
-    pub bg_tile_map: [[u8; 32]; 32],
+    bg_tile_map_bot: usize,
+    bg_tile_map: [[u8; 32]; 32],
 
-    pub window_tile_map_bot: usize,
-    pub window_tile_map: [[u8; 32]; 32],
-    pub window_enabled: bool,
-    pub window_x: u8,
-    pub window_y: u8,
+    window_tile_map_bot: usize,
+    window_tile_map: [[u8; 32]; 32],
+    window_enabled: bool,
+    window_x: u8,
+    window_y: u8,
 
     // colors 0 - 3
-    pub bg_palette: [usize; 4],
+    bg_palette: [usize; 4],
 
     pub base_tex: Texture<gfx_device_gl::Resources>,
 
@@ -62,9 +62,9 @@ pub struct Background {
     // 1 - light gray
     // 2 - dark gray
     // 3 - black
-    pub base_pixel_map: [[usize; 160]; 144],
-    pub pixel_map: [[usize; 160]; 144],
-    pub last_pixel_map: [[usize; 160]; 144],
+    base_pixel_map: [[usize; 160]; 144],
+    pixel_map: [[usize; 160]; 144],
+    last_pixel_map: [[usize; 160]; 144],
     pub enabled: u8,
 }
 
