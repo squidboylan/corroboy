@@ -411,10 +411,12 @@ impl Mmu {
         return self.video_ram[location - 0x8000];
     }
 
+    #[allow(unused)]
     pub fn get_vram_dirty(&self, location: usize) -> bool {
         return self.video_ram_dirty[location - 0x8000];
     }
 
+    #[allow(unused)]
     pub fn set_vram_dirty(&mut self, location: usize, val: bool) {
         self.video_ram_dirty[location - 0x8000] = val;
     }
