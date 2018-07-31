@@ -25,7 +25,7 @@ pub struct Emulator {
     timer: timer::Timer,
     p1: joypad::Joypad,
     // This counts the number of cycles we have to burn after the last instruction for proper timing
-    burn_count: u8,
+    burn_count: usize,
 }
 
 impl Emulator {
@@ -56,7 +56,11 @@ impl Emulator {
         loop {
             if self.burn_count == 0 {
                 self.p1.update(&mut self.mem);
-                self.burn_count = self.cpu.exec_next(&mut self.mem) - 1;
+                self.burn_count = self.cpu.exec_next(&mut self.mem);
+
+                // Update cart timer (if mbc3), otherwise noop
+                self.mem.update_cart_timer(self.burn_count);
+                self.burn_count -= 1;
             } else {
                 self.burn_count -= 1;
             }

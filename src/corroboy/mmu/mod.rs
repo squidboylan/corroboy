@@ -321,6 +321,7 @@ impl Mmu {
             }
         } else if cart_type <= 0x13 && cart_type >= 0x0F {
             let mut save = false;
+            let mut timer_batt = false;
             let mut ram_size = 0;
             if contents[0x149] == 1 {
                 ram_size = 2048;
@@ -336,11 +337,15 @@ impl Mmu {
             if cart_type == 0x13 || cart_type == 0x10 {
                 save = true;
             }
+            if cart_type == 0x0F || cart_type == 0x10 {
+                timer_batt = true;
+            }
             self.cart = Some(Box::new(cartridge::mbc3::Mbc3::new(
                 contents,
                 ram_size,
                 save,
                 &self.save_file,
+                timer_batt,
             )));
         } else if cart_type == 0x19 || cart_type == 0x1C {
             self.cart = Some(Box::new(cartridge::mbc5::Mbc5::new(
@@ -481,6 +486,12 @@ impl Mmu {
     pub fn save_cart_ram(&mut self) {
         if let Some(v) = self.cart.as_mut() {
             v.save_ram();
+        }
+    }
+
+    pub fn update_cart_timer(&mut self, ticks: usize) {
+        if let Some(v) = self.cart.as_mut() {
+            v.update_timer(ticks);
         }
     }
 }

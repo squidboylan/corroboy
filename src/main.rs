@@ -11,6 +11,7 @@ extern crate opengl_graphics;
 extern crate piston;
 extern crate piston_window;
 extern crate sdl2_window;
+extern crate byteorder;
 
 use getopts::Options;
 use opengl_graphics::OpenGL;

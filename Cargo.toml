@@ -15,6 +15,7 @@ image = "0.19.0"
 getopts = "0.2"
 gfx_device_gl = "0.15.3"
 pistoncore-sdl2_window = "*"
+byteorder = "1.2"
 
 [profile.dev]
 overflow-checks = false
