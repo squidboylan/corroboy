@@ -234,152 +234,71 @@ impl Mmu {
         println!("cart-type: {:x}", cart_type);
         println!("cart-size: {}B", contents.len());
 
-        if cart_type == 0 {
-            self.cart = Some(Box::new(cartridge::no_mbc::NoMbc::new(
-                contents,
-                0,
-                false,
-                &self.save_file,
-            )));
-        } else if cart_type == 1 {
-            let mut ram_size = 0;
-            if contents[0x149] == 1 {
-                ram_size = 2048;
-            } else if contents[0x149] == 2 {
-                ram_size = 8192;
-            } else if contents[0x149] == 3 {
-                ram_size = 8192 * 4;
-            } else if contents[0x149] == 4 {
-                ram_size = 8192 * 8;
-            } else if contents[0x149] == 5 {
-                ram_size = 8192 * 16;
-            }
+        let ram_size = if contents[0x149] == 1 {
+            2048
+        } else if contents[0x149] == 2 {
+            8192
+        } else if contents[0x149] == 3 {
+            8192 * 4
+        } else if contents[0x149] == 4 {
+            8192 * 8
+        } else if contents[0x149] == 5 {
+            8192 * 16
+        } else {
+            0
+        };
 
-            self.cart = Some(Box::new(cartridge::mbc1::Mbc1::new(
-                contents,
-                ram_size,
-                false,
-                &self.save_file,
-            )));
-        } else if cart_type == 2 || cart_type == 3 {
-            let mut ram_size = 0;
-            let mut save = false;
-            if cart_type == 3 {
-                save = true;
-            }
-            println!("0x149: {:x}", contents[0x149]);
-            if contents[0x149] == 1 {
-                ram_size = 2048;
-            } else if contents[0x149] == 2 {
-                ram_size = 8192;
-            } else if contents[0x149] == 3 {
-                ram_size = 8192 * 4;
-            } else if contents[0x149] == 4 {
-                ram_size = 8192 * 8;
-            } else if contents[0x149] == 5 {
-                ram_size = 8192 * 16;
-            }
+        let save = if cart_type == 3 || cart_type == 6 || cart_type == 9 || cart_type == 0x10 || cart_type == 0x13 || cart_type == 0x1B || cart_type == 0x1E {
+            true
+        } else {
+            false
+        };
 
-            self.cart = Some(Box::new(cartridge::mbc1::Mbc1::new(
-                contents,
-                ram_size,
-                save,
-                &self.save_file,
-            )));
-        } else if cart_type == 5 || cart_type == 6 {
-            let mut save = false;
-            if cart_type == 6 {
-                save = true;
-            }
-            self.cart = Some(Box::new(cartridge::mbc2::Mbc2::new(
-                contents,
-                save,
-                &self.save_file,
-            )));
-        } else if cart_type == 8 || cart_type == 9 {
-            let mut ram_size = 0;
-            if contents[0x149] == 1 {
-                ram_size = 2048;
-            } else if contents[0x149] == 2 {
-                ram_size = 8192;
-            }
+        let timer_batt = if cart_type == 0x0F || cart_type == 0x10 {
+            true
+        } else {
+            false
+        };
 
-            if cart_type == 8 {
-                self.cart = Some(Box::new(cartridge::no_mbc::NoMbc::new(
+        self.cart = match cart_type {
+            0 => Some(Box::new(cartridge::no_mbc::NoMbc::new(
+                    contents,
+                    0,
+                    save,
+                    &self.save_file,
+                 ))),
+            1...3 => Some(Box::new(cartridge::mbc1::Mbc1::new(
                     contents,
                     ram_size,
-                    false,
+                    save,
                     &self.save_file,
-                )));
-            } else {
-                self.cart = Some(Box::new(cartridge::no_mbc::NoMbc::new(
+                 ))),
+            5...6 => Some(Box::new(cartridge::mbc2::Mbc2::new(
+                    contents,
+                    save,
+                    &self.save_file,
+                 ))),
+            8...9 => Some(Box::new(cartridge::no_mbc::NoMbc::new(
                     contents,
                     ram_size,
-                    true,
+                    save,
                     &self.save_file,
-                )));
-            }
-        } else if cart_type <= 0x13 && cart_type >= 0x0F {
-            let mut save = false;
-            let mut timer_batt = false;
-            let mut ram_size = 0;
-            if contents[0x149] == 1 {
-                ram_size = 2048;
-            } else if contents[0x149] == 2 {
-                ram_size = 8192;
-            } else if contents[0x149] == 3 {
-                ram_size = 8192 * 4;
-            } else if contents[0x149] == 4 {
-                ram_size = 8192 * 8;
-            } else if contents[0x149] == 5 {
-                ram_size = 8192 * 16;
-            }
-            if cart_type == 0x13 || cart_type == 0x10 {
-                save = true;
-            }
-            if cart_type == 0x0F || cart_type == 0x10 {
-                timer_batt = true;
-            }
-            self.cart = Some(Box::new(cartridge::mbc3::Mbc3::new(
+                 ))),
+            0x0F...0x13 => Some(Box::new(cartridge::mbc3::Mbc3::new(
                 contents,
                 ram_size,
                 save,
                 &self.save_file,
                 timer_batt,
-            )));
-        } else if cart_type == 0x19 || cart_type == 0x1C {
-            self.cart = Some(Box::new(cartridge::mbc5::Mbc5::new(
-                contents,
-                0,
-                false,
-                &self.save_file,
-            )));
-        } else if cart_type == 0x1A || cart_type == 0x1B || cart_type == 0x1D || cart_type == 0x1E {
-            let mut save = false;
-            let mut ram_size = 0;
-            if contents[0x149] == 1 {
-                ram_size = 2048;
-            } else if contents[0x149] == 2 {
-                ram_size = 8192;
-            } else if contents[0x149] == 3 {
-                ram_size = 8192 * 4;
-            } else if contents[0x149] == 4 {
-                ram_size = 8192 * 8;
-            } else if contents[0x149] == 5 {
-                ram_size = 8192 * 16;
-            }
-            if cart_type == 0x1B || cart_type == 0x1E {
-                save = true;
-            }
-            self.cart = Some(Box::new(cartridge::mbc5::Mbc5::new(
+            ))),
+            0x19...0x1E => Some(Box::new(cartridge::mbc5::Mbc5::new(
                 contents,
                 ram_size,
                 save,
                 &self.save_file,
-            )));
-        } else {
-            panic!("Cartridge uses unsupported MBC, code: {}", cart_type);
-        }
+            ))),
+            _ => panic!("Cartridge uses unsupported MBC, code: {}", cart_type),
+        };
     }
 
     pub fn push_u16(&mut self, sp: &mut u16, val: u16) {

@@ -24,12 +24,12 @@ The following is a checklist of corroboy features:
  - [x] Joypad
  - [x] Timer
  - [x] MMU
- - [ ] Cartridge support
+ - [x] Cartridge support
    - [x] No MBC
    - [x] MBC1
    - [x] MBC2
    - [x] MBC3
-     - [ ] Timer
+     - [x] Timer
    - [x] MBC5
  - [ ] Audio
 
