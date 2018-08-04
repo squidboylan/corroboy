@@ -248,7 +248,14 @@ impl Mmu {
             0
         };
 
-        let save = if cart_type == 3 || cart_type == 6 || cart_type == 9 || cart_type == 0x10 || cart_type == 0x13 || cart_type == 0x1B || cart_type == 0x1E {
+        let save = if cart_type == 3
+            || cart_type == 6
+            || cart_type == 9
+            || cart_type == 0x10
+            || cart_type == 0x13
+            || cart_type == 0x1B
+            || cart_type == 0x1E
+        {
             true
         } else {
             false
@@ -262,28 +269,28 @@ impl Mmu {
 
         self.cart = match cart_type {
             0 => Some(Box::new(cartridge::no_mbc::NoMbc::new(
-                    contents,
-                    0,
-                    save,
-                    &self.save_file,
-                 ))),
+                contents,
+                0,
+                save,
+                &self.save_file,
+            ))),
             1...3 => Some(Box::new(cartridge::mbc1::Mbc1::new(
-                    contents,
-                    ram_size,
-                    save,
-                    &self.save_file,
-                 ))),
+                contents,
+                ram_size,
+                save,
+                &self.save_file,
+            ))),
             5...6 => Some(Box::new(cartridge::mbc2::Mbc2::new(
-                    contents,
-                    save,
-                    &self.save_file,
-                 ))),
+                contents,
+                save,
+                &self.save_file,
+            ))),
             8...9 => Some(Box::new(cartridge::no_mbc::NoMbc::new(
-                    contents,
-                    ram_size,
-                    save,
-                    &self.save_file,
-                 ))),
+                contents,
+                ram_size,
+                save,
+                &self.save_file,
+            ))),
             0x0F...0x13 => Some(Box::new(cartridge::mbc3::Mbc3::new(
                 contents,
                 ram_size,

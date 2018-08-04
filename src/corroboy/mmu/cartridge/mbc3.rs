@@ -1,12 +1,12 @@
 // Copyright (c) 2018 Caleb Boylan
 
 use super::Cartridge;
+use byteorder::{BigEndian, ByteOrder};
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::time::{SystemTime, UNIX_EPOCH};
-use byteorder::{ByteOrder, BigEndian};
 
 // This code was made using the docs that describe the different MBCs at
 // http://gbdev.gg8.se/wiki/articles/Memory_Bank_Controllers#MBC3_.28max_2MByte_ROM_and.2For_32KByte_RAM_and_Timer.29
@@ -153,11 +153,13 @@ impl Cartridge for Mbc3 {
                 if self.timer_batt == true {
                     f.write(&self.timer.get_data())
                         .expect("Failed to write save data to file");
-                    let time_from_epoch = SystemTime::now().duration_since(UNIX_EPOCH).expect("Error getting duration since epoch").as_secs();
+                    let time_from_epoch = SystemTime::now()
+                        .duration_since(UNIX_EPOCH)
+                        .expect("Error getting duration since epoch")
+                        .as_secs();
                     let mut buf: [u8; 8] = [0; 8];
                     BigEndian::write_u64(&mut buf, time_from_epoch);
-                    f.write(&buf)
-                        .expect("Failed to write save data to file");
+                    f.write(&buf).expect("Failed to write save data to file");
                 }
 
                 f.flush().expect("Failed to flush save data to file");
@@ -192,7 +194,6 @@ struct Timer {
     // See hardware documentation for what this register is for
     latch_reg5: u8,
 }
-
 
 impl Timer {
     pub fn new() -> Timer {
@@ -331,7 +332,10 @@ impl Timer {
         self.days = data[3];
         self.reg5 = data[4];
 
-        let time_from_epoch = SystemTime::now().duration_since(UNIX_EPOCH).expect("Error getting duration since epoch").as_secs();
+        let time_from_epoch = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Error getting duration since epoch")
+            .as_secs();
         println!("save_time: {}", save_time);
         println!("time_from_epoch: {}", time_from_epoch);
         let seconds_passed_since_save = time_from_epoch - save_time;
@@ -341,7 +345,6 @@ impl Timer {
         }
     }
 }
-
 
 #[test]
 fn test_mbc3() {

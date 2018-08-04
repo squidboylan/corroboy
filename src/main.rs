@@ -2,6 +2,7 @@
 
 pub mod corroboy;
 
+extern crate byteorder;
 extern crate getopts;
 extern crate gfx_device_gl;
 extern crate glutin_window;
@@ -11,7 +12,6 @@ extern crate opengl_graphics;
 extern crate piston;
 extern crate piston_window;
 extern crate sdl2_window;
-extern crate byteorder;
 
 use getopts::Options;
 use opengl_graphics::OpenGL;
