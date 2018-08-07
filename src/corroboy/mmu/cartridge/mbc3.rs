@@ -101,7 +101,7 @@ impl Cartridge for Mbc3 {
             return self.data[location];
         } else if location >= 0x4000 && location <= 0x7FFF {
             return self.data[(location - 0x4000) + (0x4000 * self.data_bank)];
-        } else if location >= 0xA000 && location <= 0xBFFF {
+        } else if location >= 0xA000 && location <= 0xBFFF && self.ram_enabled {
             if self.ram_bank <= 3 {
                 return self.ram[(location - 0xA000) + (0x2000 * self.ram_bank)];
             } else {
@@ -129,14 +129,12 @@ impl Cartridge for Mbc3 {
         } else if location >= 0x6000 && location <= 0x7FFF {
             // If val is 1, set the latch to true, otherwise false
             self.timer.update_latch(val == 1);
-        } else if location <= 0xBFFF && location >= 0xA000 {
-            if self.ram.len() - (location - 0xA000) > 0 && self.ram_enabled == true {
-                if self.ram_bank <= 3 {
-                    self.ram[(location - 0xA000) + 0x2000 * self.ram_bank] = val;
-                    self.ram_dirty = true;
-                } else {
-                    self.timer.set_val(self.ram_bank, val);
-                }
+        } else if location >= 0xA000 && location <= 0xBFFF && self.ram_enabled {
+            if self.ram_bank <= 3 {
+                self.ram[(location - 0xA000) + 0x2000 * self.ram_bank] = val;
+                self.ram_dirty = true;
+            } else {
+                self.timer.set_val(self.ram_bank, val);
             }
         }
     }
@@ -214,7 +212,7 @@ impl Timer {
     }
 
     pub fn update_timer(&mut self, ticks: usize) {
-        if self.reg5 & 0b01000000 != 0 {
+        if self.reg5 & 0b0100_0000 != 0 {
             return;
         }
 
@@ -341,7 +339,7 @@ impl Timer {
         let seconds_passed_since_save = time_from_epoch - save_time;
         println!("{}", seconds_passed_since_save);
         for _i in 0..seconds_passed_since_save {
-            self.inc_seconds();
+            self.update_timer(1048576);
         }
     }
 }
@@ -384,5 +382,90 @@ fn test_mbc3() {
                 assert_eq!(cart.read(0xA000 + i), k);
             }
         }
+    }
+}
+
+#[test]
+fn test_mbc3_timer() {
+    // Fill cart data with 0 - 255
+    let mut data: Vec<u8> = Vec::with_capacity(1024 * 32);
+    for j in 0..8 {
+        for _i in 0..16384 {
+            data.push(j as u8);
+        }
+    }
+
+    // Create cart no ram, no battery and no save file
+    let mut cart = Mbc3::new(data, 0, false, &None, false);
+
+    // Enable RAM
+    cart.write(0, 0xA);
+
+    cart.write(0x4000, 0xC);
+    cart.write(0xA000, 0b0100_0000);
+
+    // Test that timer is not updated when the bit to disable it is set
+    for _ in 0..(86400u64 * 513) {
+        // Latch the updated time
+        cart.write(0x6000, 0);
+        cart.write(0x6000, 1);
+
+        cart.write(0x4000, 0x8);
+        assert_eq!(cart.read(0xA000), 0);
+
+        cart.write(0x4000, 0x9);
+        assert_eq!(cart.read(0xA000), 0);
+
+        cart.write(0x4000, 0xA);
+        assert_eq!(cart.read(0xA000), 0);
+
+        cart.write(0x4000, 0xB);
+        assert_eq!(cart.read(0xA000), 0);
+
+        cart.write(0x4000, 0xC);
+        let reg5 = cart.read(0xA000);
+
+        assert_eq!(reg5 & 0b0000_0001, 0);
+        assert_eq!(reg5 & 0b1000_0000, 0);
+
+        cart.update_timer(1048576);
+    }
+
+    // Enable the timer
+    cart.write(0x4000, 0xC);
+    cart.write(0xA000, 0);
+
+    // Test that the timer counts when it is enabled
+    for i in 0..(86400u64 * 513) {
+        let sec = i;
+        let minute = sec / 60;
+        let hour = minute / 60;
+        let day = hour / 24;
+        let day_bit_8 = day/256;
+        let day_c = day/512;
+
+        // Latch the updated time
+        cart.write(0x6000, 0);
+        cart.write(0x6000, 1);
+
+        cart.write(0x4000, 0x8);
+        assert_eq!(cart.read(0xA000), (sec % 60) as u8);
+
+        cart.write(0x4000, 0x9);
+        assert_eq!(cart.read(0xA000), (minute % 60) as u8);
+
+        cart.write(0x4000, 0xA);
+        assert_eq!(cart.read(0xA000), (hour % 24) as u8);
+
+        cart.write(0x4000, 0xB);
+        assert_eq!(cart.read(0xA000), day as u8);
+
+        cart.write(0x4000, 0xC);
+        let reg5 = cart.read(0xA000);
+
+        assert_eq!(reg5 & 0b0000_0001, (day_bit_8 % 2) as u8);
+        assert_eq!(reg5 & 0b1000_0000, (day_c as u8) << 7);
+
+        cart.update_timer(1048576);
     }
 }
