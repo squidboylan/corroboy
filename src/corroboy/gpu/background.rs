@@ -366,7 +366,7 @@ impl Background {
                 let line_in_tile = (y % 8) as usize;
                 let tile_y = ((y / 8) % 32) as usize;
                 for i in 0..160 {
-                    if i >= self.window_x - 7 {
+                    if i + 7 >= self.window_x {
                         let x = i - self.window_x + 7;
                         let tile_x = ((x / 8) % 32) as usize;
                         let x_in_tile = (x % 8) as usize;
