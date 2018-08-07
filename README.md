@@ -35,6 +35,12 @@ The following is a checklist of corroboy features:
 
 ## Build Instructions
 
+### Supported Platforms
+
+The only platform Corroboy supports is Linux. MacOS and
+Windows may currently work (it's untested) but even if they do I make no
+promises that they will continue to work.
+
 ### Requirements
 
 Because corroboy is a Rust project all of the standard tools to build rust
