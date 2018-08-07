@@ -54,6 +54,15 @@ project with optimizations. The final binary will be available at
 Corroboy unit tests can be run using `cargo test`, Travis CI also runs these
 same tests when a commit is pushed.
 
+## Controls
+
+The emulator controls are as follows:
+  - Arrow keys -> D-Pad
+  - Z -> A
+  - X -> B
+  - Enter -> Start
+  - Right Shift -> Select
+
 ## License
 
 Corroboy is licensed under the MIT license. See the `LICENSE` file in the project
