@@ -81,7 +81,7 @@ impl Cartridge for Mbc5 {
             return self.data[location];
         } else if location >= 0x4000 && location <= 0x7FFF {
             return self.data[(location - 0x4000) + (0x4000 * self.data_bank)];
-        } else if location >= 0xA000 && location <= 0xBFFF {
+        } else if location >= 0xA000 && location <= 0xBFFF && self.ram_enabled {
             return self.ram[(location - 0xA000) + (0x2000 * self.ram_bank)];
         }
         return 0xFF;
@@ -95,11 +95,11 @@ impl Cartridge for Mbc5 {
                 self.ram_enabled = false;
             }
         } else if location >= 0x2000 && location <= 0x2FFF {
-            self.data_bank = (self.data_bank & 0b00000000) | (val as usize);
+            self.data_bank = (self.data_bank & 0b1_0000_0000) | (val as usize);
         } else if location >= 0x3000 && location <= 0x3FFF {
-            self.data_bank = (self.data_bank & 0b011111111) | ((val as usize) << 8);
+            self.data_bank = (self.data_bank & 0b0_1111_1111) | ((val as usize) << 8);
         } else if location >= 0x4000 && location <= 0x5FFF {
-            self.ram_bank = val as usize;
+            self.ram_bank = (val % 0xF) as usize;
         } else if location <= 0xBFFF && location >= 0xA000 {
             if self.ram.len() - (location - 0xA000) > 0 && self.ram_enabled == true {
                 self.ram[(location - 0xA000) + 0x2000 * self.ram_bank] = val;
