@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Caleb Boylan
+
 use corroboy::cpu::ops::rl::*;
 use corroboy::cpu::Cpu;
 
