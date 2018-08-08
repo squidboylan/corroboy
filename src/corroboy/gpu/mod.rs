@@ -81,6 +81,10 @@ impl Gpu {
                 self.sprite_manager.generate_sprite_textures(window);
             }
 
+            // This closure is loosely based on the examples in
+            // https://github.com/PistonDevelopers/piston-examples
+            // which is available under the MIT license, a copy of which
+            // is available in the LICENSE file at the root of the repo
             window.draw_2d(e, |c, g| {
                 clear([1.0; 4], g);
 

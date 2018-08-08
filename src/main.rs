@@ -104,6 +104,10 @@ fn main() {
     }
     // If we're not in debug mode run the normal way
     else {
+        // This event loop is loosely based on the examples in
+        // https://github.com/PistonDevelopers/piston-examples
+        // which is available under the MIT license, a copy of which
+        // is available in the LICENSE file at the root of the repo
         window.set_ups(60);
         window.set_max_fps(60);
         while let Some(e) = window.next() {

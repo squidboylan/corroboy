@@ -3,6 +3,10 @@
 // DAA
 // Decimal adjust register A
 
+// This implementation of the DAA instruction is based off of
+// https://github.com/VelocityRa/rustboy implementation, which is licensed
+// under the MIT license, which is available in the LICENSE file in the root
+// of the repo
 pub fn daa(a: &mut u8, flags: &mut u8) {
     let mut corr = 0;
     if *flags & 0b00100000 != 0 {
