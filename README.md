@@ -5,10 +5,11 @@ Copyright (c) 2018 Caleb Boylan
 Corroboy is a basic Nintendo™ Game Boy™ emulator written in Rust.
 
 This project started as a way to learn the Rust language. The goal of
-corroboy is to be a modular emulator that is accurate enough to play games.
-Once the emulator is accurate enough to play games without introducing any
-bugs, I would like to add the features necessary to make it possible to have an
-AI play games on the emulator.
+Corroboy is to be a modular emulator that is accurate enough to play games.
+Currently the emulator works for some simple games, but many complicated games
+do not work or are playable but have bugs. The emulator is also
+unoptimized and should work on any modern laptop or better system, but won't
+work on low power devices such as a raspberry pi.
 
 I intend for users to only play games that are legally acquired, such as
 Open Source or free ROMs.
@@ -81,7 +82,22 @@ tracker on this project
 
 Email: calebboylan AT gmail DOT com
 
-# Sources
+## CS461 and CS410
+
+For CS461 (Open Source development) and CS410 (Rust Programming) I worked on
+implementing cartridge support and window support in Corroboy. The files corresponding to
+cartridge support are `src/corroboy/mmu/cartridge/*`. The window support only
+consisted of about ~100 lines of code in the `src/corroboy/gpu/background.rs`
+file. Overall the project went fairly well. I wrote unit tests for each of my
+cartridge types and did manual testing which makes me rather confident
+that the code is correct. The window code is much harder to unit test as it
+is graphics code so I did not implement unit tests, but I did manual testing and it
+works for everything i've tested it with. I also did a bunch of bug fixing in
+code that I wrote before the classes started, but those are spread out over the
+project and the easiest way to see what I did there is to look at the commit
+history.
+
+## Sources
 
 Below are sources I have found useful for understanding the GameBoy™ hardare
  - http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
