@@ -2,6 +2,9 @@
 
 Copyright (c) 2018 Caleb Boylan
 
+Licensed under the MIT license, see the LICENSE file for a full copy of the
+license.
+
 ## Project Structure
 
 Corroboy is organized logically into modules based on the functionality and

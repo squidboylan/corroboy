@@ -1,4 +1,7 @@
 // Copyright (c) 2018 Caleb Boylan
+// [This program is licensed under the "MIT License"]
+// Please see the file LICENSE in the source
+// distribution of this software for license terms.
 
 // BIT x,n
 // Opposite of xth bit of the n register is written to the z flag, n is unset, h is set
