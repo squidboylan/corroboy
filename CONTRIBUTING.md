@@ -2,8 +2,9 @@
 
 Copyright (c) 2018 Caleb Boylan
 
-Licensed under the MIT license, see the LICENSE file for a full copy of the
-license.
+This program is licensed under the "MIT License"
+Please see the file LICENSE in the source
+distribution of this software for license terms.
 
 ## Project Structure
 
