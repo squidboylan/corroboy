@@ -93,7 +93,7 @@ impl Cpu {
     fn get_param_8_bit(&mut self, mem: &mut Mmu) -> u8 {
         let temp = mem.get_mem_u8(get_pc!(self) as usize);
         set_pc!(self, get_pc!(self) + 1);
-        if cfg!(debug_assertions = true) {
+        if cfg!(debug_assertions = "true") {
             println!(
                 "8 bit param: b: {:b}, hex: {:x}, signed: {:x}",
                 temp,
@@ -112,7 +112,7 @@ impl Cpu {
         let temp_u16: u16 = (temp as u16) + ((mem.get_mem_u8(pc as usize) as u16) << 8);
         pc += 1;
         set_pc!(self, pc);
-        if cfg!(debug_assertions = true) {
+        if cfg!(debug_assertions = "true") {
             println!("16 bit param: b: {:b}, hex: {:x}", temp_u16, temp_u16);
         }
         temp_u16
@@ -2410,7 +2410,7 @@ impl Cpu {
             return val;
         }
 
-        if cfg!(debug_assertions = true) {
+        if cfg!(debug_assertions = "true") {
             println!("a: {:x}", get_a!(self));
             println!("pc: {:x}", get_pc!(self));
             println!("sp: {:x}", get_sp!(self));
@@ -2422,7 +2422,7 @@ impl Cpu {
         if self.halt == 0 {
             let opcode = self.get_opcode(mem);
 
-            if cfg!(debug_assertions = true) {
+            if cfg!(debug_assertions = "true") {
                 println!("opcode: {:x}\n", opcode);
             }
 
@@ -2435,7 +2435,7 @@ impl Cpu {
     pub fn handle_int(&mut self, mem: &mut Mmu) -> usize {
         let ir = mem.get_interrupts();
         let interrupts = mem.get_interrupts_enabled() & ir;
-        if cfg!(debug_assertions = true) {
+        if cfg!(debug_assertions = "true") {
             println!("interrupts: {:b}", interrupts);
         }
 

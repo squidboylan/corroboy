@@ -69,7 +69,7 @@ impl Emulator {
             }
 
             //let elapsed = start.elapsed();
-            if cfg!(debug_assertions = true) {
+            if cfg!(debug_assertions = "true") {
                 //println!("elapsed nanos: {}", elapsed.subsec_nanos());
             }
 
