@@ -3,7 +3,7 @@
 // Please see the file LICENSE in the source
 // distribution of this software for license terms.
 
-use corroboy::mmu::Mmu;
+use crate::corroboy::mmu::Mmu;
 
 /// Disassemble the opcode at the location passed in as an argument
 pub fn display_disassembly(mem: &Mmu, loc: usize) {

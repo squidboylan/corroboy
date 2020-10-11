@@ -3,7 +3,7 @@
 // Please see the file LICENSE in the source
 // distribution of this software for license terms.
 
-pub use corroboy::mmu::Mmu;
+pub use crate::corroboy::mmu::Mmu;
 
 // RES n,A
 

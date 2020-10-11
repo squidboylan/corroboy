@@ -3,8 +3,8 @@
 // Please see the file LICENSE in the source
 // distribution of this software for license terms.
 
+use ::image::*;
 use gfx_device_gl;
-use image::*;
 use piston_window;
 use piston_window::PistonWindow as Window;
 use piston_window::TextureSettings;
@@ -12,7 +12,7 @@ use piston_window::*;
 use sdl2_window::Sdl2Window;
 use std::collections::HashMap;
 
-use corroboy::mmu::Mmu;
+use crate::corroboy::mmu::Mmu;
 
 //#[derive(Clone, Copy)]
 pub struct Sprite {

@@ -11,18 +11,14 @@
 #[allow(unused_macros)]
 macro_rules! set_a {
     ($self_:ident, $x:expr) => {
-        unsafe {
-            $self_.af.split.upper = $x;
-        }
+        $self_.af.split.upper = $x;
     };
 }
 
 #[allow(unused_macros)]
 macro_rules! set_f {
     ($self_:ident, $x:expr) => {
-        unsafe {
-            $self_.af.split.lower = $x;
-        }
+        $self_.af.split.lower = $x;
     };
 }
 
@@ -36,18 +32,14 @@ macro_rules! set_af {
 #[allow(unused_macros)]
 macro_rules! set_b {
     ($self_:ident, $x:expr) => {
-        unsafe {
-            $self_.bc.split.upper = $x;
-        }
+        $self_.bc.split.upper = $x;
     };
 }
 
 #[allow(unused_macros)]
 macro_rules! set_c {
     ($self_:ident, $x:expr) => {
-        unsafe {
-            $self_.bc.split.lower = $x;
-        }
+        $self_.bc.split.lower = $x;
     };
 }
 
@@ -61,18 +53,14 @@ macro_rules! set_bc {
 #[allow(unused_macros)]
 macro_rules! set_d {
     ($self_:ident, $x:expr) => {
-        unsafe {
-            $self_.de.split.upper = $x;
-        }
+        $self_.de.split.upper = $x;
     };
 }
 
 #[allow(unused_macros)]
 macro_rules! set_e {
     ($self_:ident, $x:expr) => {
-        unsafe {
-            $self_.de.split.lower = $x;
-        }
+        $self_.de.split.lower = $x;
     };
 }
 
@@ -86,18 +74,14 @@ macro_rules! set_de {
 #[allow(unused_macros)]
 macro_rules! set_h {
     ($self_:ident, $x:expr) => {
-        unsafe {
-            $self_.hl.split.upper = $x;
-        }
+        $self_.hl.split.upper = $x;
     };
 }
 
 #[allow(unused_macros)]
 macro_rules! set_l {
     ($self_:ident, $x:expr) => {
-        unsafe {
-            $self_.hl.split.lower = $x;
-        }
+        $self_.hl.split.lower = $x;
     };
 }
 

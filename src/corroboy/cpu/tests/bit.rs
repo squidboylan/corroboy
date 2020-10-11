@@ -3,8 +3,8 @@
 // Please see the file LICENSE in the source
 // distribution of this software for license terms.
 
-use corroboy::cpu::ops::bit::*;
-use corroboy::cpu::Cpu;
+use crate::corroboy::cpu::ops::bit::*;
+use crate::corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_bit(&mut self) {

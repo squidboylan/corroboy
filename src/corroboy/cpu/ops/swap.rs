@@ -3,7 +3,7 @@
 // Please see the file LICENSE in the source
 // distribution of this software for license terms.
 
-use corroboy::mmu::Mmu;
+use crate::corroboy::mmu::Mmu;
 // SWAP n
 
 pub fn swap(reg: &mut u8, flags: &mut u8) {

@@ -6,8 +6,8 @@
 use piston::input::Button;
 use piston::input::Key;
 
-use corroboy::joypad::Joypad;
-use corroboy::mmu::Mmu;
+use crate::corroboy::joypad::Joypad;
+use crate::corroboy::mmu::Mmu;
 
 #[test]
 pub fn test_joypad() {

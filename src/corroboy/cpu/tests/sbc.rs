@@ -4,8 +4,8 @@
 // distribution of this software for license terms.
 
 use super::super::super::mmu::Mmu;
-use corroboy::cpu::ops::sbc::*;
-use corroboy::cpu::Cpu;
+use crate::corroboy::cpu::ops::sbc::*;
+use crate::corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_sbc(&mut self, mem: &mut Mmu) {

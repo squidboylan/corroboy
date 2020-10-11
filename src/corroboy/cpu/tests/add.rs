@@ -4,8 +4,8 @@
 // distribution of this software for license terms.
 
 use super::super::super::mmu::Mmu;
-use corroboy::cpu::ops::add::*;
-use corroboy::cpu::Cpu;
+use crate::corroboy::cpu::ops::add::*;
+use crate::corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_add(&mut self, mem: &mut Mmu) {

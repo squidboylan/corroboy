@@ -3,7 +3,7 @@
 // Please see the file LICENSE in the source
 // distribution of this software for license terms.
 
-use corroboy::mmu::Mmu;
+use crate::corroboy::mmu::Mmu;
 // JP nn
 
 pub fn jp(val: u16, pc: &mut u16) {

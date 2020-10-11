@@ -11,7 +11,7 @@ use piston_window::Texture;
 use piston_window::TextureSettings;
 use sdl2_window::Sdl2Window;
 
-use corroboy::mmu::Mmu;
+use crate::corroboy::mmu::Mmu;
 
 struct Tile {
     // color nums that represent the tile, this + palette data each line represent how the tile is

@@ -22,7 +22,7 @@ mod swap;
 mod xor;
 
 use super::super::mmu::Mmu;
-use corroboy::cpu::Cpu;
+use crate::corroboy::cpu::Cpu;
 
 impl Cpu {
     pub fn test_registers(&mut self) {
